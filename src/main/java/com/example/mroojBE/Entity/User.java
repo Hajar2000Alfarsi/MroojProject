@@ -37,6 +37,11 @@ public class User extends BaseEntity {
     @Builder.Default
     private Boolean enabled = true;
 
+    // language
+     @Column(length = 5, nullable = false)
+    @Builder.Default
+    private String preferredLanguage = "ar";
+
     @OneToOne(mappedBy = "user")
     private Farmer farmer;
 
