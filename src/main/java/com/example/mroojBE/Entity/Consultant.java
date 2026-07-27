@@ -2,12 +2,18 @@ package com.example.mroojBE.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.locationtech.jts.geom.Point;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Table(name = "consultants")
+@Getter
+@Setter
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,9 +23,21 @@ public class Consultant extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(nullable = false, length = 150)
-    private String specialization;
+    @Column(nullable = false, length = 50)
+    private String specialtyDomain;   // PLANT / LIVESTOCK
 
+    @Column(length = 500)
+    private String specialtyTags;     // "tomatoes,pests,irrigation"
+
+
+    //
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer currentLoad = 0;
+
+    @Column(columnDefinition = "POINT SRID 4326", nullable = false)
+    private Point location;   //
+    //
     @Column(nullable = false)
     @Builder.Default
     private Integer experienceYears = 0;
@@ -50,4 +68,7 @@ public class Consultant extends BaseEntity {
     @Builder.Default
     private List<Appointment> appointments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<AssignmentLog> assignmentLogs = new ArrayList<>();
 }

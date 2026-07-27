@@ -2,12 +2,18 @@ package com.example.mroojBE.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.locationtech.jts.geom.Point;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "farmers")
 @Data
+@Getter
+@Setter
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -19,9 +25,8 @@ public class Farmer extends BaseEntity {
     @Column(nullable = false, length = 200)
     private String farmName;
 
-    @Column(length = 255)
-    private String farmLocation;
-
+    @Column(columnDefinition = "POINT SRID 4326", nullable = false)
+    private Point farmLocation;
     @Column(length = 100)
     private String region;
 
