@@ -13,6 +13,7 @@ import java.util.ArrayList;
 @Entity
 @Getter
 @Setter
+@Table(name = "bookings")
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
