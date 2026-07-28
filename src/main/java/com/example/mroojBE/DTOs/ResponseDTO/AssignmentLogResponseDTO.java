@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AssignmentLogResponseDTO {
+    // No Request DTO for AssignmentLog — this entity is created automatically by the
+    // auto-assignment service logic (booking -> best consultant match)
 
     private Long id;
     private Long bookingId;
