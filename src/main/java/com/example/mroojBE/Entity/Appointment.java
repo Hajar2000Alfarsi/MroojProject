@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 @Builder
 public class Appointment extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "booking_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "booking_id", nullable = false, unique = true)
     private Booking booking;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

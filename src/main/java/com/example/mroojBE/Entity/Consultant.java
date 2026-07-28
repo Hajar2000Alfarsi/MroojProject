@@ -30,14 +30,14 @@ public class Consultant extends BaseEntity {
     private String specialtyTags;     // "tomatoes,pests,irrigation"
 
 
-    //
+
     @Column(nullable = false)
     @Builder.Default
     private Integer currentLoad = 0;
 
     @Column(columnDefinition = "POINT SRID 4326", nullable = false)
-    private Point location;   //
-    //
+    private Point location;
+
     @Column(nullable = false)
     @Builder.Default
     private Integer experienceYears = 0;

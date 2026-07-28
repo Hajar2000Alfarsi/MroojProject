@@ -1,6 +1,7 @@
 package com.example.mroojBE.Entity;
 
 import com.example.mroojBE.Entity.enums.BookingStatus;
+import com.example.mroojBE.Entity.enums.ConsultationDomain;
 import com.example.mroojBE.Entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,14 +44,12 @@ public class Booking extends BaseEntity {
     //to take only value that's there in BookingStatus in enum file
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Role domain;   // enum: PLANT, LIVESTOCK
+    private ConsultationDomain domain;   // enum: PLANT, LIVESTOCK (ConsultationDomain)
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private BookingStatus status = BookingStatus.PENDING;
-
-    //
 
     @Column(length = 1000)
     private String subjectType;
@@ -67,15 +66,14 @@ public class Booking extends BaseEntity {
     @Column(columnDefinition = "POINT SRID 4326")
     private Point location;
 
-    //
-
     @Column(length = 1000)
     private String rejectionReason;
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private Appointment appointment;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    //This will create an exception when the application is running.
+    /*@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Appointment> appointments = new ArrayList<>();
+    private List<Appointment> appointments = new ArrayList<>();*/
 }
