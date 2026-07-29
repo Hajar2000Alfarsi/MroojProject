@@ -35,3 +35,4 @@ build/
 
 echo "all_code.txt" >> .gitignore
 git add .gitignore
+echo "project_dump.txt" >> .gitignore

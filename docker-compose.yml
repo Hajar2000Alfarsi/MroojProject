@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8.0 # أو mysql:latest / 9.2 (ينصح بإصدار ثابت مثل 8.0/latest لضمان الاستقرار)
+    image: mysql:8.0
     container_name: mrooj-mysql
     restart: unless-stopped
 
@@ -17,8 +17,12 @@ services:
 
     volumes:
       - mrooj_mysql_data:/var/lib/mysql
-      # 💡 هذا السطر يقوم بتشغيل ملف الـ SQL تلقائياً عند أول إنشاء للحاوية:
-      - ./V1__init_mrooj_schema.sql:/docker-entrypoint-initdb.d/V1__init_mrooj_schema.sql
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pMroojRoot@2026"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   mrooj_mysql_data:
