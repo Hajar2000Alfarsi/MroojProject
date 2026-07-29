@@ -2,51 +2,60 @@ package com.example.mroojBE.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.locationtech.jts.geom.Point;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * FARMERS entity — profile owned One-to-One by a User with role FARMER.
+ * Owning side of the User link (holds user_id). Also owns the inverse
+ * (mappedBy) side of its Bookings and Appointments for navigation like
+ * farmer.getBookings().
+ */
 @Entity
 @Table(name = "farmers")
-@Data
 @Getter
 @Setter
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
+@ToString(callSuper = true, exclude = {"user", "bookings", "appointments"})
+@EqualsAndHashCode(callSuper = false, exclude = {"user", "bookings", "appointments"})
 public class Farmer extends BaseEntity {
-    @OneToOne(optional = false)
+
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "farm_name", nullable = false, length = 150)
     private String farmName;
 
-    @Column(columnDefinition = "POINT SRID 4326", nullable = false)
+    /**
+     * ERD: "POINT NOT NULL SRID 4326". Requires hibernate-spatial on the
+     * classpath for the org.locationtech.jts.geom.Point type to resolve.
+     */
+    @Column(name = "farm_location", nullable = false, columnDefinition = "POINT SRID 4326")
     private Point farmLocation;
+
     @Column(length = 100)
     private String region;
 
-    @Column
+    @Column(name = "farm_size_acres")
     private Double farmSizeAcres;
 
-    @Column(length = 500)
+    @Column(name = "crop_types", length = 255)
     private String cropTypes;
 
-    @Column(length = 1000)
-    private String bio;
-
-    //cascade = CascadeType.ALL --> each change in framer will be also changed in booking
-    //orphanRemoval --> any framer booking delete from framer also delete it from DB
-    @OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Inverse side of Booking.farmer — read-only convenience, don't rely
+    // on this collection to persist new bookings; save via BookingRepository.
+    @OneToMany(mappedBy = "farmer", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Booking> bookings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Inverse side of Appointment.farmer
+    @OneToMany(mappedBy = "farmer", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Appointment> appointments = new ArrayList<>();
-
 }

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0 # أو mysql:latest / 9.2 (ينصح بإصدار ثابت مثل 8.0/latest لضمان الاستقرار)
+    container_name: mrooj-mysql
+    restart: unless-stopped
+
+    environment:
+      MYSQL_DATABASE: mrooj_db
+      MYSQL_USER: mrooj_user
+      MYSQL_PASSWORD: MroojDB@2026
+      MYSQL_ROOT_PASSWORD: MroojRoot@2026
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - mrooj_mysql_data:/var/lib/mysql
+      # 💡 هذا السطر يقوم بتشغيل ملف الـ SQL تلقائياً عند أول إنشاء للحاوية:
+      - ./V1__init_mrooj_schema.sql:/docker-entrypoint-initdb.d/V1__init_mrooj_schema.sql
+
+volumes:
+  mrooj_mysql_data:
