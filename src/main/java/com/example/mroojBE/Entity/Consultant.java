@@ -1,74 +1,74 @@
 package com.example.mroojBE.Entity;
 
+import com.example.mroojBE.Entity.enums.Domain;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.locationtech.jts.geom.Point;
-
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * CONSULTANTS entity — profile owned One-to-One by a User with role
+ * CONSULTANT. current_load and rating feed the Phase 4 assignment algorithm.
+ *
+ * ERD notes location as "POINT NOT NULL SRID 4326 + SPATIAL INDEX" — the
+ * spatial index is a DB-level concern (schema migration), not expressible
+ * through the @Column annotation alone.
+ */
 @Entity
 @Table(name = "consultants")
 @Getter
 @Setter
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
+@ToString(callSuper = true, exclude = {"user", "bookings", "appointments", "assignmentLogs"})
+@EqualsAndHashCode(callSuper = false, exclude = {"user", "bookings", "appointments", "assignmentLogs"})
 public class Consultant extends BaseEntity {
 
-    @OneToOne(optional = false)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(nullable = false, length = 50)
-    private String specialtyDomain;   // PLANT / LIVESTOCK
+    @Enumerated(EnumType.STRING)
+    @Column(name = "specialty_domain", nullable = false, length = 20)
+    private Domain specialtyDomain;
 
-    @Column(length = 500)
-    private String specialtyTags;     // "tomatoes,pests,irrigation"
+    @Column(name = "specialty_tags", length = 255)
+    private String specialtyTags;
 
+    @Column(nullable = false, columnDefinition = "POINT SRID 4326")
+    private Point location;
 
-    //
-    @Column(nullable = false)
+    @Column(name = "current_load", nullable = false)
     @Builder.Default
-    private Integer currentLoad = 0;
+    private int currentLoad = 0;
 
-    @Column(columnDefinition = "POINT SRID 4326", nullable = false)
-    private Point location;   //
-    //
-    @Column(nullable = false)
-    @Builder.Default
-    private Integer experienceYears = 0;
-
-    @Column(length = 1000)
-    private String bio;
-
-    @Column(length = 255)
-    private String qualifications;
-
-    @Column
-    @Builder.Default
-    private Double rating = 0.0;
-
-    @Column
-    @Builder.Default
-    private Integer totalReviews = 0;
+    @Column(name = "experience_years")
+    private Integer experienceYears;
 
     @Column(nullable = false)
     @Builder.Default
-    private Boolean available = true;
+    private double rating = 0.0;
 
-    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean available = true;
+
+    // Inverse side of Booking.assignedConsultant
+    @OneToMany(mappedBy = "assignedConsultant", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Booking> bookings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Inverse side of Appointment.consultant
+    @OneToMany(mappedBy = "consultant", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Appointment> appointments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Inverse side of AssignmentLog.consultant
+    @OneToMany(mappedBy = "consultant", fetch = FetchType.LAZY)
     @Builder.Default
     private List<AssignmentLog> assignmentLogs = new ArrayList<>();
 }
