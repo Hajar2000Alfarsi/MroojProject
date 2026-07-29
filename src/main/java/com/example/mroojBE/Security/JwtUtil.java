@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+
+//JwtUtil class is the class that creates JWT tokens at login and reads/verifies
+// them on every later request — the single place that handles all token logic.
 @Component
 public class JwtUtil {
     //pulls the secret value from our application.properties
