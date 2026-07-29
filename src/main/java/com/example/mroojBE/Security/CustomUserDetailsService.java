@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
+//UserDetailsService is a Spring Security interface(a contract that says "any class implementing me must provide a method with this exact name and signature)
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
