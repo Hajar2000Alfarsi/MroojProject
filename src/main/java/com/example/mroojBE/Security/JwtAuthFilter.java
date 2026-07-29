@@ -18,7 +18,7 @@ import java.util.List;
 //reaching your endpoints.
 
 @Component
-public class JwtAuthFilter {
+public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     public JwtAuthFilter(JwtUtil jwtUtil) {
