@@ -204,4 +204,28 @@
       }
 
     }
+    , 
+        "learning": {
+
+      "hero": {
+        "title": "MROOJ Learning Center",
+        "description": "Explore agricultural and veterinary knowledge designed for farmers and livestock owners in Oman."
+      },
+
+
+      "plant": {
+        "title": "Plant Care",
+        "description": "Learn about crops, diseases, farming techniques, and sustainable agriculture practices."
+      },
+
+
+      "animal": {
+        "title": "Animal Care",
+        "description": "Discover animal health, livestock management, diseases, and veterinary guidance."
+      },
+
+
+      "explore": "Explore Articles"
+
+    }
 }

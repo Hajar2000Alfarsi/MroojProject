@@ -14,6 +14,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/about/about')
       .then(m => m.About)
+  },
+
+
+  {
+    path: 'learning-center',
+    loadComponent: () =>
+      import('./features/learning-center/learning-center-landing/learning-center-landing')
+      .then(m => m.LearningCenterLanding)
   }
 
 ];

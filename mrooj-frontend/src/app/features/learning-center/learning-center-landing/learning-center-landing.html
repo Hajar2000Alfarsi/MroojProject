@@ -1,0 +1,68 @@
+<main class="learning-page">
+
+
+<section class="hero">
+
+
+<h1>
+{{ 'learning.hero.title' | translate }}
+</h1>
+
+
+<p>
+{{ 'learning.hero.description' | translate }}
+</p>
+
+
+</section>
+
+
+
+
+<section class="cards">
+
+
+<a 
+class="category-card"
+*ngFor="let category of categories"
+[routerLink]="category.link"
+>
+
+
+<img 
+[src]="category.image"
+[alt]="category.title | translate"
+/>
+
+
+<div class="content">
+
+
+<h2>
+{{ category.title | translate }}
+</h2>
+
+
+<p>
+{{ category.description | translate }}
+</p>
+
+
+
+<button>
+
+{{ 'learning.explore' | translate }}
+
+</button>
+
+
+</div>
+
+
+</a>
+
+
+</section>
+
+
+</main>
