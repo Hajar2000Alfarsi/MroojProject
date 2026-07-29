@@ -1,0 +1,297 @@
+<main class="about">
+
+
+  <!-- =========================
+       Hero Section
+       القسم الرئيسي
+       ========================= -->
+
+  <section class="about-hero">
+
+    <div class="about-hero__overlay"></div>
+
+
+    <div class="container about-hero__content">
+
+      <h1>
+        {{ 'about.hero.title' | translate }}
+      </h1>
+
+
+      <p>
+        {{ 'about.hero.description' | translate }}
+      </p>
+
+
+    </div>
+
+
+  </section>
+
+
+
+
+
+
+
+  <!-- =========================
+       Who We Are
+       من نحن
+       ========================= -->
+
+
+  <section class="who container">
+
+
+    <div class="who__image">
+
+      <!-- لاحقاً نضع صورة حقيقية -->
+
+      <img
+        src="assets/images/about-team.png"
+        alt="Smart agriculture"
+      >
+
+    </div>
+
+
+
+    <div class="who__content">
+
+
+      <h2>
+        {{ 'about.who.title' | translate }}
+      </h2>
+
+
+      <p>
+        {{ 'about.who.description' | translate }}
+      </p>
+
+
+    </div>
+
+
+  </section>
+
+
+
+
+
+
+
+
+  <!-- =========================
+       Mission & Vision
+       الرسالة والرؤية
+       ========================= -->
+
+
+  <section class="mission-vision">
+
+
+    <div class="container mission-vision__grid">
+
+
+      <div class="info-card">
+
+
+        <div class="card-icon">
+          🌱
+        </div>
+
+
+        <h3>
+          {{ 'about.mission.title' | translate }}
+        </h3>
+
+
+        <p>
+          {{ 'about.mission.description' | translate }}
+        </p>
+
+
+      </div>
+
+
+
+
+
+
+      <div class="info-card">
+
+
+        <div class="card-icon">
+          🚀
+        </div>
+
+
+        <h3>
+          {{ 'about.vision.title' | translate }}
+        </h3>
+
+
+        <p>
+          {{ 'about.vision.description' | translate }}
+        </p>
+
+
+      </div>
+
+
+
+    </div>
+
+
+  </section>
+
+
+
+
+
+
+
+
+
+  <!-- =========================
+       Process Flow
+       كيف تعمل مروج
+       ========================= -->
+
+
+  <section class="process">
+
+
+    <div class="container">
+
+
+      <h2>
+        {{ 'about.process.title' | translate }}
+      </h2>
+
+
+
+
+      <div class="process-grid">
+
+
+
+        <div
+          class="process-card"
+          *ngFor="let step of processSteps; let i = index"
+        >
+
+
+          <div class="process-number">
+
+            {{ i + 1 }}
+
+          </div>
+
+
+
+          <h3>
+
+            {{ step.title | translate }}
+
+          </h3>
+
+
+
+          <p>
+
+            {{ step.description | translate }}
+
+          </p>
+
+
+
+        </div>
+
+
+
+      </div>
+
+
+
+    </div>
+
+
+  </section>
+
+
+
+
+
+
+
+
+
+  <!-- =========================
+       Why Choose MROOJ
+       لماذا مروج
+       ========================= -->
+
+
+  <section class="why">
+
+
+    <div class="container">
+
+
+      <h2>
+
+        {{ 'about.why.title' | translate }}
+
+      </h2>
+
+
+
+      <div class="why-grid">
+
+
+        <div
+          class="why-card"
+          *ngFor="let item of whyItems"
+        >
+
+
+          <div class="why-icon">
+
+            {{ item.icon }}
+
+          </div>
+
+
+
+          <h3>
+
+            {{ item.title | translate }}
+
+          </h3>
+
+
+
+          <p>
+
+            {{ item.description | translate }}
+
+          </p>
+
+
+
+        </div>
+
+
+      </div>
+
+
+
+    </div>
+
+
+  </section>
+
+
+
+</main>

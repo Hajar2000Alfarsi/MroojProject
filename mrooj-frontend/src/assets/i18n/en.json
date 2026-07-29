@@ -1,0 +1,207 @@
+{
+  "navbar": {
+    "home": "Home",
+    "about": "About",
+    "learning": "Learning Center",
+    "login": "Login",
+    "register": "Registration"
+  },
+
+
+  "hero": {
+    "badge": "AI-DRIVEN PRECISION AGRICULTURE",
+    "title": "Empowering Growth through Smart AI Consultation",
+    "description": "MROOJ bridges the gap between traditional farming wisdom and cutting-edge data science. Optimize your yields with real-time AI diagnoses and expert agricultural guidance.",
+    "button": "Start Consultation"
+  },
+
+
+  "mission": {
+    "title": "Our Mission: Digitizing the Earth’s Wisdom",
+    "description": "At MROOJ, we believe the future of farming is sustainable and data-driven. Our platform connects farmers with AI-powered precision tools and agricultural expertise."
+  },
+
+
+  "features": {
+    "title": "Precision Tools for Modern Producers",
+
+    "items": [
+      {
+        "icon": "🤖",
+        "title": "AI Diagnosis",
+        "description": "Instant disease identification using AI-assisted analysis for crops and livestock."
+      },
+      {
+        "icon": "👨‍🌾",
+        "title": "Expert Consults",
+        "description": "Direct access to agricultural and veterinary consultants for complex cases."
+      },
+      {
+        "icon": "📚",
+        "title": "Learning Center",
+        "description": "Educational resources covering crops, diseases, livestock and farming practices."
+      },
+      {
+        "icon": "📊",
+        "title": "Smart Recommendations",
+        "description": "AI-based suggestions to improve farming decisions."
+      }
+    ]
+  },
+
+
+  "learning": {
+    "title": "Cultivate Your Knowledge",
+
+    "items": [
+      {
+        "title": "Palm Disease Prevention",
+        "description": "Guide for managing Red Palm Weevil and common date palm diseases.",
+        "image": "/assets/images/palm.png"
+      },
+      {
+        "title": "Mastering Tomato Health",
+        "description": "Improve tomato production through nutrition and disease prevention.",
+        "image": "/assets/images/tomato.png"
+      },
+      {
+        "title": "Livestock Wellness 101",
+        "description": "Learn vaccination, nutrition and early disease detection.",
+        "image": "/assets/images/livestock.png"
+      }
+    ]
+  },
+
+
+  "steps": {
+    "title": "From Problem to Solution in 3 Steps",
+
+    "items": [
+      {
+        "number": 1,
+        "title": "Upload Data",
+        "description": "Upload crop or animal images and information."
+      },
+      {
+        "number": 2,
+        "title": "AI Analysis",
+        "description": "AI detects possible diseases and provides insights."
+      },
+      {
+        "number": 3,
+        "title": "Expert Feedback",
+        "description": "Receive recommendations from specialists."
+      }
+    ]
+  },
+
+
+  "footer": {
+
+    "tagline": "AI-powered agricultural and veterinary consultation platform connecting farmers and livestock owners with experts and smart solutions.",
+
+
+    "quickLinks": {
+      "title": "Quick Links",
+      "home": "Home",
+      "about": "About",
+      "learning": "Learning Center"
+    },
+
+
+    "services": {
+      "title": "Services",
+      "plant": "Plant Care",
+      "animal": "Animal Care",
+      "consultation": "AI Consultation"
+    },
+
+
+    "contact": {
+      "title": "Contact",
+      "location": "Oman",
+      "email": "Email: mrooj@gmail.com",
+      "phone": "Phone: +968 9114 9309"
+    },
+
+
+    "copyright": "MROOJ AI Agriculture. All rights reserved."
+
+  }
+
+  
+  ,
+    "about": {
+
+      "hero": {
+        "title": "Empowering Agriculture Through Intelligent Technology",
+        "description": "MROOJ combines artificial intelligence, agricultural expertise, and veterinary knowledge to support smarter and more sustainable farming."
+      },
+
+
+      "who": {
+        "title": "Who We Are",
+        "description": "MROOJ is an AI-powered agricultural and veterinary consultation platform designed to connect farmers and livestock owners with intelligent solutions and specialized experts."
+      },
+
+
+      "mission": {
+        "title": "Our Mission",
+        "description": "To empower farmers with accessible AI technologies and expert guidance that improve productivity and sustainability."
+      },
+
+
+      "vision": {
+        "title": "Our Vision",
+        "description": "To become a leading smart agriculture platform that transforms farming decisions through artificial intelligence."
+      },
+
+
+      "process": {
+        "title": "How MROOJ Works",
+
+        "steps": [
+          {
+            "title": "Identify",
+            "description": "Upload crop or livestock information and describe the problem."
+          },
+
+          {
+            "title": "AI Analysis",
+            "description": "Our AI analyzes the information and provides possible insights."
+          },
+
+          {
+            "title": "Expert Consultation",
+            "description": "Connect with agricultural and veterinary specialists for guidance."
+          }
+        ]
+      },
+
+
+      "why": {
+        "title": "Why Choose MROOJ",
+
+        "items": [
+          {
+            "icon": "🤖",
+            "title": "AI-Powered Solutions",
+            "description": "Smart analysis to support faster agricultural decisions."
+          },
+
+          {
+            "icon": "🌱",
+            "title": "Sustainable Farming",
+            "description": "Helping farmers adopt efficient and sustainable practices."
+          },
+
+          {
+            "icon": "👨‍⚕️",
+            "title": "Expert Support",
+            "description": "Access professional agricultural and veterinary consultants."
+          }
+        ]
+      }
+
+    }
+}

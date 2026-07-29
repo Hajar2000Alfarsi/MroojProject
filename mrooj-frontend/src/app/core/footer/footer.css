@@ -1,0 +1,278 @@
+:host {
+
+  --primary-green: #1b5e20;
+  --light-green: #c8e6c9;
+  --text-dark: #263238;
+  --text-gray: #616161;
+  --border-color: #e0e0e0;
+  --white: #ffffff;
+
+  display: block;
+
+  font-family: 'Inter', sans-serif;
+
+  background: var(--white);
+
+}
+
+
+
+
+
+/* ==========================
+   Footer Container
+========================== */
+
+
+.footer {
+
+  background: var(--white);
+
+  width: 100%;
+
+}
+
+
+
+.footer__container {
+
+  max-width: 1440px;
+
+  margin: auto;
+
+  padding: 60px 40px 30px;
+
+}
+
+
+
+
+
+/* ==========================
+   Columns
+========================== */
+
+
+.footer__columns {
+
+  display: grid;
+
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+
+  gap: 40px;
+
+  margin-bottom: 50px;
+
+}
+
+
+
+@media(max-width:900px){
+
+  .footer__columns{
+
+    grid-template-columns: repeat(2,1fr);
+
+  }
+
+}
+
+
+
+@media(max-width:600px){
+
+  .footer__columns{
+
+    grid-template-columns:1fr;
+
+  }
+
+
+}
+
+
+
+
+
+/* ==========================
+   Brand
+========================== */
+
+
+.footer__brand {
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  text-decoration:none;
+
+  margin-bottom:18px;
+
+}
+
+
+
+.footer__logo {
+
+  width:45px;
+
+  height:45px;
+
+  border-radius:50%;
+
+  object-fit:cover;
+
+}
+
+
+
+.footer__brand-name {
+
+  color:var(--primary-green);
+
+  font-size:22px;
+
+  font-weight:700;
+
+  letter-spacing:1px;
+
+}
+
+
+
+.footer__tagline {
+
+  max-width:300px;
+
+  color:var(--text-gray);
+
+  font-size:14px;
+
+  line-height:1.7;
+
+}
+
+
+
+
+
+/* ==========================
+   Footer Columns
+========================== */
+
+
+.footer__col {
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:14px;
+
+}
+
+
+
+.footer__heading {
+
+  margin:0 0 8px;
+
+  color:var(--primary-green);
+
+  font-size:16px;
+
+  font-weight:700;
+
+}
+
+
+
+
+
+/* ==========================
+   Links
+========================== */
+
+
+.footer__link {
+
+  color:var(--text-gray);
+
+  text-decoration:none;
+
+  font-size:14px;
+
+  transition:0.3s ease;
+
+}
+
+
+
+.footer__link:hover {
+
+  color:var(--primary-green);
+
+  transform:translateX(5px);
+
+}
+
+
+
+
+
+/* ==========================
+   Contact
+========================== */
+
+
+.footer__text {
+
+  color:var(--text-gray);
+
+  font-size:14px;
+
+}
+
+
+
+
+
+/* ==========================
+   Divider
+========================== */
+
+
+.footer__divider {
+
+  width:100%;
+
+  border-top:1px solid var(--border-color);
+
+  margin-bottom:25px;
+
+}
+
+
+
+
+
+/* ==========================
+   Copyright
+========================== */
+
+
+.footer__copyright {
+
+  text-align:center;
+
+  color:var(--text-gray);
+
+  font-size:13px;
+
+  margin:0 0 20px;
+
+}
+

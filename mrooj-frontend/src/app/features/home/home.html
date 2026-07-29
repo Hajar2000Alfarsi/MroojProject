@@ -1,0 +1,283 @@
+<main class="home">
+
+
+  <!-- Hero Section -->
+
+  <section class="hero">
+
+
+    <div class="hero-image"></div>
+
+
+    <div class="container">
+
+
+      <span class="badge">
+        {{ 'hero.badge' | translate }}
+      </span>
+
+
+      <h1>
+        {{ 'hero.title' | translate }}
+      </h1>
+
+
+      <p>
+        {{ 'hero.description' | translate }}
+      </p>
+
+
+      <button>
+        {{ 'hero.button' | translate }}
+      </button>
+
+
+    </div>
+
+
+  </section>
+
+
+
+
+
+  <!-- Mission Section -->
+
+
+  <section class="mission container">
+
+
+    <div class="mission-image"></div>
+
+
+    <div class="mission-content">
+
+
+      <h2>
+        {{ 'mission.title' | translate }}
+      </h2>
+
+
+      <p>
+        {{ 'mission.description' | translate }}
+      </p>
+
+
+    </div>
+
+
+  </section>
+
+
+
+
+
+
+
+  <!-- Features Section -->
+
+
+  <section class="features">
+
+
+    <div class="container">
+
+
+      <h2>
+        {{ 'features.title' | translate }}
+      </h2>
+
+
+
+      <div class="features-grid">
+
+
+        <div 
+          class="feature-card"
+          *ngFor="let feature of ('features.items' | translate)"
+        >
+
+
+          <div class="feature-icon">
+
+            {{ feature.icon }}
+
+          </div>
+
+
+
+          <h3>
+
+            {{ feature.title }}
+
+          </h3>
+
+
+
+          <p>
+
+            {{ feature.description }}
+
+          </p>
+
+
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+  </section>
+
+
+
+
+
+
+
+  <!-- Learning Center -->
+
+
+  <section class="learning">
+
+
+    <div class="container">
+
+
+      <h2>
+
+        {{ 'learning.title' | translate }}
+
+      </h2>
+
+
+
+
+      <div class="learning-grid">
+
+
+
+        <div
+          class="learning-card"
+          *ngFor="let item of ('learning.items' | translate)"
+        >
+
+
+
+          <img
+            [src]="item.image"
+            [alt]="item.title"
+          >
+
+
+
+          <h3>
+
+            {{ item.title }}
+
+          </h3>
+
+
+
+          <p>
+
+            {{ item.description }}
+
+          </p>
+
+
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+  </section>
+
+
+
+
+
+
+
+
+  <!-- Steps Section -->
+
+
+  <section class="process">
+
+
+    <div class="container">
+
+
+      <h2>
+
+        {{ 'steps.title' | translate }}
+
+      </h2>
+
+
+
+
+      <div class="steps">
+
+
+
+        <div
+          class="step"
+          *ngFor="let step of ('steps.items' | translate)"
+        >
+
+
+
+          <div class="step-number">
+
+            {{ step.number }}
+
+          </div>
+
+
+
+
+          <h3>
+
+            {{ step.title }}
+
+          </h3>
+
+
+
+
+          <p>
+
+            {{ step.description }}
+
+          </p>
+
+
+
+
+        </div>
+
+
+
+      </div>
+
+
+
+    </div>
+
+
+  </section>
+
+
+
+</main>

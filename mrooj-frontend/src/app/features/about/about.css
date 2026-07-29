@@ -1,0 +1,610 @@
+:host {
+
+  --primary: #1b5e20;
+  --primary-light: #e8f5e9;
+
+  --text-main: #071e27;
+  --text-secondary: #41493e;
+
+  --white: #ffffff;
+
+  --border: #dce8dc;
+
+  --radius: 16px;
+
+  --shadow:
+    0 10px 30px rgba(27, 94, 32, 0.10);
+
+
+  display: block;
+
+  font-family:
+    'Inter',
+    sans-serif;
+
+}
+
+
+
+/* =========================
+   Global Container
+========================= */
+
+
+.container {
+
+  width: min(90%, 1200px);
+
+  margin-inline: auto;
+
+}
+
+
+
+
+
+
+
+/* =========================
+   Hero Section
+========================= */
+
+
+.about-hero {
+
+
+  min-height: 520px;
+
+
+  display: flex;
+
+  align-items: center;
+
+
+  position: relative;
+
+
+  background:
+
+    linear-gradient(
+      rgba(27,94,32,0.65),
+      rgba(27,94,32,0.65)
+    ),
+
+    url('/assets/images/about-farm.jpg');
+
+
+  background-size: cover;
+
+  background-position: center;
+
+
+
+  color: white;
+
+}
+
+
+
+.about-hero__content {
+
+
+  position: relative;
+
+  z-index: 2;
+
+
+  max-width: 700px;
+
+
+}
+
+
+
+.about-hero h1 {
+
+
+  font-size: clamp(2rem,5vw,3.5rem);
+
+  line-height: 1.2;
+
+  margin-bottom: 20px;
+
+}
+
+
+
+.about-hero p {
+
+
+  font-size: 18px;
+
+  line-height: 1.8;
+
+
+  opacity: .95;
+
+}
+
+
+
+
+
+
+
+
+
+/* =========================
+   Who We Are
+========================= */
+
+
+.who {
+
+
+  display: grid;
+
+
+  grid-template-columns:
+
+  1fr 1fr;
+
+
+  gap: 60px;
+
+
+  padding-block: 90px;
+
+
+  align-items: center;
+
+
+}
+
+
+
+.who__image img {
+
+
+  width: 100%;
+
+
+  border-radius: var(--radius);
+
+
+  box-shadow: var(--shadow);
+
+
+}
+
+
+
+.who__content h2 {
+
+
+  color: var(--primary);
+
+  font-size: 32px;
+
+
+  margin-bottom: 20px;
+
+}
+
+
+
+.who__content p {
+
+
+  color: var(--text-secondary);
+
+
+  line-height: 1.8;
+
+}
+
+
+
+
+
+
+
+
+
+/* =========================
+   Mission & Vision
+========================= */
+
+
+.mission-vision {
+
+
+  background: var(--primary-light);
+
+
+  padding-block: 80px;
+
+
+}
+
+
+
+.mission-vision__grid {
+
+
+  display: grid;
+
+
+  grid-template-columns: repeat(2,1fr);
+
+
+  gap: 30px;
+
+
+}
+
+
+
+.info-card {
+
+
+  background: white;
+
+
+  padding: 35px;
+
+
+  border-radius: var(--radius);
+
+
+  box-shadow: var(--shadow);
+
+
+  transition: transform .3s ease;
+
+
+}
+
+
+
+.info-card:hover {
+
+
+  transform: translateY(-8px);
+
+
+}
+
+
+
+.card-icon {
+
+
+  font-size: 40px;
+
+
+  margin-bottom: 20px;
+
+
+}
+
+
+
+.info-card h3 {
+
+
+  color: var(--primary);
+
+
+  margin-bottom: 15px;
+
+
+}
+
+
+
+.info-card p {
+
+
+  color: var(--text-secondary);
+
+
+  line-height: 1.7;
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =========================
+   Process
+========================= */
+
+
+.process {
+
+
+  padding-block: 90px;
+
+
+}
+
+
+
+.process h2,
+
+.why h2 {
+
+
+  text-align: center;
+
+
+  color: var(--primary);
+
+
+  font-size: 32px;
+
+
+  margin-bottom: 50px;
+
+
+}
+
+
+
+.process-grid {
+
+
+  display:grid;
+
+
+  grid-template-columns:repeat(3,1fr);
+
+
+  gap:30px;
+
+
+}
+
+
+
+.process-card {
+
+
+  text-align:center;
+
+
+  padding:35px;
+
+
+  border-radius:var(--radius);
+
+
+  background:white;
+
+
+  box-shadow:var(--shadow);
+
+
+}
+
+
+
+.process-number {
+
+
+  width:55px;
+
+
+  height:55px;
+
+
+  margin:0 auto 20px;
+
+
+  display:flex;
+
+
+  align-items:center;
+
+
+  justify-content:center;
+
+
+  border-radius:50%;
+
+
+  background:var(--primary);
+
+
+  color:white;
+
+
+  font-size:22px;
+
+
+  font-weight:700;
+
+
+}
+
+
+
+.process-card h3 {
+
+
+  color:var(--primary);
+
+
+}
+
+
+
+.process-card p {
+
+
+  color:var(--text-secondary);
+
+
+  line-height:1.7;
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =========================
+   Why Choose MROOJ
+========================= */
+
+
+.why {
+
+
+  background:#fafafa;
+
+
+  padding-block:90px;
+
+
+}
+
+
+
+.why-grid {
+
+
+  display:grid;
+
+
+  grid-template-columns:repeat(3,1fr);
+
+
+  gap:30px;
+
+
+}
+
+
+
+.why-card {
+
+
+  background:white;
+
+
+  padding:35px;
+
+
+  border-radius:var(--radius);
+
+
+  text-align:center;
+
+
+  box-shadow:var(--shadow);
+
+
+  transition:.3s;
+
+
+}
+
+
+
+.why-card:hover {
+
+
+  transform:translateY(-8px);
+
+
+}
+
+
+
+.why-icon {
+
+
+  font-size:42px;
+
+
+  margin-bottom:20px;
+
+
+}
+
+
+
+.why-card h3 {
+
+
+  color:var(--primary);
+
+
+}
+
+
+
+.why-card p {
+
+
+  color:var(--text-secondary);
+
+
+  line-height:1.7;
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =========================
+   Responsive
+========================= */
+
+
+@media(max-width:900px){
+
+
+  .who {
+
+
+    grid-template-columns:1fr;
+
+
+  }
+
+
+
+  .mission-vision__grid,
+
+  .process-grid,
+
+  .why-grid {
+
+
+    grid-template-columns:1fr;
+
+
+  }
+
+
+}
