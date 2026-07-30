@@ -57,17 +57,21 @@
       {
         "title": "الوقاية من أمراض النخيل",
         "description": "دليل لإدارة سوسة النخيل الحمراء وأمراض النخيل الشائعة.",
-        "image": "/assets/images/palm.png"
+        "image": "/assets/images/palm.png",
+        "link": "https://iraqi-datepalms.net/wp-content/uploads/2021/06/%D8%A3%D9%85%D8%B1%D8%A7%D8%B6-%D9%88-%D8%A2%D9%81%D8%A7%D8%AA-%D8%A7%D9%84%D9%86%D8%AE%D9%8A%D9%84-2017%D9%85.pdf"
       },
       {
         "title": "العناية بصحة الطماطم",
         "description": "تحسين إنتاج الطماطم من خلال التغذية والوقاية من الأمراض.",
-        "image": "/assets/images/tomato.png"
+        "image": "/assets/images/tomato.png",
+        "link": "https://agrimisr.com/index.php?dispatch=pages.view&page_id=69"
       },
       {
         "title": "أساسيات صحة المواشي",
         "description": "تعلم التطعيمات والتغذية والكشف المبكر عن الأمراض.",
-        "image": "/assets/images/livestock.png"
+        "image": "/assets/images/livestock.png",
+        "link": "https://www.noah.co.uk/wp-content/uploads/2022/08/NOAH-Livestock-Vaccination-Guideline-August-2022.pdf"
+    
       }
     ]
   },
