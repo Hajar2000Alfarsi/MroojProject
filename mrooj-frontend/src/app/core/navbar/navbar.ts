@@ -51,7 +51,7 @@ export class Navbar {
         label: 'navbar.about',
         path: '/about'
       },
-
+// Learning Center navigation link
       {
         label: 'navbar.learning',
         path: '/learning-center'
