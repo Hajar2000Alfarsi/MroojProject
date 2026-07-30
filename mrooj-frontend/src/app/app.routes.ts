@@ -17,11 +17,28 @@ export const routes: Routes = [
   },
 
 
+  // Learning Center Main Page
   {
     path: 'learning-center',
     loadComponent: () =>
       import('./features/learning-center/learning-center-landing/learning-center-landing')
       .then(m => m.LearningCenterLanding)
+  },
+
+
+  // Learning Articles Page
+  {
+    path: 'learning-center/articles/:category',
+    loadComponent: () =>
+      import('./features/learning-center/learning-articles/learning-articles')
+      .then(m => m.LearningArticles)
+  },
+
+
+  // أي رابط غير موجود يرجع للـ Home
+  {
+    path: '**',
+    redirectTo: ''
   }
 
 ];

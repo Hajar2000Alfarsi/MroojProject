@@ -50,7 +50,7 @@
   },
 
 
-  "learning": {
+  "homeLearning": {
     "title": "Cultivate Your Knowledge",
 
     "items": [
@@ -227,5 +227,88 @@
 
       "explore": "Explore Articles"
 
+    }, 
+
+
+"learningArticles": {
+
+  "title": "Learning Articles",
+  "description": "Explore agricultural and veterinary knowledge designed for farmers and livestock owners in Oman.",
+  "read": "Read More",
+
+
+  "plant": {
+    "title": "Plant",
+    "button": "Plant Care",
+
+    "article1": {
+      "title": "Date Palm Diseases",
+      "description": "Learn how to identify, prevent, and manage common date palm diseases in Oman."
+    },
+
+    "article2": {
+      "title": "Red Palm Weevil Management",
+      "description": "Discover prevention methods and early detection techniques for red palm weevil infestations."
+    },
+
+    "article3": {
+      "title": "Crop Disease Prevention",
+      "description": "Learn how to protect crops from common diseases using sustainable farming practices."
+    },
+
+    "article4": {
+      "title": "Smart Irrigation Techniques",
+      "description": "Understand efficient irrigation methods to improve crop growth and save water."
+    },
+
+    "article5": {
+      "title": "Soil Health Management",
+      "description": "Learn how soil quality affects plant growth and agricultural productivity."
+    },
+
+    "article6": {
+      "title": "Sustainable Farming Practices",
+      "description": "Discover eco-friendly farming methods that improve productivity while protecting natural resources."
     }
+
+  },
+
+
+  "animal": {
+    "title": "Animals",
+    "button": "Animal Care",
+
+    "article1": {
+      "title": "Camel Health Management",
+      "description": "Learn about camel nutrition, diseases, and veterinary care practices."
+    },
+
+    "article2": {
+      "title": "Livestock Vaccination Guide",
+      "description": "Understand important vaccinations and preventive care for livestock."
+    },
+
+    "article3": {
+      "title": "Animal Nutrition Basics",
+      "description": "Learn how proper nutrition improves animal health and productivity."
+    },
+
+    "article4": {
+      "title": "Early Disease Detection",
+      "description": "Discover common signs of livestock diseases and when to seek expert advice."
+    },
+
+    "article5": {
+      "title": "Poultry Health Management",
+      "description": "Learn basic poultry care, disease prevention, and farm management practices."
+    },
+
+      "article6": {
+        "title": "Goat Farming Essentials",
+        "description": "Learn the fundamentals of goat breeding, nutrition, and disease prevention."
+      }
+
+  }
+
+}
 }

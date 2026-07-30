@@ -77,12 +77,12 @@ export class Footer {
 
     {
       label: 'footer.services.plant',
-      path: '/learning-center/plant-care'
+      path: '/learning-center/articles/plant-care'
     },
 
     {
       label: 'footer.services.animal',
-      path: '/learning-center/animal-care'
+      path: '/learning-center/articles/animal-care'
     },
 
     {
