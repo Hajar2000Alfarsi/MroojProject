@@ -21,9 +21,9 @@ import java.util.List;
 @Table(name = "bookings")
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 @ToString(callSuper = true, exclude = {"farmer", "assignedConsultant", "appointments", "assignmentLogs"})
 @EqualsAndHashCode(callSuper = false, exclude = {"farmer", "assignedConsultant", "appointments", "assignmentLogs"})
 public class Booking extends BaseEntity {

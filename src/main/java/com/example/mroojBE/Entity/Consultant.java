@@ -18,12 +18,12 @@ import java.util.List;
  * through the @Column annotation alone.
  */
 @Entity
-@Table(name = "consultants")
 @Getter
 @Setter
+@SuperBuilder
+@Table(name = "consultants")
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 @ToString(callSuper = true, exclude = {"user", "bookings", "appointments", "assignmentLogs"})
 @EqualsAndHashCode(callSuper = false, exclude = {"user", "bookings", "appointments", "assignmentLogs"})
 public class Consultant extends BaseEntity {

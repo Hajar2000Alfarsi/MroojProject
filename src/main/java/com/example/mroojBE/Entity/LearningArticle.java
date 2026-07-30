@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 @Table(name = "learning_articles")
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
 public class LearningArticle extends BaseEntity {
