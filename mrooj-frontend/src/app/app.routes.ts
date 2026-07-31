@@ -34,6 +34,13 @@ export const routes: Routes = [
       .then(m => m.LearningArticles)
   },
 
+  // Registration Page
+{
+  path: 'auth/registration',
+  loadComponent: () =>
+    import('./features/auth/registration/registration')
+    .then(m => m.Registration)
+},
 
   // أي رابط غير موجود يرجع للـ Home
   {

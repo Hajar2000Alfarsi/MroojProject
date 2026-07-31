@@ -1,1 +1,647 @@
-<p>registration works!</p>
+<div class="registration-container">
+
+  <div class="registration-card">
+
+
+    <!-- Header -->
+    <div class="header">
+
+      <h1>
+        {{ 'REGISTRATION.TITLE' | translate }}
+      </h1>
+
+      <p>
+        {{ 'REGISTRATION.SUBTITLE' | translate }}
+      </p>
+
+    </div>
+
+
+
+    <!-- Account Type -->
+
+    <div class="account-type">
+
+      <button
+        type="button"
+        [class.active]="isFarmer()"
+        (click)="selectAccountType('farmer')">
+
+        {{ 'REGISTRATION.FARMER' | translate }}
+
+      </button>
+
+
+      <button
+        type="button"
+        [class.active]="isConsultant()"
+        (click)="selectAccountType('consultant')">
+
+        {{ 'REGISTRATION.CONSULTANT' | translate }}
+
+      </button>
+
+    </div>
+
+
+
+
+
+    <form
+      [formGroup]="registrationForm"
+      (ngSubmit)="submit()">
+
+
+
+
+
+      <!-- Personal Information -->
+
+      <h2>
+        {{ 'REGISTRATION.PERSONAL_INFO' | translate }}
+      </h2>
+
+
+      <div class="form-grid">
+
+
+
+        <!-- First Name -->
+
+        <div class="form-group">
+
+          <label>
+            {{ 'REGISTRATION.FIRST_NAME' | translate }}
+          </label>
+
+
+          <input
+            type="text"
+            formControlName="firstName">
+
+
+          @if(hasError('firstName','required')){
+
+            <p class="error">
+              {{ 'REGISTRATION.FIRST_NAME_REQUIRED' | translate }}
+            </p>
+
+          }
+
+
+        </div>
+
+
+
+
+
+        <!-- Last Name -->
+
+        <div class="form-group">
+
+          <label>
+            {{ 'REGISTRATION.LAST_NAME' | translate }}
+          </label>
+
+
+          <input
+            type="text"
+            formControlName="lastName">
+
+
+          @if(hasError('lastName','required')){
+
+            <p class="error">
+              {{ 'REGISTRATION.LAST_NAME_REQUIRED' | translate }}
+            </p>
+
+          }
+
+
+        </div>
+
+
+
+
+
+
+        <!-- Email -->
+
+        <div class="form-group">
+
+          <label>
+            {{ 'REGISTRATION.EMAIL' | translate }}
+          </label>
+
+
+          <input
+            type="email"
+            formControlName="email">
+
+
+          @if(hasError('email','required')){
+
+            <p class="error">
+              {{ 'REGISTRATION.EMAIL_REQUIRED' | translate }}
+            </p>
+
+          }
+
+
+          @if(hasError('email','email')){
+
+            <p class="error">
+              {{ 'REGISTRATION.EMAIL_INVALID' | translate }}
+            </p>
+
+          }
+
+
+        </div>
+
+
+
+
+
+
+        <!-- Password -->
+
+        <div class="form-group password-field">
+
+
+          <label>
+            {{ 'REGISTRATION.PASSWORD' | translate }}
+          </label>
+
+
+
+          <input
+            [type]="showPassword() ? 'text':'password'"
+            formControlName="password">
+
+
+
+          <button
+            type="button"
+            (click)="togglePassword()">
+
+
+            {{
+              showPassword()
+              ?
+              ('REGISTRATION.HIDE' | translate)
+              :
+              ('REGISTRATION.SHOW' | translate)
+            }}
+
+
+          </button>
+
+
+
+          @if(hasError('password','required')){
+
+            <p class="error">
+              {{ 'REGISTRATION.PASSWORD_REQUIRED' | translate }}
+            </p>
+
+          }
+
+
+
+          @if(hasError('password','minlength')){
+
+            <p class="error">
+              {{ 'REGISTRATION.PASSWORD_LENGTH' | translate }}
+            </p>
+
+          }
+
+          @if(hasError('password','pattern')){
+
+            <p class="error">
+              {{ 'REGISTRATION.PASSWORD_PATTERN' | translate }}
+            </p>
+
+          }
+
+        </div>
+
+
+
+
+
+
+
+        <!-- Phone -->
+
+        <div class="form-group">
+
+          <label>
+            {{ 'REGISTRATION.PHONE' | translate }}
+          </label>
+
+
+          <div class="phone-input">
+
+        <span class="country-code">
+            +968
+        </span>
+
+        <input
+            type="tel"
+            maxlength="8"
+            formControlName="phone"
+            placeholder="91234567">
+
+        </div>
+
+
+        @if(hasError('phone','pattern')){
+
+        <p class="error">
+        {{ 'REGISTRATION.INVALID_PHONE' | translate }}
+        </p>
+
+        }
+
+
+        </div>
+
+
+      </div>
+
+
+
+
+
+
+
+
+
+      <!-- Farmer Section -->
+
+      @if(isFarmer()){
+
+
+      <h2>
+        {{ 'REGISTRATION.FARM_INFO' | translate }}
+      </h2>
+
+
+
+
+      <div class="form-grid">
+
+
+        <!-- Farm Name -->
+
+        <div class="form-group">
+
+          <label>
+            {{ 'REGISTRATION.FARM_NAME' | translate }}
+          </label>
+
+
+          <input
+            type="text"
+            formControlName="farmName">
+
+
+          @if(hasError('farmName','required')){
+
+            <p class="error">
+              {{ 'REGISTRATION.FARM_NAME_REQUIRED' | translate }}
+            </p>
+
+          }
+
+
+        </div>
+
+
+
+
+
+        <!-- Region -->
+
+        <div class="form-group">
+
+          <label>
+            {{ 'REGISTRATION.REGION' | translate }}
+          </label>
+
+
+          <input
+            type="text"
+            formControlName="region">
+
+        </div>
+
+
+
+
+
+
+
+        <!-- Farm Size -->
+
+        <div class="form-group">
+
+          <label>
+            {{ 'REGISTRATION.FARM_SIZE' | translate }}
+          </label>
+
+
+          <input
+            type="number"
+            formControlName="farmSizeAcres">
+
+        </div>
+
+
+
+
+
+
+
+        <!-- Crop Types -->
+
+        <div class="form-group">
+
+          <label>
+            {{ 'REGISTRATION.CROP_TYPES' | translate }}
+          </label>
+
+
+          <input
+            type="text"
+            formControlName="cropTypes">
+
+        </div>
+
+
+      </div>
+
+
+      }
+
+
+
+
+
+
+
+
+
+      <!-- Consultant Section -->
+
+      @if(isConsultant()){
+
+
+      <h2>
+        {{ 'REGISTRATION.CONSULTANT_INFO' | translate }}
+      </h2>
+
+
+
+      <div class="form-grid">
+
+
+
+        <!-- Specialty Domain -->
+
+        <div class="form-group">
+
+
+          <label>
+            {{ 'REGISTRATION.SPECIALTY_DOMAIN' | translate }}
+          </label>
+
+
+
+          <div class="domain-buttons">
+
+
+            <button
+              type="button"
+              [class.active]="specialtyDomain()==='PLANT'"
+              (click)="selectSpecialtyDomain('PLANT')">
+
+
+              {{ 'REGISTRATION.PLANT' | translate }}
+
+
+            </button>
+
+
+
+
+
+            <button
+              type="button"
+              [class.active]="specialtyDomain()==='LIVESTOCK'"
+              (click)="selectSpecialtyDomain('LIVESTOCK')">
+
+
+              {{ 'REGISTRATION.LIVESTOCK' | translate }}
+
+
+            </button>
+
+
+          </div>
+
+
+
+          @if(!specialtyDomain()){
+
+            <p class="error">
+              {{ 'REGISTRATION.DOMAIN_REQUIRED' | translate }}
+            </p>
+
+          }
+
+
+        </div>
+
+
+
+
+
+
+
+        <!-- Specialty Tags -->
+
+        <div class="form-group">
+
+
+          <label>
+            {{ 'REGISTRATION.SPECIALTY_TAGS' | translate }}
+          </label>
+
+
+          <input
+            type="text"
+            formControlName="specialtyTags">
+
+
+        </div>
+
+
+
+
+
+
+
+        <!-- Experience -->
+
+        <div class="form-group">
+
+
+          <label>
+            {{ 'REGISTRATION.EXPERIENCE' | translate }}
+          </label>
+
+
+          <input
+            type="number"
+            formControlName="experienceYears">
+
+
+        </div>
+
+
+
+      </div>
+
+
+      }
+
+
+
+
+
+
+
+
+
+      <!-- Location -->
+
+      <h2>
+        {{ 'REGISTRATION.LOCATION' | translate }}
+      </h2>
+
+
+
+
+      <button
+        type="button"
+        class="location-btn"
+        (click)="useCurrentLocation()">
+
+
+
+        {{ 'REGISTRATION.CURRENT_LOCATION' | translate }}
+
+
+      </button>
+
+
+
+
+
+      @if(locationStatus() === 'loading'){
+
+        <p>
+          {{ 'REGISTRATION.LOCATION_LOADING' | translate }}
+        </p>
+
+      }
+
+
+
+
+      @if(locationStatus() === 'success'){
+
+        <p class="success">
+
+          {{ 'REGISTRATION.LOCATION_SUCCESS' | translate }}
+
+        </p>
+
+      }
+
+
+
+
+
+
+
+      <!-- Messages -->
+
+      @if(successMessage()){
+
+        <p class="success">
+
+          {{successMessage()}}
+
+        </p>
+
+      }
+
+
+
+      @if(errorMessage()){
+
+        <p class="error">
+
+          {{errorMessage()}}
+
+        </p>
+
+      }
+
+
+
+
+
+
+
+
+
+      <!-- Submit -->
+
+
+      <button
+        class="submit-btn"
+        type="submit"
+        [disabled]="loading()">
+
+
+
+        @if(loading()){
+
+          Loading...
+
+        }
+
+        @else{
+
+          {{ 'REGISTRATION.CREATE_ACCOUNT' | translate }}
+
+        }
+
+
+      </button>
+
+
+
+
+    </form>
+
+
+  </div>
+
+
+</div>

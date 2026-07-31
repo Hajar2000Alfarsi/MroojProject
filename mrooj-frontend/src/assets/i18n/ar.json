@@ -322,5 +322,59 @@
 }
 
 }
-}
+} , 
+
+ "REGISTRATION": {
+
+    "TITLE": "إنشاء حسابك",
+    "SUBTITLE": "انضم إلى مروج واحصل على دعم زراعي وبيطري ذكي",
+
+    "FARMER": "مزارع",
+    "CONSULTANT": "مستشار",
+
+    "PERSONAL_INFO": "المعلومات الشخصية",
+
+    "FIRST_NAME": "الاسم الأول",
+    "LAST_NAME": "اسم العائلة",
+    "EMAIL": "البريد الإلكتروني",
+    "PASSWORD": "كلمة المرور",
+    "PHONE": "رقم الهاتف",
+
+    "FARM_INFO": "معلومات المزرعة",
+
+    "FARM_NAME": "اسم المزرعة",
+    "REGION": "المنطقة",
+    "FARM_SIZE": "مساحة المزرعة (فدان)",
+    "CROP_TYPES": "أنواع المحاصيل",
+
+    "CONSULTANT_INFO": "معلومات المستشار",
+    "SPECIALTY_DOMAIN": "مجال التخصص",
+    "PLANT": "نباتات",
+    "LIVESTOCK": "ثروة حيوانية",
+
+    "SPECIALTY_TAGS": "مجالات التخصص",
+    "EXPERIENCE": "سنوات الخبرة",
+
+    "LOCATION": "الموقع",
+    "CURRENT_LOCATION": "استخدام الموقع الحالي",
+
+    "CREATE_ACCOUNT": "إنشاء الحساب",
+
+    "SHOW": "إظهار",
+    "HIDE": "إخفاء",
+
+    "LOCATION_LOADING": "جاري تحديد الموقع...",
+    "LOCATION_SUCCESS": "تم تحديد الموقع بنجاح",
+
+    "FIRST_NAME_REQUIRED": "الاسم الأول مطلوب",
+    "LAST_NAME_REQUIRED": "اسم العائلة مطلوب",
+    "EMAIL_REQUIRED": "البريد الإلكتروني مطلوب",
+    "EMAIL_INVALID": "صيغة البريد الإلكتروني غير صحيحة",
+    "PASSWORD_REQUIRED": "كلمة المرور مطلوبة",
+    "PASSWORD_LENGTH": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+    "FARM_NAME_REQUIRED": "اسم المزرعة مطلوب",
+    "DOMAIN_REQUIRED": "يرجى اختيار مجال التخصص",
+    "INVALID_PHONE": "أدخل رقم هاتف عماني صحيح",
+    "PASSWORD_PATTERN": "يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير ورقم"
+  }
 }
