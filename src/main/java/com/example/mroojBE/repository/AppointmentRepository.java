@@ -2,6 +2,8 @@ package com.example.mroojBE.repository;
 
 import com.example.mroojBE.Entity.Appointment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,4 +21,18 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      */
     List<Appointment> findByConsultantIdAndScheduledAtBetween(
             Long consultantId, LocalDateTime from, LocalDateTime to);
+
+    @Query(value = """
+            SELECT * FROM appointments a
+            WHERE a.consultant_id = :consultantId
+              AND a.status <> 'CANCELLED'
+              AND a.scheduled_at < :windowEnd
+              AND TIMESTAMPADD(MINUTE, a.duration_minutes, a.scheduled_at) > :windowStart
+            """, nativeQuery = true)
+    List<Appointment> findOverlapping(
+            @Param("consultantId") Long consultantId,
+            @Param("windowStart") LocalDateTime windowStart,
+            @Param("windowEnd") LocalDateTime windowEnd
+    );
+
 }

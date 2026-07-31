@@ -14,6 +14,7 @@ import com.example.mroojBE.exceptions.InvalidBookingStateException;
 import com.example.mroojBE.exceptions.NoConsultantAvailableException;
 import com.example.mroojBE.exceptions.ResourceNotFoundException;
 import com.example.mroojBE.repository.BookingRepository;
+import com.example.mroojBE.repository.ConsultantRepository;
 import com.example.mroojBE.repository.FarmerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ public class BookingService {
         private final BookingRepository bookingRepository;
         private final FarmerRepository farmerRepository;
         private final AssignmentService assignmentService;
+        private final ConsultantRepository consultantRepository;
 
         /**
          * Persists the booking as PENDING, then immediately attempts
@@ -129,6 +131,9 @@ public class BookingService {
                 if (booking.getAssignedConsultant() != null) {
                         Consultant consultant = booking.getAssignedConsultant();
                         consultant.setCurrentLoad(Math.max(0, consultant.getCurrentLoad() - 1));
+                }
+                if (booking.getAssignedConsultant() != null) {
+                        consultantRepository.decrementLoad(booking.getAssignedConsultant().getId());
                 }
                 booking.setConsultantResponse(reason);
                 booking.setStatus(BookingStatus.CANCELLED);

@@ -20,4 +20,6 @@ public interface AssignmentLogRepository extends JpaRepository<AssignmentLog, Lo
     Optional<AssignmentLog> findByBookingIdAndOutcome(Long bookingId, AssignmentOutcome outcome);
 
     List<AssignmentLog> findByConsultantIdAndOutcome(Long consultantId, AssignmentOutcome outcome);
+    boolean existsByBookingIdAndOutcome(Long bookingId, AssignmentOutcome outcome);
+
 }

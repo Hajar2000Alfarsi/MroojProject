@@ -48,13 +48,14 @@ public class AppointmentService {
 
         // Widen the query window by one slot on each side so any appointment
         // whose own span overlaps [windowStart, windowEnd) is caught.
-        boolean doubleBooked = appointmentRepository
-                .findByConsultantIdAndScheduledAtBetween(consultant.getId(), windowStart.minusMinutes(duration), windowEnd)
-                .stream()
-                .anyMatch(a -> a.getStatus() != AppointmentStatus.CANCELLED
-                        && a.getScheduledAt().isBefore(windowEnd)
-                        && a.getScheduledAt().plusMinutes(a.getDurationMinutes()).isAfter(windowStart));
+        boolean doubleBooked = !appointmentRepository
+                .findOverlapping(consultant.getId(), windowStart, windowEnd)
+                .isEmpty();
 
+        if (doubleBooked) {
+            throw new InvalidBookingStateException(
+                    "Consultant " + consultant.getId() + " already has an appointment overlapping this time slot");
+        }
         if (doubleBooked) {
             throw new InvalidBookingStateException(
                     "Consultant " + consultant.getId() + " already has an appointment overlapping this time slot");

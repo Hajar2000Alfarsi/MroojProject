@@ -49,11 +49,18 @@ public class AssignmentService {
             throw new InvalidBookingStateException(
                     "Booking " + bookingId + " is not PENDING (current status: " + booking.getStatus() + ")");
         }
+        // Guard against a duplicate ACCEPTED assignment for the same booking —
+        // see AssignmentLogRepository#existsByBookingIdAndOutcome for scope/limits.
+        if (assignmentLogRepository.existsByBookingIdAndOutcome(bookingId, AssignmentOutcome.ACCEPTED)) {
+            throw new InvalidBookingStateException(
+                    "Booking " + bookingId + " already has an active ACCEPTED assignment");
+        }
 
         Set<Long> alreadyAttempted = assignmentLogRepository.findByBookingIdOrderByAssignedAtDesc(bookingId)
                 .stream()
                 .map(log -> log.getConsultant().getId())
                 .collect(Collectors.toSet());
+
 
         double lat = booking.getLocation().getY();
         double lng = booking.getLocation().getX();
@@ -79,8 +86,7 @@ public class AssignmentService {
         booking.setAssignedConsultant(chosen);
         booking.setStatus(BookingStatus.ASSIGNED);
 
-        chosen.setCurrentLoad(chosen.getCurrentLoad() + 1);
-
+        consultantRepository.incrementLoad(chosen.getId());
         return toDTO(log, "Booking assigned to " + chosen.getUser().getFirstName() + " " + chosen.getUser().getLastName());
     }
 
@@ -106,9 +112,7 @@ public class AssignmentService {
         activeLog.setOutcome(AssignmentOutcome.REJECTED);
         activeLog.setRespondedAt(LocalDateTime.now());
 
-        Consultant consultant = activeLog.getConsultant();
-        consultant.setCurrentLoad(Math.max(0, consultant.getCurrentLoad() - 1));
-
+        consultantRepository.decrementLoad(activeLog.getConsultant().getId());
         booking.setAssignedConsultant(null);
         booking.setStatus(BookingStatus.PENDING);
 
@@ -131,8 +135,7 @@ public class AssignmentService {
         activeLog.setOutcome(AssignmentOutcome.TIMEOUT);
         activeLog.setRespondedAt(LocalDateTime.now());
 
-        Consultant consultant = activeLog.getConsultant();
-        consultant.setCurrentLoad(Math.max(0, consultant.getCurrentLoad() - 1));
+        consultantRepository.decrementLoad(activeLog.getConsultant().getId());
 
         Booking booking = activeLog.getBooking();
         booking.setAssignedConsultant(null);
