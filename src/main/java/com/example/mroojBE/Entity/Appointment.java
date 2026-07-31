@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 @Table(name = "appointments")
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 @ToString(callSuper = true, exclude = {"booking", "farmer", "consultant"})
 @EqualsAndHashCode(callSuper = false, exclude = {"booking", "farmer", "consultant"})
 public class Appointment extends BaseEntity {

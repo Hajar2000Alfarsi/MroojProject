@@ -20,11 +20,12 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "assignment_log")
+@Data
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 @ToString(exclude = {"booking", "consultant"})
 @EqualsAndHashCode(exclude = {"booking", "consultant"})
 public class AssignmentLog {

@@ -1,0 +1,3800 @@
+
+====================
+FILE: src/main/java/com/example/mroojBE/repository/LearningArticleRepository.java
+====================
+package com.example.mroojBE.repository;
+
+import com.example.mroojBE.Entity.LearningArticle;
+import com.example.mroojBE.Entity.enums.Domain;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface LearningArticleRepository extends JpaRepository<LearningArticle, Long> {
+
+    Optional<LearningArticle> findBySlugAndPublishedTrue(String slug);
+
+    Page<LearningArticle> findByTargetDomainAndPublishedTrue(Domain targetDomain, Pageable pageable);
+
+    boolean existsBySlug(String slug);
+}
+====================
+FILE: src/main/java/com/example/mroojBE/repository/FarmerRepository.java
+====================
+package com.example.mroojBE.repository;
+
+import com.example.mroojBE.Entity.Farmer;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.Optional;
+
+
+@Repository
+public interface FarmerRepository extends JpaRepository<Farmer, Long> {
+
+    Optional<Farmer> findByUserId(Long userId);
+
+    boolean existsByUserId(Long userId);
+
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/repository/AppointmentRepository.java
+====================
+package com.example.mroojBE.repository;
+
+import com.example.mroojBE.Entity.Appointment;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
+
+    Optional<Appointment> findByBookingId(Long bookingId);
+
+    List<Appointment> findByFarmerIdOrderByScheduledAtDesc(Long farmerId);
+
+    /**
+     * Calendar view for a consultant's dashboard, and also used to check
+     * for double-booking before confirming a new appointment slot.
+     */
+    List<Appointment> findByConsultantIdAndScheduledAtBetween(
+            Long consultantId, LocalDateTime from, LocalDateTime to);
+}
+====================
+FILE: src/main/java/com/example/mroojBE/repository/UserRepository.java
+====================
+package com.example.mroojBE.repository;
+
+import com.example.mroojBE.Entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.Optional;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    Optional<User> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/repository/AssignmentLogRepository.java
+====================
+package com.example.mroojBE.repository;
+
+import com.example.mroojBE.Entity.AssignmentLog;
+import com.example.mroojBE.Entity.enums.AssignmentOutcome;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface AssignmentLogRepository extends JpaRepository<AssignmentLog, Long> {
+
+    List<AssignmentLog> findByBookingIdOrderByAssignedAtDesc(Long bookingId);
+
+    /**
+     * Enforces "at most one ACCEPTED attempt per booking" at the query
+     * level so the assignment service can check before writing.
+     * A DB-level guarantee for this still needs a unique constraint or
+     * application-level transactional check — see architecture notes.
+     */
+    Optional<AssignmentLog> findByBookingIdAndOutcome(Long bookingId, AssignmentOutcome outcome);
+
+    List<AssignmentLog> findByConsultantIdAndOutcome(Long consultantId, AssignmentOutcome outcome);
+}
+====================
+FILE: src/main/java/com/example/mroojBE/repository/BookingRepository.java
+====================
+package com.example.mroojBE.repository;
+
+import com.example.mroojBE.Entity.Booking;
+import com.example.mroojBE.Entity.enums.BookingStatus;
+import com.example.mroojBE.Entity.enums.Domain;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+
+    Page<Booking> findByFarmerId(Long farmerId, Pageable pageable);
+
+    Page<Booking> findByAssignedConsultantId(Long consultantId, Pageable pageable);
+
+    Page<Booking> findByStatus(BookingStatus status, Pageable pageable);
+
+    Page<Booking> findByDomainAndStatus(Domain domain, BookingStatus status, Pageable pageable);
+
+    long countByAssignedConsultantIdAndStatusIn(Long consultantId, java.util.List<BookingStatus> statuses);
+}
+====================
+FILE: src/main/java/com/example/mroojBE/repository/ConsultantRepository.java
+====================
+package com.example.mroojBE.repository;
+
+import com.example.mroojBE.Entity.Consultant;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface ConsultantRepository extends JpaRepository<Consultant, Long> {
+
+    Optional<Consultant> findByUserId(Long userId);
+
+    boolean existsByUserId(Long userId);
+
+    /**
+     * Core query for the Phase 4 assignment engine.
+     * Finds AVAILABLE consultants matching the requested domain, ordered by
+     * geographic distance (meters, via ST_Distance_Sphere) then by lowest
+     * current_load — the two signals the ERD explicitly calls out
+     * ("specialization and location") plus load-balancing as a tiebreak.
+     *
+     * :lng / :lat are the booking's location coordinates (WGS84).
+     * :radiusMeters caps the search (e.g. 100000 = 100km) so a consultant
+     * on the far side of Oman never gets matched over an unavailable
+     * nearby one falling back to "anyone in the country."
+     */
+    @Query(value = """
+            SELECT c.* FROM consultants c
+            WHERE c.specialty_domain = :domain
+              AND c.available = TRUE
+              AND ST_Distance_Sphere(c.location, POINT(:lng, :lat)) <= :radiusMeters
+            ORDER BY ST_Distance_Sphere(c.location, POINT(:lng, :lat)) ASC,
+                     c.current_load ASC
+            """, nativeQuery = true)
+    List<Consultant> findNearestAvailableByDomain(
+            @Param("domain") String domain,
+            @Param("lng") double lng,
+            @Param("lat") double lat,
+            @Param("radiusMeters") double radiusMeters
+    );
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Security/SecurityConfig.java
+====================
+package com.example.mroojBE.Security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+/**
+ * TEMPORARY / PHASE-0 security config.
+ *
+ * Purpose: unblock manual Postman testing of Booking/Assignment endpoints
+ * while the real JWT filter chain (JwtAuthFilter, UserDetailsService,
+ * login/register flow) is still being built.
+ *
+ * What this does:
+ *   - Disables the default Spring Security auto-config (generated user +
+ *     /login form) that was intercepting every request.
+ *   - permitAll() on every path — NO real authorization yet.
+ *   - Disables CSRF — irrelevant for a stateless JSON API, and would
+ *     otherwise block every non-GET Postman request with 403.
+ *   - STATELESS session policy — no server-side session/cookie, since a
+ *     JWT-based API shouldn't rely on HttpSession once auth is added.
+ *
+ * MUST be replaced before production: swap permitAll() for explicit
+ * per-endpoint rules and register the JWT filter once it exists. Left as
+ * a loud, unmissable TODO rather than silently shipping this as-is.
+ */
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    // TODO(PHASE-JWT): remove permitAll(), wire JwtAuthFilter here,
+    // restrict by role (FARMER / CONSULTANT / ADMIN) per endpoint.
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                )
+                .httpBasic(basic -> basic.disable())
+                .formLogin(form -> form.disable());
+
+        return http.build();
+    }
+
+    /**
+     * Registered now (not in Phase-JWT) because AuthService will need it
+     * for password hashing regardless of when JWT lands — RegisterRequestDTO
+     * already documents that the caller must pass an encoded password.
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Security/SecurityUtils.java
+====================
+package com.example.mroojBE.Security;
+
+//import org.springframework.security.core.context.SecurityContextHolder;
+
+public class SecurityUtils {
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/Appointment.java
+====================
+package com.example.mroojBE.Entity;
+
+import com.example.mroojBE.Entity.enums.AppointmentStatus;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
+
+/**
+ * APPOINTMENTS entity — a scheduled live session tied to a Booking.
+ * farmer_id / consultant_id are denormalized alongside booking_id (per
+ * ERD) so calendar-style queries don't always need to join through Booking.
+ */
+@Entity
+@Table(name = "appointments")
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true, exclude = {"booking", "farmer", "consultant"})
+@EqualsAndHashCode(callSuper = false, exclude = {"booking", "farmer", "consultant"})
+public class Appointment extends BaseEntity {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id", nullable = false)
+    private Booking booking;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmer_id", nullable = false)
+    private Farmer farmer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consultant_id", nullable = false)
+    private Consultant consultant;
+
+    @Column(name = "scheduled_at", nullable = false)
+    private LocalDateTime scheduledAt;
+
+    @Column(name = "duration_minutes", nullable = false)
+    @Builder.Default
+    private int durationMinutes = 30;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private AppointmentStatus status = AppointmentStatus.SCHEDULED;
+
+    @Column(name = "meeting_link", length = 500)
+    private String meetingLink;
+
+    /**
+     * Free-text location note (e.g. "on-site visit, north gate") — distinct
+     * from the geo Point on Farmer/Consultant.
+     */
+    @Column(length = 255)
+    private String location;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/Booking.java
+====================
+package com.example.mroojBE.Entity;
+
+import com.example.mroojBE.Entity.enums.BookingStatus;
+import com.example.mroojBE.Entity.enums.Domain;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.locationtech.jts.geom.Point;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * BOOKINGS entity — the central consultation request.
+ *
+ * NOTE-B1 (architectural rule): non-2xx responses from any downstream call
+ * (AI wrapper, assignment service) are always surfaced as error paths in
+ * the service layer — never silently swallowed or replaced with mock data.
+ */
+@Entity
+@Table(name = "bookings")
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true, exclude = {"farmer", "assignedConsultant", "appointments", "assignmentLogs"})
+@EqualsAndHashCode(callSuper = false, exclude = {"farmer", "assignedConsultant", "appointments", "assignmentLogs"})
+public class Booking extends BaseEntity {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmer_id", nullable = false)
+    private Farmer farmer;
+
+    // Nullable until Phase 4's assignment algorithm matches a consultant.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_consultant_id")
+    private Consultant assignedConsultant;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Domain domain;
+
+    @Column(name = "subject_type", nullable = false, length = 100)
+    private String subjectType;
+
+    @Column(name = "issue_category", length = 100)
+    private String issueCategory;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "symptoms_image_url", length = 500)
+    private String symptomsImageUrl;
+
+    /**
+     * Raw JSON from the AI diagnosis wrapper (Gemini API), kept as String
+     * for now; swap for a mapped POJO via a converter if structured
+     * querying is needed later.
+     */
+    @Column(name = "ai_report", columnDefinition = "json")
+    private String aiReport;
+
+    @Column(nullable = false, columnDefinition = "POINT SRID 4326")
+    private Point location;
+
+    // NEW field — the consultant's treatment plan once resolved.
+    @Column(name = "consultant_response", columnDefinition = "TEXT")
+    private String consultantResponse;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private BookingStatus status = BookingStatus.PENDING;
+
+    // Inverse side of Appointment.booking
+    @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Appointment> appointments = new ArrayList<>();
+
+    // Inverse side of AssignmentLog.booking
+    @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<AssignmentLog> assignmentLogs = new ArrayList<>();
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/enums/AssignmentOutcome.java
+====================
+package com.example.mroojBE.Entity.enums;
+
+/**
+ * Result of a single assignment attempt logged in ASSIGNMENT_LOG.
+ */
+public enum AssignmentOutcome {
+    PENDING,    // offered to the consultant, awaiting response
+    ACCEPTED,
+    REJECTED,
+    TIMEOUT     // consultant did not respond in time, reassigned elsewhere
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/enums/AppointmentStatus.java
+====================
+package com.example.mroojBE.Entity.enums;
+
+public enum AppointmentStatus {
+    SCHEDULED,
+    CONFIRMED,
+    IN_PROGRESS,
+    COMPLETED,
+    CANCELLED,
+    NO_SHOW
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/enums/BookingStatus.java
+====================
+package com.example.mroojBE.Entity.enums;
+
+
+/**
+ * Lifecycle of a consultation request. Drives BOOKINGS.status.
+ */
+public enum BookingStatus {
+    PENDING,        // created, not yet assigned to a consultant
+    ASSIGNED,       // matched to a consultant via the assignment algorithm
+    IN_PROGRESS,    // consultant is actively working the case
+    RESOLVED,       // consultant_response provided, case closed successfully
+    CANCELLED,
+    REJECTED    // farmer or admin cancelled the request
+}
+
+
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/enums/Role.java
+====================
+package com.example.mroojBE.Entity.enums;
+
+
+/**
+ * User roles in the Mrooj platform. Stored as VARCHAR in USERS.role.
+ */
+
+public enum Role {
+    FARMER,
+    CONSULTANT,
+    ADMIN
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/enums/Domain.java
+====================
+
+
+package com.example.mroojBE.Entity.enums;
+
+/**
+ * Whether a booking or article concerns a plant/crop issue or a livestock/
+ * animal issue. Shared by BOOKINGS.domain and LEARNING_ARTICLES.target_domain.
+ */
+public enum Domain {
+    PLANT,
+    LIVESTOCK
+}
+
+
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/BaseEntity.java
+====================
+package com.example.mroojBE.Entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+
+/**
+ * Shared base for every entity: id + audit timestamps.
+ *
+ * IMPORTANT: because subclasses use Lombok's @Builder, this class (and
+ * every subclass) must use @SuperBuilder instead — plain @Builder on a
+ * subclass silently ignores fields declared in the superclass, so
+ * id/createdAt/updatedAt would never make it into a built object.
+ * @SuperBuilder fixes that by chaining the builder through the hierarchy.
+ */
+@MappedSuperclass
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+
+public abstract class BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/User.java
+====================
+package com.example.mroojBE.Entity;
+
+import com.example.mroojBE.Entity.enums.Role;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true, exclude = {"farmer", "consultant"})
+@EqualsAndHashCode(callSuper = false, exclude = {"farmer", "consultant"})
+public class User extends BaseEntity {
+
+    @Column(nullable = false, unique = true, length = 150)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(name = "first_name", nullable = false, length = 100)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false, length = 100)
+    private String lastName;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean enabled = true;
+
+    @Column(name = "preferred_language", nullable = false, length = 5)
+    @Builder.Default
+    private String preferredLanguage = "ar";
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Farmer farmer;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Consultant consultant;
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/AssignmentLog.java
+====================
+package com.example.mroojBE.Entity;
+
+import com.example.mroojBE.Entity.enums.AssignmentOutcome;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
+
+/**
+ * ASSIGNMENT_LOG entity — audit trail of every attempt the automatic
+ * expert-assignment algorithm (Phase 4) makes to match a Booking to a
+ * Consultant.
+ *
+ * Deliberately does NOT extend BaseEntity: the ERD for this table only
+ * has (id, booking_id, consultant_id, assigned_at, responded_at, outcome)
+ * — no created_at/updated_at columns. Extending BaseEntity would silently
+ * add two columns the schema doesn't define. assigned_at is the meaningful
+ * "created" moment here and is set explicitly by the assignment service.
+ */
+@Entity
+@Table(name = "assignment_log")
+@Data
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = {"booking", "consultant"})
+@EqualsAndHashCode(exclude = {"booking", "consultant"})
+public class AssignmentLog {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id", nullable = false)
+    private Booking booking;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consultant_id", nullable = false)
+    private Consultant consultant;
+
+    @Column(name = "assigned_at", nullable = false)
+    private LocalDateTime assignedAt;
+
+    // Null until the consultant accepts, rejects, or the offer times out.
+    @Column(name = "responded_at")
+    private LocalDateTime respondedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private AssignmentOutcome outcome = AssignmentOutcome.PENDING;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/Consultant.java
+====================
+package com.example.mroojBE.Entity;
+
+import com.example.mroojBE.Entity.enums.Domain;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.locationtech.jts.geom.Point;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * CONSULTANTS entity — profile owned One-to-One by a User with role
+ * CONSULTANT. current_load and rating feed the Phase 4 assignment algorithm.
+ *
+ * ERD notes location as "POINT NOT NULL SRID 4326 + SPATIAL INDEX" — the
+ * spatial index is a DB-level concern (schema migration), not expressible
+ * through the @Column annotation alone.
+ */
+@Entity
+@Getter
+@Setter
+@SuperBuilder
+@Table(name = "consultants")
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true, exclude = {"user", "bookings", "appointments", "assignmentLogs"})
+@EqualsAndHashCode(callSuper = false, exclude = {"user", "bookings", "appointments", "assignmentLogs"})
+public class Consultant extends BaseEntity {
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "specialty_domain", nullable = false, length = 20)
+    private Domain specialtyDomain;
+
+    @Column(name = "specialty_tags", length = 255)
+    private String specialtyTags;
+
+    @Column(nullable = false, columnDefinition = "POINT SRID 4326")
+    private Point location;
+
+    @Column(name = "current_load", nullable = false)
+    @Builder.Default
+    private int currentLoad = 0;
+
+    @Column(name = "experience_years")
+    private Integer experienceYears;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private double rating = 0.0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean available = true;
+
+    // Inverse side of Booking.assignedConsultant
+    @OneToMany(mappedBy = "assignedConsultant", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Booking> bookings = new ArrayList<>();
+
+    // Inverse side of Appointment.consultant
+    @OneToMany(mappedBy = "consultant", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Appointment> appointments = new ArrayList<>();
+
+    // Inverse side of AssignmentLog.consultant
+    @OneToMany(mappedBy = "consultant", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<AssignmentLog> assignmentLogs = new ArrayList<>();
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/Farmer.java
+====================
+package com.example.mroojBE.Entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.locationtech.jts.geom.Point;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * FARMERS entity — profile owned One-to-One by a User with role FARMER.
+ * Owning side of the User link (holds user_id). Also owns the inverse
+ * (mappedBy) side of its Bookings and Appointments for navigation like
+ * farmer.getBookings().
+ */
+@Entity
+@Table(name = "farmers")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+@ToString(callSuper = true, exclude = {"user", "bookings", "appointments"})
+@EqualsAndHashCode(callSuper = false, exclude = {"user", "bookings", "appointments"})
+public class Farmer extends BaseEntity {
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @Column(name = "farm_name", nullable = false, length = 150)
+    private String farmName;
+
+    /**
+     * ERD: "POINT NOT NULL SRID 4326". Requires hibernate-spatial on the
+     * classpath for the org.locationtech.jts.geom.Point type to resolve.
+     */
+    @Column(name = "farm_location", nullable = false, columnDefinition = "POINT SRID 4326")
+    private Point farmLocation;
+
+    @Column(length = 100)
+    private String region;
+
+    @Column(name = "farm_size_acres")
+    private Double farmSizeAcres;
+
+    @Column(name = "crop_types", length = 255)
+    private String cropTypes;
+
+    // Inverse side of Booking.farmer — read-only convenience, don't rely
+    // on this collection to persist new bookings; save via BookingRepository.
+    @OneToMany(mappedBy = "farmer", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Booking> bookings = new ArrayList<>();
+
+    // Inverse side of Appointment.farmer
+    @OneToMany(mappedBy = "farmer", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Appointment> appointments = new ArrayList<>();
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Entity/LearningArticle.java
+====================
+package com.example.mroojBE.Entity;
+
+import com.example.mroojBE.Entity.enums.Domain;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
+
+/**
+ * LEARNING_ARTICLES entity — the standalone knowledge hub (Phase 5).
+ * No FK to USERS/CONSULTANTS: target_domain and author_name are plain
+ * tags/free text per the ERD, so articles stay manageable independently
+ * of any specific account.
+ */
+@Entity
+@Table(name = "learning_articles")
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+public class LearningArticle extends BaseEntity {
+
+    @Column(nullable = false, length = 255)
+    private String title;
+
+    // URL-friendly unique identifier, e.g. "citrus-leaf-miner-treatment".
+    @Column(nullable = false, unique = true, length = 255)
+    private String slug;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
+
+    @Column(length = 100)
+    private String category;
+
+    // NEW field — PLANT or LIVESTOCK, no FK per ERD.
+    @Enumerated(EnumType.STRING)
+    @Column(name = "target_domain", nullable = false, length = 20)
+    private Domain targetDomain;
+
+    // NEW field (i18n) — ISO language code. Defaults to Arabic.
+    @Column(nullable = false, length = 5)
+    @Builder.Default
+    private String language = "ar";
+
+    // NEW field — free-text author, intentionally not an FK to USERS so
+    // external contributors/agencies can be credited too.
+    @Column(name = "author_name", length = 100)
+    private String authorName;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean published = false;
+
+    // Set explicitly by the service layer at the moment of publishing —
+    // distinct from createdAt, since a draft may exist long before that.
+    @Column(name = "published_at")
+    private LocalDateTime publishedAt;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/MroojBeApplication.java
+====================
+package com.example.mroojBE;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
+// FIX: BaseEntity relies on @CreatedDate/@LastModifiedDate via
+// AuditingEntityListener, but that listener does nothing unless JPA
+// auditing is explicitly enabled. Without @EnableJpaAuditing, createdAt/
+// updatedAt stay null on every entity, and both are declared
+// nullable = false — the very first save() throws a constraint violation.
+@SpringBootApplication
+@EnableJpaAuditing
+public class MroojBeApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(MroojBeApplication.class, args);
+	}
+
+}
+====================
+FILE: src/main/java/com/example/mroojBE/exceptions/ResourceNotFoundException.java
+====================
+package com.example.mroojBE.exceptions;
+
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/exceptions/InvalidBookingStateException.java
+====================
+package com.example.mroojBE.exceptions;
+
+public class InvalidBookingStateException extends RuntimeException {
+    public InvalidBookingStateException(String message) {
+        super(message);
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/exceptions/DuplicateResourceException.java
+====================
+package com.example.mroojBE.exceptions;
+
+public class DuplicateResourceException extends RuntimeException {
+    public DuplicateResourceException(String message) {
+        super(message);
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/exceptions/GlobalExceptionHandler.java
+====================
+package com.example.mroojBE.exceptions;
+
+import com.example.mroojBE.exceptions.common.ErrorResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.servlet.resource.NoResourceFoundException; // أضيفي هذا الاستيراد في الأعلى
+//import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+import java.nio.file.AccessDeniedException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Was an empty class before — every exception was falling through to
+ * Spring Boot's default whitelabel error page / raw stack trace instead of
+ * the ApiResponse-style JSON the frontend needs. Now every custom
+ * exception plus the common Spring ones map to a consistent ErrorResponse.
+ */
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex, WebRequest request) {
+        return build(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicate(DuplicateResourceException ex, WebRequest request) {
+        return build(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(InvalidBookingStateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidState(InvalidBookingStateException ex, WebRequest request) {
+        return build(HttpStatus.CONFLICT, "Invalid State", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(NoConsultantAvailableException.class)
+    public ResponseEntity<ErrorResponse> handleNoConsultant(NoConsultantAvailableException ex, WebRequest request) {
+        return build(HttpStatus.UNPROCESSABLE_CONTENT, "No Consultant Available", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, WebRequest request) {
+        return build(HttpStatus.FORBIDDEN, "Forbidden", "You don't have permission to perform this action", request);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, WebRequest request) {
+        Map<String, String> fieldErrors = new HashMap<>();
+        for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
+            fieldErrors.put(fe.getField(), fe.getDefaultMessage());
+        }
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation Failed",
+                "One or more fields are invalid",
+                path(request),
+                fieldErrors
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, WebRequest request) {
+        return build(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, WebRequest request) {
+        ex.printStackTrace();
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
+                "Something went wrong. Please try again later.", request);
+    }
+
+
+    private ResponseEntity<ErrorResponse> build(HttpStatus status, String error, String message, WebRequest request) {
+        ErrorResponse body = new ErrorResponse(status, status.value(), error, message, path(request));
+        return ResponseEntity.status(status).body(body);
+    }
+
+    private String path(WebRequest request) {
+        String desc = request.getDescription(false);
+        return desc.startsWith("uri=") ? desc.substring(4) : desc;
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException ex, WebRequest request) {
+        return build(
+                HttpStatus.NOT_FOUND,
+                "Resource Not Found",
+                "The requested endpoint or static resource was not found: " + ex.getResourcePath(),
+                request
+        );
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/exceptions/NoConsultantAvailableException.java
+====================
+package com.example.mroojBE.exceptions;
+
+public class NoConsultantAvailableException extends RuntimeException {
+    public NoConsultantAvailableException(String message) {
+        super(message);
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/exceptions/common/ErrorResponse.java
+====================
+package com.example.mroojBE.exceptions.common;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
+
+import java.util.Date;
+import java.util.Map;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ErrorResponse {
+    private Date timestamp;
+    private int statusCode;
+    private HttpStatus status;
+    private String error;
+    private String message;
+    private String path;
+    private Map<String, String> fieldErrors;
+
+    // Constructor for standard domain errors (404, 409, 500)
+    public ErrorResponse(HttpStatus status, int statusCode, String error, String message, String path) {
+        this.timestamp = new Date();
+        this.statusCode = statusCode;
+        this.status = status;
+        this.error = error;
+        this.message = message;
+        this.path = path;
+    }
+
+    // Constructor for Bean Validation failures (400)
+    public ErrorResponse(HttpStatus status, int statusCode, String error, String message, String path, Map<String, String> fieldErrors) {
+        this.timestamp = new Date();
+        this.statusCode = statusCode;
+        this.status = status;
+        this.error = error;
+        this.message = message;
+        this.path = path;
+        this.fieldErrors = fieldErrors;
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/ResponseDTO/BookingResponseDTO.java
+====================
+package com.example.mroojBE.DTOs.ResponseDTO;
+
+import com.example.mroojBE.DTOs.LocationDto;
+import com.example.mroojBE.Entity.Booking;
+//import com.example.mroojBE.UtilityHelperClass.GeoUtils;
+import com.example.mroojBE.Entity.enums.Domain;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class BookingResponseDTO {
+    private Long id;
+
+    private Long farmerId;
+    private String farmerName;
+
+
+    private Long consultantId;
+    private String consultantName;
+
+    private String domain;
+    private String subjectType;
+    private String issueCategory;
+    private String description;
+    private String symptomsImageUrl;
+    private String aiReport;
+
+    private String cropType;
+
+    private LocationDto location;
+
+    private String consultantResponse;
+    private String status;
+
+    private LocalDateTime createdAt;
+    private String rejectionReason;
+
+
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/ResponseDTO/AssignmentLogResponseDTO.java
+====================
+package com.example.mroojBE.DTOs.ResponseDTO;
+
+import com.example.mroojBE.Entity.AssignmentLog;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class AssignmentLogResponseDTO {
+    // No Request DTO for AssignmentLog — this entity is created automatically by the
+    // auto-assignment service logic (booking -> best consultant match)
+
+    //private Long id;
+    private Long bookingId;
+    private Long consultantId;
+    private String consultantName;
+    private LocalDateTime assignedAt;
+    private String outcome;
+    private String message;
+    private LocalDateTime respondedAt;
+
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/ResponseDTO/UserResponseDTO.java
+====================
+package com.example.mroojBE.DTOs.ResponseDTO;
+
+import com.example.mroojBE.Entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserResponseDTO {
+    private Long id;
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private String role;
+    private Boolean enabled;
+    private String preferredLanguage;
+
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/ResponseDTO/AppointmentResponseDTO.java
+====================
+package com.example.mroojBE.DTOs.ResponseDTO;
+
+import com.example.mroojBE.Entity.Appointment;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class AppointmentResponseDTO {
+    private Long id;
+    private Long bookingId;
+    private Long farmerId;
+    private Long consultantId;
+    private String consultantName;
+    private LocalDateTime scheduledAt;
+    private LocalDateTime endAt;
+    private Integer durationMinutes;
+    private String status;
+    private String meetingLink;
+    private String location;
+    private String notes;
+    private String cancellationReason;
+
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/ResponseDTO/AuthResponseDTO.java
+====================
+package com.example.mroojBE.DTOs.ResponseDTO;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class AuthResponseDTO {
+    private String token;
+    private String tokenType;
+    private UserResponseDTO user;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/ResponseDTO/LearningArticleResponseDTO.java
+====================
+package com.example.mroojBE.DTOs.ResponseDTO;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class LearningArticleResponseDTO {
+    private Long id;
+    private String title;
+    private String slug;
+    private String content;
+    private String category;
+    private String targetDomain;
+    private String language;
+    private String authorName;
+    private boolean published;
+    private LocalDateTime publishedAt;
+    private LocalDateTime createdAt;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/ResponseDTO/ConsultantResponseDTO.java
+====================
+package com.example.mroojBE.DTOs.ResponseDTO;
+
+import com.example.mroojBE.Entity.Consultant;
+//import com.example.mroojBE.UtilityHelperClass.GeoUtils;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ConsultantResponseDTO {
+    private Long id;
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String phone;
+
+    private String specialtyDomain;
+    private String specialtyTags;
+    private Double latitude;
+    private Double longitude;
+    private Integer currentLoad;
+    private Integer experienceYears;
+    private Double rating;
+    private Integer totalReviews;
+    private Boolean available;
+
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/ResponseDTO/FarmerResponseDTO.java
+====================
+package com.example.mroojBE.DTOs.ResponseDTO;
+
+import com.example.mroojBE.Entity.Farmer;
+//import com.example.mroojBE.UtilityHelperClass.GeoUtils;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class FarmerResponseDTO {
+    private Long id;
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String phone;
+
+    private String farmName;
+    private Double latitude;
+    private Double longitude;
+    private String region;
+    private Double farmSizeAcres;
+    private String cropTypes;
+
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/RequestDTO/LearningArticleRequestDTO.java
+====================
+package com.example.mroojBE.DTOs.RequestDTO;
+
+import com.example.mroojBE.Entity.enums.Domain;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * NOTE (audit finding): this DTO didn't exist yet — LearningArticle had no
+ * Request/Response DTOs at all despite having an Entity + Repository.
+ */
+@Data
+@NoArgsConstructor
+public class LearningArticleRequestDTO {
+
+    @NotBlank(message = "Title is required")
+    private String title;
+
+    @NotBlank(message = "Content is required")
+    private String content;
+
+    private String category;
+
+    @NotNull(message = "Target domain is required")
+    private Domain targetDomain; // PLANT / LIVESTOCK
+
+    private String language;
+
+    private String authorName;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/RequestDTO/RegisterRequestDTO.java
+====================
+package com.example.mroojBE.DTOs.RequestDTO;
+
+import com.example.mroojBE.Entity.User;
+import com.example.mroojBE.Entity.enums.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+public class RegisterRequestDTO {
+    @NotBlank(message = "First name is required")
+    private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    private String lastName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
+    private String email;
+
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    private String password;
+
+    private String phone;
+
+    @NotBlank(message = "Role is required")
+    private String role; // "FARMER" or "CONSULTANT"
+
+    /**
+     * encodedPassword must already be BCrypt-hashed by the caller
+     * (AuthService) before this is invoked — this DTO never persists
+     * the raw password.
+     */
+    public User toEntity(String encodedPassword) {
+        User user = new User();
+
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setPassword(encodedPassword);
+        user.setPhone(phone);
+        user.setRole(Role.valueOf(role.toUpperCase()));
+        user.setEnabled(true);
+        user.setPreferredLanguage("ar");
+
+        return user;
+    }
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/RequestDTO/BookingResolveRequest.java
+====================
+package com.example.mroojBE.DTOs.RequestDTO;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Payload for CONSULTANT-side resolution of a booking:
+ * PUT /bookings/{id}/resolve
+ * Sets Booking.consultantResponse and flips status to RESOLVED.
+ */
+@Data
+@NoArgsConstructor
+public class BookingResolveRequest {
+
+    @NotBlank(message = "Consultant response (treatment plan) is required")
+    private String consultantResponse;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/RequestDTO/AppointmentRequestDTO.java
+====================
+package com.example.mroojBE.DTOs.RequestDTO;
+
+import com.example.mroojBE.Entity.Appointment;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+public class AppointmentRequestDTO {
+
+    @NotNull(message = "Booking id is required")
+    private Long bookingId;
+
+    @NotNull(message = "Consultant id is required")
+    private Long consultantId;
+
+    @NotNull(message = "Scheduled time is required")
+    private LocalDateTime scheduledAt;
+
+    private Integer durationMinutes;
+
+    private String meetingLink;
+
+    private String location;
+
+    private String notes;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/RequestDTO/FarmerRequestDTO.java
+====================
+package com.example.mroojBE.DTOs.RequestDTO;
+
+import com.example.mroojBE.Entity.Farmer;
+import com.example.mroojBE.Entity.User;
+import com.example.mroojBE.Entity.enums.Role;
+import com.example.mroojBE.UtilityHelperClass.GeoUtils;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+public class FarmerRequestDTO {
+    // ---- user fields (registration) ----
+    @NotBlank(message = "Email is required")
+    @Email(message = "Please provide a valid email address")
+    private String email;
+
+    @NotBlank(message = "Password is required")
+    private String password;
+
+    @NotBlank(message = "First name is required")
+    private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    private String lastName;
+
+    private String phone;
+
+    private String preferredLanguage;
+
+    // ---- farmer fields ----
+    @NotBlank(message = "Farm name is required")
+    private String farmName;
+
+    @NotNull(message = "Farm latitude is required")
+    private Double latitude;
+
+    @NotNull(message = "Farm longitude is required")
+    private Double longitude;
+
+    private String region;
+
+    private Double farmSizeAcres;
+
+    private String cropTypes;
+
+    private String bio;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/RequestDTO/LoginRequestDTO.java
+====================
+package com.example.mroojBE.DTOs.RequestDTO;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class LoginRequestDTO {
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
+    private String email;
+
+    @NotBlank(message = "Password is required")
+    private String password;
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/RequestDTO/UserRequestDTO.java
+====================
+package com.example.mroojBE.DTOs.RequestDTO;
+
+import com.example.mroojBE.Entity.User;
+import com.example.mroojBE.Entity.enums.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+public class UserRequestDTO {
+    @NotBlank(message = "Email is required")
+    @Email(message = "Please provide a valid email address")
+    private String email;
+
+    @NotBlank(message = "Password is required")
+    private String password;
+
+    @NotBlank(message = "First name is required")
+    private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    private String lastName;
+
+    private String phone;
+
+    @NotBlank(message = "Role is required")
+    private String role; // "FARMER" or "CONSULTANT"
+
+    private String preferredLanguage;
+
+    public User toEntity() { // For creating
+        return User.builder()
+                .email(email)
+                .password(password)
+                .firstName(firstName)
+                .lastName(lastName)
+                .phone(phone)
+                .role(Role.valueOf(role.toUpperCase()))
+                .preferredLanguage(preferredLanguage != null ? preferredLanguage : "ar")
+                .build();
+    }
+
+    public void applyTo(User user) { // For updating
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPhone(phone);
+        if (preferredLanguage != null) {
+            user.setPreferredLanguage(preferredLanguage);
+        }
+        // email, password, role intentionally NOT updated here —
+        // those need dedicated endpoints (change-password, change-email, admin-only role change)
+    }
+}
+
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/RequestDTO/BookingRequestDTO.java
+====================
+package com.example.mroojBE.DTOs.RequestDTO;
+
+import com.example.mroojBE.DTOs.LocationDto;
+import com.example.mroojBE.Entity.enums.Domain;
+//import com.example.mroojBE.UtilityHelperClass.GeoUtils;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+public class BookingRequestDTO {
+    @NotBlank(message = "Title is required")
+    private String title;
+
+    @NotBlank(message = "Description is required")
+    private String description;
+
+    private String cropType;
+
+    private String issueCategory;
+
+    @NotNull(message = "Domain is required")
+    private Domain domain; // PLANT / LIVESTOCK
+
+    @NotBlank(message = "Subject type is required")
+    private String subjectType; // e.g. "tomato", "cattle"
+    private String symptomsImageUrl;
+    @NotNull(message = "Location is required")
+
+    @Valid
+    private LocationDto location;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/RequestDTO/ConsultantRequestDTO.java
+====================
+package com.example.mroojBE.DTOs.RequestDTO;
+
+import com.example.mroojBE.Entity.Consultant;
+import com.example.mroojBE.Entity.User;
+import com.example.mroojBE.Entity.enums.Role;
+import com.example.mroojBE.UtilityHelperClass.GeoUtils;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+public class ConsultantRequestDTO {
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Please provide a valid email address")
+    private String email;
+
+    @NotBlank(message = "Password is required")
+    private String password;
+
+    @NotBlank(message = "First name is required")
+    private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    private String lastName;
+
+    private String phone;
+
+    private String preferredLanguage;
+
+    @NotBlank(message = "Specialty domain is required")
+    private String specialtyDomain; // PLANT / LIVESTOCK
+
+    private String specialtyTags;
+
+    @NotNull(message = "Location latitude is required")
+    private Double latitude;
+
+    @NotNull(message = "Location longitude is required")
+    private Double longitude;
+
+    private Integer experienceYears;
+
+    private String bio;
+
+    private String qualifications;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/ApiResponse.java
+====================
+package com.example.mroojBE.DTOs;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+/**
+ * Standard success envelope for every controller response, mirroring
+ * ErrorResponse's shape on the failure side (GlobalExceptionHandler already
+ * builds that one). Didn't exist in the codebase yet despite being implied
+ * by the architecture — added here since every controller below returns it.
+ */
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ApiResponse<T> {
+
+    private boolean success;
+    private String message;
+    private T data;
+
+    @Builder.Default
+    private LocalDateTime timestamp = LocalDateTime.now();
+
+    public static <T> ApiResponse<T> of(String message, T data) {
+        return ApiResponse.<T>builder()
+                .success(true)
+                .message(message)
+                .data(data)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    public static <T> ApiResponse<T> of(T data) {
+        return of("OK", data);
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/LocationDto.java
+====================
+package com.example.mroojBE.DTOs;
+
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Shared lat/lng shape used by every Request/Response DTO that wraps a
+ * JTS Point. Kept flat (no nested "geometry" object) to match how the
+ * Angular frontend already consumes plain latitude/longitude numbers.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class LocationDto {
+
+    @NotNull(message = "Latitude is required")
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    private Double latitude;
+
+    @NotNull(message = "Longitude is required")
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
+    private Double longitude;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/DTOs/AppointmentCreateDTO.java
+====================
+package com.example.mroojBE.DTOs;
+
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+public class AppointmentCreateDTO {
+    @NotNull(message = "Booking ID is required")
+    private Long bookingId;
+
+    @NotNull(message = "Scheduled time is required")
+    @Future(message = "Appointment time must be in the future")
+    private LocalDateTime scheduledAt;
+
+    private int durationMinutes = 30;
+    private String meetingLink;
+    private String location;
+}
+====================
+FILE: src/main/java/com/example/mroojBE/UtilityHelperClass/GeoUtils.java
+====================
+package com.example.mroojBE.UtilityHelperClass;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
+
+/**
+ * Central helper for converting between JTS {@link Point} (SRID 4326)
+ * and latitude/longitude doubles used in DTOs.
+ *
+ * Note: JTS uses (x, y) = (longitude, latitude).
+ */
+//helper class to convert between simple lat/lng numbers (used in DTOs/JSON)
+public final class GeoUtils {
+
+    private static final int SRID = 4326;
+    //factory used to build any JTS geometry (Point, Line, Polygon...)
+    private static final GeometryFactory FACTORY = new GeometryFactory(new PrecisionModel(), SRID);
+
+    private GeoUtils() {
+        // Prevent instantiation
+    }
+
+    public static Point createPoint(Double latitude, Double longitude) {
+        if (latitude == null || longitude == null) {
+            return null;
+        }
+        Point point = FACTORY.createPoint(new Coordinate(longitude, latitude));
+        point.setSRID(SRID);
+        return point;
+    }
+
+    public static Double latitudeOf(Point point) {
+        return point == null ? null : point.getY();
+    }
+
+    public static Double longitudeOf(Point point) {
+        return point == null ? null : point.getX();
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Service/BookingService.java
+====================
+package com.example.mroojBE.Service;
+
+import com.example.mroojBE.DTOs.LocationDto;
+import com.example.mroojBE.DTOs.RequestDTO.BookingRequestDTO;
+import com.example.mroojBE.DTOs.RequestDTO.BookingResolveRequest;
+import com.example.mroojBE.DTOs.ResponseDTO.BookingResponseDTO;
+import com.example.mroojBE.Entity.Booking;
+import com.example.mroojBE.Entity.Consultant;
+import com.example.mroojBE.Entity.Farmer;
+import com.example.mroojBE.Entity.enums.BookingStatus;
+import com.example.mroojBE.Entity.enums.Domain;
+import com.example.mroojBE.UtilityHelperClass.GeoUtils;
+import com.example.mroojBE.exceptions.InvalidBookingStateException;
+import com.example.mroojBE.exceptions.NoConsultantAvailableException;
+import com.example.mroojBE.exceptions.ResourceNotFoundException;
+import com.example.mroojBE.repository.BookingRepository;
+import com.example.mroojBE.repository.FarmerRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.EnumSet;
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class BookingService {
+
+        private static final Set<BookingStatus> CANCELLABLE = EnumSet.of(
+                BookingStatus.PENDING, BookingStatus.ASSIGNED, BookingStatus.IN_PROGRESS);
+
+        private final BookingRepository bookingRepository;
+        private final FarmerRepository farmerRepository;
+        private final AssignmentService assignmentService;
+
+        /**
+         * Persists the booking as PENDING, then immediately attempts
+         * auto-assignment. Per NOTE-B1 on the entity ("downstream failures are
+         * never silently swallowed"), only the one expected business outcome —
+         * "no consultant available right now" — is caught here and leaves the
+         * booking PENDING for later retry; any other exception from the
+         * assignment step propagates and rolls back with the booking creation.
+         */
+        public BookingResponseDTO createBooking(Long farmerId, BookingRequestDTO request) {
+                Farmer farmer = farmerRepository.findById(farmerId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Farmer not found with id: " + farmerId));
+
+                Booking booking = Booking.builder()
+                        .farmer(farmer)
+                        .domain(request.getDomain())
+                        .subjectType(request.getSubjectType())
+                        .issueCategory(request.getIssueCategory())
+                        .description(request.getDescription())
+                        .symptomsImageUrl(request.getSymptomsImageUrl())
+                        .location(GeoUtils.createPoint(request.getLocation().getLatitude(), request.getLocation().getLongitude()))
+                        .status(BookingStatus.PENDING)
+                        .build();
+                Booking saved = bookingRepository.save(booking);
+
+                try {
+                        assignmentService.assignBooking(saved.getId());
+                } catch (NoConsultantAvailableException ex) {
+                        // Expected outcome — booking stays PENDING for later retry/admin follow-up.
+                }
+
+                return toDTO(saved);
+        }
+
+        @Transactional(readOnly = true)
+        public BookingResponseDTO getBookingById(Long bookingId) {
+                return toDTO(findOrThrow(bookingId));
+        }
+
+        @Transactional(readOnly = true)
+        public Page<BookingResponseDTO> listByFarmer(Long farmerId, Pageable pageable) {
+                return bookingRepository.findByFarmerId(farmerId, pageable).map(this::toDTO);
+        }
+
+        @Transactional(readOnly = true)
+        public Page<BookingResponseDTO> listByConsultant(Long consultantId, Pageable pageable) {
+                return bookingRepository.findByAssignedConsultantId(consultantId, pageable).map(this::toDTO);
+        }
+
+        @Transactional(readOnly = true)
+        public Page<BookingResponseDTO> listByStatus(BookingStatus status, Pageable pageable) {
+                return bookingRepository.findByStatus(status, pageable).map(this::toDTO);
+        }
+
+        @Transactional(readOnly = true)
+        public Page<BookingResponseDTO> listByDomainAndStatus(Domain domain, BookingStatus status, Pageable pageable) {
+                return bookingRepository.findByDomainAndStatus(domain, status, pageable).map(this::toDTO);
+        }
+
+        public BookingResponseDTO startProgress(Long bookingId, Long consultantId) {
+                Booking booking = findOrThrow(bookingId);
+                assertAssignedConsultant(booking, consultantId);
+                if (booking.getStatus() != BookingStatus.ASSIGNED) {
+                        throw new InvalidBookingStateException(
+                                "Booking " + bookingId + " must be ASSIGNED to start progress (current: " + booking.getStatus() + ")");
+                }
+                booking.setStatus(BookingStatus.IN_PROGRESS);
+                return toDTO(booking);
+        }
+
+        public BookingResponseDTO resolveBooking(Long bookingId, Long consultantId, BookingResolveRequest request) {
+                Booking booking = findOrThrow(bookingId);
+                assertAssignedConsultant(booking, consultantId);
+                if (booking.getStatus() != BookingStatus.ASSIGNED && booking.getStatus() != BookingStatus.IN_PROGRESS) {
+                        throw new InvalidBookingStateException(
+                                "Booking " + bookingId + " cannot be resolved from status " + booking.getStatus());
+                }
+                booking.setConsultantResponse(request.getConsultantResponse());
+                booking.setStatus(BookingStatus.RESOLVED);
+                return toDTO(booking);
+        }
+
+        public BookingResponseDTO cancelBooking(Long bookingId, Long farmerId, String reason) {
+                Booking booking = findOrThrow(bookingId);
+                if (!booking.getFarmer().getId().equals(farmerId)) {
+                        throw new InvalidBookingStateException("Booking " + bookingId + " does not belong to farmer " + farmerId);
+                }
+                if (!CANCELLABLE.contains(booking.getStatus())) {
+                        throw new InvalidBookingStateException(
+                                "Booking " + bookingId + " cannot be cancelled from status " + booking.getStatus());
+                }
+                if (booking.getAssignedConsultant() != null) {
+                        Consultant consultant = booking.getAssignedConsultant();
+                        consultant.setCurrentLoad(Math.max(0, consultant.getCurrentLoad() - 1));
+                }
+                booking.setConsultantResponse(reason);
+                booking.setStatus(BookingStatus.CANCELLED);
+                return toDTO(booking);
+        }
+
+        /** Admin-only: rejects a still-PENDING booking as invalid/out-of-scope. */
+        public BookingResponseDTO adminRejectBooking(Long bookingId, String reason) {
+                Booking booking = findOrThrow(bookingId);
+                if (booking.getStatus() != BookingStatus.PENDING) {
+                        throw new InvalidBookingStateException(
+                                "Only PENDING bookings can be administratively rejected (current: " + booking.getStatus() + ")");
+                }
+                booking.setConsultantResponse(reason);
+                booking.setStatus(BookingStatus.REJECTED);
+                return toDTO(booking);
+        }
+
+        private void assertAssignedConsultant(Booking booking, Long consultantId) {
+                if (booking.getAssignedConsultant() == null || !booking.getAssignedConsultant().getId().equals(consultantId)) {
+                        throw new InvalidBookingStateException(
+                                "Consultant " + consultantId + " is not assigned to booking " + booking.getId());
+                }
+        }
+
+        private Booking findOrThrow(Long bookingId) {
+                return bookingRepository.findById(bookingId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+        }
+
+        private BookingResponseDTO toDTO(Booking booking) {
+                Consultant consultant = booking.getAssignedConsultant();
+                boolean terminalNegative = booking.getStatus() == BookingStatus.CANCELLED
+                        || booking.getStatus() == BookingStatus.REJECTED;
+
+                return BookingResponseDTO.builder()
+                        .id(booking.getId())
+                        .farmerId(booking.getFarmer().getId())
+                        .farmerName(booking.getFarmer().getUser().getFirstName() + " " + booking.getFarmer().getUser().getLastName())
+                        .consultantId(consultant != null ? consultant.getId() : null)
+                        .consultantName(consultant != null
+                                ? consultant.getUser().getFirstName() + " " + consultant.getUser().getLastName()
+                                : null)
+                        .domain(booking.getDomain().name())
+                        .subjectType(booking.getSubjectType())
+                        .issueCategory(booking.getIssueCategory())
+                        .description(booking.getDescription())
+                        .symptomsImageUrl(booking.getSymptomsImageUrl())
+                        .aiReport(booking.getAiReport())
+                        .location(new LocationDto(GeoUtils.latitudeOf(booking.getLocation()), GeoUtils.longitudeOf(booking.getLocation())))
+                        .consultantResponse(booking.getConsultantResponse())
+                        .status(booking.getStatus().name())
+                        .createdAt(booking.getCreatedAt())
+                        .rejectionReason(terminalNegative ? booking.getConsultantResponse() : null)
+                        .build();
+        }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Service/JwtService.java
+====================
+package com.example.mroojBE.Security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+
+/**
+ * Issues and parses the JWTs used by AuthService.login(). jjwt-api/impl/jackson
+ * and jwt.secret / jwt.expiration-ms were already wired into pom.xml and
+ * application.properties, but no component actually used them yet — this
+ * fills that gap. Wiring JwtAuthFilter into SecurityConfig (replacing
+ * permitAll()) is a separate follow-up, tracked there as TODO(PHASE-JWT).
+ */
+@Component
+public class JwtService {
+
+    private final SecretKey key;
+    private final long expirationMs;
+
+    public JwtService(@Value("${jwt.secret}") String secret,
+                      @Value("${jwt.expiration-ms}") long expirationMs) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expirationMs = expirationMs;
+    }
+
+    public String generateToken(Long userId, String email, String role) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + expirationMs);
+        return Jwts.builder()
+                .subject(email)
+                .claim("userId", userId)
+                .claim("role", role)
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(key)
+                .compact();
+    }
+
+    public Claims parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public Long extractUserId(String token) {
+        return parseClaims(token).get("userId", Long.class);
+    }
+
+    public String extractRole(String token) {
+        return parseClaims(token).get("role", String.class);
+    }
+
+    public boolean isExpired(String token) {
+        return parseClaims(token).getExpiration().before(new Date());
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Service/UserService.java
+====================
+package com.example.mroojBE.Service;
+
+import com.example.mroojBE.DTOs.RequestDTO.UserRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.UserResponseDTO;
+import com.example.mroojBE.Entity.User;
+import com.example.mroojBE.exceptions.ResourceNotFoundException;
+import com.example.mroojBE.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    @Transactional(readOnly = true)
+    public UserResponseDTO getById(Long userId) {
+        return toDTO(findOrThrow(userId));
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponseDTO getByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        return toDTO(user);
+    }
+
+    /**
+     * email/password/role intentionally not touched here — UserRequestDTO#applyTo
+     * already deliberately skips them; those need dedicated
+     * change-password / change-email / admin-only role-change endpoints.
+     */
+    public UserResponseDTO updateProfile(Long userId, UserRequestDTO request) {
+        User user = findOrThrow(userId);
+        request.applyTo(user);
+        return toDTO(user);
+    }
+
+    public UserResponseDTO setEnabled(Long userId, boolean enabled) {
+        User user = findOrThrow(userId);
+        user.setEnabled(enabled);
+        return toDTO(user);
+    }
+
+    private User findOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+    }
+
+    private UserResponseDTO toDTO(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhone(),
+                user.getRole().name(),
+                user.isEnabled(),
+                user.getPreferredLanguage()
+        );
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Service/LearningArticleService.java
+====================
+package com.example.mroojBE.Service;
+
+import com.example.mroojBE.DTOs.RequestDTO.LearningArticleRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.LearningArticleResponseDTO;
+import com.example.mroojBE.Entity.LearningArticle;
+import com.example.mroojBE.Entity.enums.Domain;
+import com.example.mroojBE.exceptions.DuplicateResourceException;
+import com.example.mroojBE.exceptions.ResourceNotFoundException;
+import com.example.mroojBE.repository.LearningArticleRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.Normalizer;
+import java.time.LocalDateTime;
+import java.util.Locale;
+import java.util.regex.Pattern;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class LearningArticleService {
+
+    private static final Pattern NON_SLUG_CHARS = Pattern.compile("[^a-z0-9\\s-]");
+    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+
+    private final LearningArticleRepository learningArticleRepository;
+
+    public LearningArticleResponseDTO createArticle(LearningArticleRequestDTO request) {
+        String slug = slugify(request.getTitle());
+        if (learningArticleRepository.existsBySlug(slug)) {
+            throw new DuplicateResourceException("An article with slug '" + slug + "' already exists");
+        }
+
+        LearningArticle article = LearningArticle.builder()
+                .title(request.getTitle())
+                .slug(slug)
+                .content(request.getContent())
+                .category(request.getCategory())
+                .targetDomain(request.getTargetDomain())
+                .language(request.getLanguage() != null ? request.getLanguage() : "ar")
+                .authorName(request.getAuthorName())
+                .published(false)
+                .build();
+
+        return toDTO(learningArticleRepository.save(article));
+    }
+
+    public LearningArticleResponseDTO updateArticle(Long articleId, LearningArticleRequestDTO request) {
+        LearningArticle article = findOrThrow(articleId);
+        article.setTitle(request.getTitle());
+        article.setContent(request.getContent());
+        article.setCategory(request.getCategory());
+        article.setTargetDomain(request.getTargetDomain());
+        if (request.getLanguage() != null) article.setLanguage(request.getLanguage());
+        article.setAuthorName(request.getAuthorName());
+        return toDTO(article);
+    }
+
+    public LearningArticleResponseDTO publishArticle(Long articleId) {
+        LearningArticle article = findOrThrow(articleId);
+        article.setPublished(true);
+        article.setPublishedAt(LocalDateTime.now());
+        return toDTO(article);
+    }
+
+    public LearningArticleResponseDTO unpublishArticle(Long articleId) {
+        LearningArticle article = findOrThrow(articleId);
+        article.setPublished(false);
+        return toDTO(article);
+    }
+
+    @Transactional(readOnly = true)
+    public LearningArticleResponseDTO getPublishedBySlug(String slug) {
+        LearningArticle article = learningArticleRepository.findBySlugAndPublishedTrue(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Published article not found with slug: " + slug));
+        return toDTO(article);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<LearningArticleResponseDTO> listPublishedByDomain(Domain domain, Pageable pageable) {
+        return learningArticleRepository.findByTargetDomainAndPublishedTrue(domain, pageable).map(this::toDTO);
+    }
+
+    private LearningArticle findOrThrow(Long articleId) {
+        return learningArticleRepository.findById(articleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found with id: " + articleId));
+    }
+
+    private String slugify(String title) {
+        String normalized = Normalizer.normalize(title, Normalizer.Form.NFD).toLowerCase(Locale.ROOT);
+        String noAccents = normalized.replaceAll("\\p{M}", "");
+        String cleaned = NON_SLUG_CHARS.matcher(noAccents).replaceAll("").trim();
+        String base = WHITESPACE.matcher(cleaned).replaceAll("-");
+        return base.isBlank() ? "article-" + System.currentTimeMillis() : base;
+    }
+
+    private LearningArticleResponseDTO toDTO(LearningArticle article) {
+        return LearningArticleResponseDTO.builder()
+                .id(article.getId())
+                .title(article.getTitle())
+                .slug(article.getSlug())
+                .content(article.getContent())
+                .category(article.getCategory())
+                .targetDomain(article.getTargetDomain().name())
+                .language(article.getLanguage())
+                .authorName(article.getAuthorName())
+                .published(article.isPublished())
+                .publishedAt(article.getPublishedAt())
+                .createdAt(article.getCreatedAt())
+                .build();
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Service/AssignmentService.java
+====================
+package com.example.mroojBE.Service;
+
+import com.example.mroojBE.DTOs.ResponseDTO.AssignmentLogResponseDTO;
+import com.example.mroojBE.Entity.AssignmentLog;
+import com.example.mroojBE.Entity.Booking;
+import com.example.mroojBE.Entity.Consultant;
+import com.example.mroojBE.Entity.enums.AssignmentOutcome;
+import com.example.mroojBE.Entity.enums.BookingStatus;
+import com.example.mroojBE.exceptions.InvalidBookingStateException;
+import com.example.mroojBE.exceptions.NoConsultantAvailableException;
+import com.example.mroojBE.exceptions.ResourceNotFoundException;
+import com.example.mroojBE.repository.AssignmentLogRepository;
+import com.example.mroojBE.repository.BookingRepository;
+import com.example.mroojBE.repository.ConsultantRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class AssignmentService {
+
+    // Matches the 100km fallback documented on ConsultantRepository#findNearestAvailableByDomain
+    private static final double DEFAULT_SEARCH_RADIUS_METERS = 100_000;
+
+    private final AssignmentLogRepository assignmentLogRepository;
+    private final BookingRepository bookingRepository;
+    private final ConsultantRepository consultantRepository;
+
+    /**
+     * Core Phase 4 flow: finds the nearest available consultant matching the
+     * booking's domain (ConsultantRepository already orders by distance then
+     * current_load), auto-confirms the match, attaches the consultant to the
+     * booking and bumps their load. Consultants who already have a logged
+     * attempt for this booking are excluded, so a retry after a
+     * REJECTED/TIMEOUT never re-offers the same person.
+     */
+    public AssignmentLogResponseDTO assignBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new InvalidBookingStateException(
+                    "Booking " + bookingId + " is not PENDING (current status: " + booking.getStatus() + ")");
+        }
+
+        Set<Long> alreadyAttempted = assignmentLogRepository.findByBookingIdOrderByAssignedAtDesc(bookingId)
+                .stream()
+                .map(log -> log.getConsultant().getId())
+                .collect(Collectors.toSet());
+
+        double lat = booking.getLocation().getY();
+        double lng = booking.getLocation().getX();
+
+        List<Consultant> candidates = consultantRepository.findNearestAvailableByDomain(
+                booking.getDomain().name(), lng, lat, DEFAULT_SEARCH_RADIUS_METERS);
+
+        Consultant chosen = candidates.stream()
+                .filter(c -> !alreadyAttempted.contains(c.getId()))
+                .findFirst()
+                .orElseThrow(() -> new NoConsultantAvailableException(
+                        "No available " + booking.getDomain() + " consultant found near this location"));
+
+        AssignmentLog log = AssignmentLog.builder()
+                .booking(booking)
+                .consultant(chosen)
+                .assignedAt(LocalDateTime.now())
+                .respondedAt(LocalDateTime.now())
+                .outcome(AssignmentOutcome.ACCEPTED)
+                .build();
+        assignmentLogRepository.save(log);
+
+        booking.setAssignedConsultant(chosen);
+        booking.setStatus(BookingStatus.ASSIGNED);
+
+        chosen.setCurrentLoad(chosen.getCurrentLoad() + 1);
+
+        return toDTO(log, "Booking assigned to " + chosen.getUser().getFirstName() + " " + chosen.getUser().getLastName());
+    }
+
+    /**
+     * Consultant declines an offered/assigned booking: closes out the
+     * ACCEPTED log as REJECTED, frees their load, resets the booking to
+     * PENDING and immediately retries assignment against the next-nearest
+     * candidate (see AssignmentLogRepository's "at most one ACCEPTED attempt
+     * per booking" note — this is the application-level enforcement of that).
+     */
+    public AssignmentLogResponseDTO rejectAndReassign(Long bookingId, Long consultantId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+
+        AssignmentLog activeLog = assignmentLogRepository.findByBookingIdAndOutcome(bookingId, AssignmentOutcome.ACCEPTED)
+                .orElseThrow(() -> new ResourceNotFoundException("No active assignment found for booking " + bookingId));
+
+        if (!activeLog.getConsultant().getId().equals(consultantId)) {
+            throw new InvalidBookingStateException(
+                    "Consultant " + consultantId + " is not the currently assigned consultant for booking " + bookingId);
+        }
+
+        activeLog.setOutcome(AssignmentOutcome.REJECTED);
+        activeLog.setRespondedAt(LocalDateTime.now());
+
+        Consultant consultant = activeLog.getConsultant();
+        consultant.setCurrentLoad(Math.max(0, consultant.getCurrentLoad() - 1));
+
+        booking.setAssignedConsultant(null);
+        booking.setStatus(BookingStatus.PENDING);
+
+        return assignBooking(bookingId);
+    }
+
+    /**
+     * Marks a stale offer as TIMEOUT (e.g. from a scheduled sweep of
+     * ACCEPTED-but-unactioned assignments) and reassigns, same as a reject.
+     */
+    public AssignmentLogResponseDTO timeoutAndReassign(Long bookingId, Long consultantId) {
+        AssignmentLog activeLog = assignmentLogRepository.findByBookingIdAndOutcome(bookingId, AssignmentOutcome.ACCEPTED)
+                .orElseThrow(() -> new ResourceNotFoundException("No active assignment found for booking " + bookingId));
+
+        if (!activeLog.getConsultant().getId().equals(consultantId)) {
+            throw new InvalidBookingStateException(
+                    "Consultant " + consultantId + " is not the currently assigned consultant for booking " + bookingId);
+        }
+
+        activeLog.setOutcome(AssignmentOutcome.TIMEOUT);
+        activeLog.setRespondedAt(LocalDateTime.now());
+
+        Consultant consultant = activeLog.getConsultant();
+        consultant.setCurrentLoad(Math.max(0, consultant.getCurrentLoad() - 1));
+
+        Booking booking = activeLog.getBooking();
+        booking.setAssignedConsultant(null);
+        booking.setStatus(BookingStatus.PENDING);
+
+        return assignBooking(booking.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public List<AssignmentLogResponseDTO> getHistory(Long bookingId) {
+        return assignmentLogRepository.findByBookingIdOrderByAssignedAtDesc(bookingId)
+                .stream()
+                .map(log -> toDTO(log, null))
+                .toList();
+    }
+
+    private AssignmentLogResponseDTO toDTO(AssignmentLog log, String message) {
+        Consultant c = log.getConsultant();
+        return AssignmentLogResponseDTO.builder()
+                .bookingId(log.getBooking().getId())
+                .consultantId(c.getId())
+                .consultantName(c.getUser().getFirstName() + " " + c.getUser().getLastName())
+                .assignedAt(log.getAssignedAt())
+                .outcome(log.getOutcome().name())
+                .message(message)
+                .respondedAt(log.getRespondedAt())
+                .build();
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Service/AppointmentService.java
+====================
+package com.example.mroojBE.Service;
+
+import com.example.mroojBE.DTOs.RequestDTO.AppointmentRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.AppointmentResponseDTO;
+import com.example.mroojBE.Entity.Appointment;
+import com.example.mroojBE.Entity.Booking;
+import com.example.mroojBE.Entity.Consultant;
+import com.example.mroojBE.Entity.enums.AppointmentStatus;
+import com.example.mroojBE.Entity.enums.BookingStatus;
+import com.example.mroojBE.exceptions.InvalidBookingStateException;
+import com.example.mroojBE.exceptions.ResourceNotFoundException;
+import com.example.mroojBE.repository.AppointmentRepository;
+import com.example.mroojBE.repository.BookingRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class AppointmentService {
+
+    private final AppointmentRepository appointmentRepository;
+    private final BookingRepository bookingRepository;
+
+    public AppointmentResponseDTO scheduleAppointment(AppointmentRequestDTO request) {
+        Booking booking = bookingRepository.findById(request.getBookingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + request.getBookingId()));
+
+        if (booking.getAssignedConsultant() == null
+                || !booking.getAssignedConsultant().getId().equals(request.getConsultantId())) {
+            throw new InvalidBookingStateException(
+                    "Consultant " + request.getConsultantId() + " is not assigned to booking " + booking.getId());
+        }
+        if (booking.getStatus() != BookingStatus.ASSIGNED && booking.getStatus() != BookingStatus.IN_PROGRESS) {
+            throw new InvalidBookingStateException(
+                    "Booking " + booking.getId() + " must be ASSIGNED or IN_PROGRESS to schedule an appointment");
+        }
+
+        Consultant consultant = booking.getAssignedConsultant();
+        int duration = request.getDurationMinutes() != null ? request.getDurationMinutes() : 30;
+
+        LocalDateTime windowStart = request.getScheduledAt();
+        LocalDateTime windowEnd = windowStart.plusMinutes(duration);
+
+        // Widen the query window by one slot on each side so any appointment
+        // whose own span overlaps [windowStart, windowEnd) is caught.
+        boolean doubleBooked = appointmentRepository
+                .findByConsultantIdAndScheduledAtBetween(consultant.getId(), windowStart.minusMinutes(duration), windowEnd)
+                .stream()
+                .anyMatch(a -> a.getStatus() != AppointmentStatus.CANCELLED
+                        && a.getScheduledAt().isBefore(windowEnd)
+                        && a.getScheduledAt().plusMinutes(a.getDurationMinutes()).isAfter(windowStart));
+
+        if (doubleBooked) {
+            throw new InvalidBookingStateException(
+                    "Consultant " + consultant.getId() + " already has an appointment overlapping this time slot");
+        }
+
+        Appointment appointment = Appointment.builder()
+                .booking(booking)
+                .farmer(booking.getFarmer())
+                .consultant(consultant)
+                .scheduledAt(windowStart)
+                .durationMinutes(duration)
+                .status(AppointmentStatus.SCHEDULED)
+                .meetingLink(request.getMeetingLink())
+                .location(request.getLocation())
+                .build();
+
+        return toDTO(appointmentRepository.save(appointment));
+    }
+
+    @Transactional(readOnly = true)
+    public AppointmentResponseDTO getAppointmentById(Long appointmentId) {
+        return toDTO(findOrThrow(appointmentId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<AppointmentResponseDTO> listByFarmer(Long farmerId) {
+        return appointmentRepository.findByFarmerIdOrderByScheduledAtDesc(farmerId)
+                .stream().map(this::toDTO).toList();
+    }
+
+    /** Calendar view for a consultant's dashboard (see AppointmentRepository docs). */
+    @Transactional(readOnly = true)
+    public List<AppointmentResponseDTO> listByConsultantCalendar(Long consultantId, LocalDateTime from, LocalDateTime to) {
+        return appointmentRepository.findByConsultantIdAndScheduledAtBetween(consultantId, from, to)
+                .stream().map(this::toDTO).toList();
+    }
+
+    public AppointmentResponseDTO updateStatus(Long appointmentId, AppointmentStatus status) {
+        Appointment appointment = findOrThrow(appointmentId);
+        appointment.setStatus(status);
+        return toDTO(appointment);
+    }
+
+    public AppointmentResponseDTO cancelAppointment(Long appointmentId) {
+        Appointment appointment = findOrThrow(appointmentId);
+        if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
+            throw new InvalidBookingStateException("Cannot cancel a completed appointment");
+        }
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        return toDTO(appointment);
+    }
+
+    private Appointment findOrThrow(Long appointmentId) {
+        return appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + appointmentId));
+    }
+
+    private AppointmentResponseDTO toDTO(Appointment appointment) {
+        return new AppointmentResponseDTO(
+                appointment.getId(),
+                appointment.getBooking().getId(),
+                appointment.getFarmer().getId(),
+                appointment.getConsultant().getId(),
+                appointment.getConsultant().getUser().getFirstName() + " "
+                        + appointment.getConsultant().getUser().getLastName(),
+                appointment.getScheduledAt(),
+                appointment.getScheduledAt().plusMinutes(appointment.getDurationMinutes()),
+                appointment.getDurationMinutes(),
+                appointment.getStatus().name(),
+                appointment.getMeetingLink(),
+                appointment.getLocation(),
+                null,
+                null
+
+        );
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Service/AuthService.java
+====================
+package com.example.mroojBE.Service;
+
+import com.example.mroojBE.DTOs.RequestDTO.LoginRequestDTO;
+import com.example.mroojBE.DTOs.RequestDTO.RegisterRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.AuthResponseDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.UserResponseDTO;
+import com.example.mroojBE.Entity.User;
+import com.example.mroojBE.Security.JwtService;
+import com.example.mroojBE.exceptions.DuplicateResourceException;
+import com.example.mroojBE.exceptions.ResourceNotFoundException;
+import com.example.mroojBE.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Handles bare USERS accounts and login. Farmers and Consultants normally
+ * register in one shot via FarmerService#registerFarmer /
+ * ConsultantService#registerConsultant, since FarmerRequestDTO /
+ * ConsultantRequestDTO already carry both the account fields and the
+ * profile fields — RegisterRequestDTO alone can't create a valid Farmer or
+ * Consultant profile (no farm/specialty fields on it), so #register() here
+ * is really only for ADMIN accounts.
+ */
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    public UserResponseDTO register(RegisterRequestDTO request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException("An account with this email already exists");
+        }
+        String encoded = passwordEncoder.encode(request.getPassword());
+        User saved = userRepository.save(request.toEntity(encoded));
+        return toDTO(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public AuthResponseDTO login(LoginRequestDTO request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new ResourceNotFoundException("Invalid email or password");
+        }
+        if (!user.isEnabled()) {
+            throw new IllegalArgumentException("This account has been disabled");
+        }
+
+        String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole().name());
+        return AuthResponseDTO.builder()
+                .token(token)
+                .tokenType("Bearer")
+                .user(toDTO(user))
+                .build();
+    }
+
+    private UserResponseDTO toDTO(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhone(),
+                user.getRole().name(),
+                user.isEnabled(),
+                user.getPreferredLanguage()
+        );
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Service/ConsultantService.java
+====================
+package com.example.mroojBE.Service;
+
+import com.example.mroojBE.DTOs.RequestDTO.ConsultantRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.ConsultantResponseDTO;
+import com.example.mroojBE.Entity.Consultant;
+import com.example.mroojBE.Entity.User;
+import com.example.mroojBE.Entity.enums.Domain;
+import com.example.mroojBE.Entity.enums.Role;
+import com.example.mroojBE.UtilityHelperClass.GeoUtils;
+import com.example.mroojBE.exceptions.DuplicateResourceException;
+import com.example.mroojBE.exceptions.ResourceNotFoundException;
+import com.example.mroojBE.repository.ConsultantRepository;
+import com.example.mroojBE.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Point;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class ConsultantService {
+
+    // Matches the 100km fallback documented on ConsultantRepository#findNearestAvailableByDomain
+    private static final double DEFAULT_SEARCH_RADIUS_METERS = 100_000;
+
+    private final ConsultantRepository consultantRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public ConsultantResponseDTO registerConsultant(ConsultantRequestDTO request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException("An account with this email already exists");
+        }
+
+        User user = User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .phone(request.getPhone())
+                .role(Role.CONSULTANT)
+                .enabled(true)
+                .preferredLanguage(request.getPreferredLanguage() != null ? request.getPreferredLanguage() : "ar")
+                .build();
+        User savedUser = userRepository.save(user);
+
+        Point location = GeoUtils.createPoint(request.getLatitude(), request.getLongitude());
+        Consultant consultant = Consultant.builder()
+                .user(savedUser)
+                .specialtyDomain(parseDomain(request.getSpecialtyDomain()))
+                .specialtyTags(request.getSpecialtyTags())
+                .location(location)
+                .currentLoad(0)
+                .experienceYears(request.getExperienceYears())
+                .rating(0.0)
+                .available(true)
+                .build();
+        Consultant saved = consultantRepository.save(consultant);
+
+        return toDTO(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public ConsultantResponseDTO getConsultantById(Long consultantId) {
+        return toDTO(findOrThrow(consultantId));
+    }
+
+    @Transactional(readOnly = true)
+    public ConsultantResponseDTO getConsultantByUserId(Long userId) {
+        Consultant consultant = consultantRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Consultant profile not found for user id: " + userId));
+        return toDTO(consultant);
+    }
+
+    public ConsultantResponseDTO updateConsultantProfile(Long consultantId, ConsultantRequestDTO request) {
+        Consultant consultant = findOrThrow(consultantId);
+
+        if (request.getSpecialtyDomain() != null) {
+            consultant.setSpecialtyDomain(parseDomain(request.getSpecialtyDomain()));
+        }
+        consultant.setSpecialtyTags(request.getSpecialtyTags());
+        consultant.setExperienceYears(request.getExperienceYears());
+        if (request.getLatitude() != null && request.getLongitude() != null) {
+            consultant.setLocation(GeoUtils.createPoint(request.getLatitude(), request.getLongitude()));
+        }
+
+        User user = consultant.getUser();
+        if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
+        if (request.getLastName() != null) user.setLastName(request.getLastName());
+        if (request.getPhone() != null) user.setPhone(request.getPhone());
+
+        return toDTO(consultant);
+    }
+
+    public ConsultantResponseDTO setAvailability(Long consultantId, boolean available) {
+        Consultant consultant = findOrThrow(consultantId);
+        consultant.setAvailable(available);
+        return toDTO(consultant);
+    }
+
+    /**
+     * Thin wrapper around the native spatial query on ConsultantRepository —
+     * exposed for admin/dashboard "who would this booking match to" previews,
+     * separate from AssignmentService which actually commits an assignment.
+     */
+    @Transactional(readOnly = true)
+    public List<ConsultantResponseDTO> findNearestAvailable(Domain domain, double lat, double lng, Double radiusMeters) {
+        double radius = radiusMeters != null ? radiusMeters : DEFAULT_SEARCH_RADIUS_METERS;
+        return consultantRepository.findNearestAvailableByDomain(domain.name(), lng, lat, radius)
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    private Domain parseDomain(String raw) {
+        try {
+            return Domain.valueOf(raw.toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException ex) {
+            throw new IllegalArgumentException("specialtyDomain must be PLANT or LIVESTOCK");
+        }
+    }
+
+    private Consultant findOrThrow(Long consultantId) {
+        return consultantRepository.findById(consultantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Consultant not found with id: " + consultantId));
+    }
+
+    private ConsultantResponseDTO toDTO(Consultant consultant) {
+        User user = consultant.getUser();
+        return new ConsultantResponseDTO(
+                consultant.getId(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhone(),
+                consultant.getSpecialtyDomain().name(),
+                consultant.getSpecialtyTags(),
+                GeoUtils.latitudeOf(consultant.getLocation()),
+                GeoUtils.longitudeOf(consultant.getLocation()),
+                consultant.getCurrentLoad(),
+                consultant.getExperienceYears(),
+                consultant.getRating(),
+                consultant.getBookings() == null ? 0 : consultant.getBookings().size(),
+                consultant.isAvailable()
+        );
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/Service/FarmerService.java
+====================
+package com.example.mroojBE.Service;
+
+import com.example.mroojBE.DTOs.RequestDTO.FarmerRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.FarmerResponseDTO;
+import com.example.mroojBE.Entity.Farmer;
+import com.example.mroojBE.Entity.User;
+import com.example.mroojBE.Entity.enums.Role;
+import com.example.mroojBE.UtilityHelperClass.GeoUtils;
+import com.example.mroojBE.exceptions.DuplicateResourceException;
+import com.example.mroojBE.exceptions.ResourceNotFoundException;
+import com.example.mroojBE.repository.FarmerRepository;
+import com.example.mroojBE.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Point;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class FarmerService {
+
+    private final FarmerRepository farmerRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    /**
+     * One-shot registration: FarmerRequestDTO carries both the USERS fields
+     * and the FARMERS profile fields, so a single call creates both rows in
+     * one transaction.
+     */
+    public FarmerResponseDTO registerFarmer(FarmerRequestDTO request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException("An account with this email already exists");
+        }
+
+        User user = User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .phone(request.getPhone())
+                .role(Role.FARMER)
+                .enabled(true)
+                .preferredLanguage(request.getPreferredLanguage() != null ? request.getPreferredLanguage() : "ar")
+                .build();
+        User savedUser = userRepository.save(user);
+
+        Point location = GeoUtils.createPoint(request.getLatitude(), request.getLongitude());
+        Farmer farmer = Farmer.builder()
+                .user(savedUser)
+                .farmName(request.getFarmName())
+                .farmLocation(location)
+                .region(request.getRegion())
+                .farmSizeAcres(request.getFarmSizeAcres())
+                .cropTypes(request.getCropTypes())
+                .build();
+        Farmer savedFarmer = farmerRepository.save(farmer);
+
+        return toDTO(savedFarmer);
+    }
+
+    @Transactional(readOnly = true)
+    public FarmerResponseDTO getFarmerById(Long farmerId) {
+        return toDTO(findOrThrow(farmerId));
+    }
+
+    @Transactional(readOnly = true)
+    public FarmerResponseDTO getFarmerByUserId(Long userId) {
+        Farmer farmer = farmerRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Farmer profile not found for user id: " + userId));
+        return toDTO(farmer);
+    }
+
+    /**
+     * Updates only the FARMERS-owned fields plus the mutable USERS fields
+     * (first/last name, phone) — same pattern UserRequestDTO#applyTo follows,
+     * email/password stay untouched here.
+     */
+    public FarmerResponseDTO updateFarmerProfile(Long farmerId, FarmerRequestDTO request) {
+        Farmer farmer = findOrThrow(farmerId);
+
+        farmer.setFarmName(request.getFarmName());
+        farmer.setRegion(request.getRegion());
+        farmer.setFarmSizeAcres(request.getFarmSizeAcres());
+        farmer.setCropTypes(request.getCropTypes());
+        if (request.getLatitude() != null && request.getLongitude() != null) {
+            farmer.setFarmLocation(GeoUtils.createPoint(request.getLatitude(), request.getLongitude()));
+        }
+
+        User user = farmer.getUser();
+        if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
+        if (request.getLastName() != null) user.setLastName(request.getLastName());
+        if (request.getPhone() != null) user.setPhone(request.getPhone());
+
+        return toDTO(farmer);
+    }
+
+    private Farmer findOrThrow(Long farmerId) {
+        return farmerRepository.findById(farmerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Farmer not found with id: " + farmerId));
+    }
+
+    private FarmerResponseDTO toDTO(Farmer farmer) {
+        User user = farmer.getUser();
+        return new FarmerResponseDTO(
+                farmer.getId(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhone(),
+                farmer.getFarmName(),
+                GeoUtils.latitudeOf(farmer.getFarmLocation()),
+                GeoUtils.longitudeOf(farmer.getFarmLocation()),
+                farmer.getRegion(),
+                farmer.getFarmSizeAcres(),
+                farmer.getCropTypes()
+        );
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/controllers/LearningArticleController.java
+====================
+package com.example.mroojBE.controllers;
+
+
+import com.example.mroojBE.DTOs.RequestDTO.LearningArticleRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.LearningArticleResponseDTO;
+import com.example.mroojBE.DTOs.ApiResponse;
+import com.example.mroojBE.Entity.enums.Domain;
+import com.example.mroojBE.Service.LearningArticleService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/articles")
+@RequiredArgsConstructor
+public class LearningArticleController {
+
+    private final LearningArticleService learningArticleService;
+
+    /** ADMIN-only in practice — enforce via the role check once JwtAuthFilter exists. */
+    @PostMapping
+    public ResponseEntity<ApiResponse<LearningArticleResponseDTO>> createArticle(
+            @Valid @RequestBody LearningArticleRequestDTO request) {
+        LearningArticleResponseDTO created = learningArticleService.createArticle(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of("Article created as draft", created));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<LearningArticleResponseDTO>> updateArticle(
+            @PathVariable Long id, @Valid @RequestBody LearningArticleRequestDTO request) {
+        return ResponseEntity.ok(ApiResponse.of("Article updated", learningArticleService.updateArticle(id, request)));
+    }
+
+    @PatchMapping("/{id}/publish")
+    public ResponseEntity<ApiResponse<LearningArticleResponseDTO>> publish(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.of("Article published", learningArticleService.publishArticle(id)));
+    }
+
+    @PatchMapping("/{id}/unpublish")
+    public ResponseEntity<ApiResponse<LearningArticleResponseDTO>> unpublish(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.of("Article unpublished", learningArticleService.unpublishArticle(id)));
+    }
+
+    /** Public — only ever returns published articles. */
+    @GetMapping("/{slug}")
+    public ResponseEntity<ApiResponse<LearningArticleResponseDTO>> getBySlug(@PathVariable String slug) {
+        return ResponseEntity.ok(ApiResponse.of(learningArticleService.getPublishedBySlug(slug)));
+    }
+
+    /** Public — only ever returns published articles. */
+    @GetMapping("/domain/{domain}")
+    public ResponseEntity<ApiResponse<Page<LearningArticleResponseDTO>>> listByDomain(
+            @PathVariable Domain domain, @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.of(learningArticleService.listPublishedByDomain(domain, pageable)));
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/controllers/AppointmentController.java
+====================
+package com.example.mroojBE.controllers;
+
+
+import com.example.mroojBE.DTOs.RequestDTO.AppointmentRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.AppointmentResponseDTO;
+import com.example.mroojBE.DTOs.ApiResponse;
+import com.example.mroojBE.Entity.enums.AppointmentStatus;
+import com.example.mroojBE.Service.AppointmentService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/appointments")
+@RequiredArgsConstructor
+public class AppointmentController {
+
+    private final AppointmentService appointmentService;
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<AppointmentResponseDTO>> scheduleAppointment(
+            @Valid @RequestBody AppointmentRequestDTO request) {
+        AppointmentResponseDTO created = appointmentService.scheduleAppointment(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of("Appointment scheduled", created));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<AppointmentResponseDTO>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.of(appointmentService.getAppointmentById(id)));
+    }
+
+    @GetMapping("/farmer/{farmerId}")
+    public ResponseEntity<ApiResponse<List<AppointmentResponseDTO>>> listByFarmer(@PathVariable Long farmerId) {
+        return ResponseEntity.ok(ApiResponse.of(appointmentService.listByFarmer(farmerId)));
+    }
+
+    /** Calendar view for a consultant's dashboard. */
+    @GetMapping("/consultant/{consultantId}/calendar")
+    public ResponseEntity<ApiResponse<List<AppointmentResponseDTO>>> listByConsultantCalendar(
+            @PathVariable Long consultantId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
+        return ResponseEntity.ok(ApiResponse.of(appointmentService.listByConsultantCalendar(consultantId, from, to)));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<AppointmentResponseDTO>> updateStatus(
+            @PathVariable Long id, @RequestParam AppointmentStatus status) {
+        return ResponseEntity.ok(ApiResponse.of("Status updated", appointmentService.updateStatus(id, status)));
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<ApiResponse<AppointmentResponseDTO>> cancelAppointment(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.of("Appointment cancelled", appointmentService.cancelAppointment(id)));
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/controllers/FarmerController.java
+====================
+package com.example.mroojBE.controllers;
+
+
+import com.example.mroojBE.DTOs.RequestDTO.FarmerRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.FarmerResponseDTO;
+import com.example.mroojBE.DTOs.ApiResponse;
+import com.example.mroojBE.Service.FarmerService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/farmers")
+@RequiredArgsConstructor
+public class FarmerController {
+
+    private final FarmerService farmerService;
+
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<FarmerResponseDTO>> register(@Valid @RequestBody FarmerRequestDTO request) {
+        FarmerResponseDTO created = farmerService.registerFarmer(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of("Farmer account created", created));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<FarmerResponseDTO>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.of(farmerService.getFarmerById(id)));
+    }
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<ApiResponse<FarmerResponseDTO>> getByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(ApiResponse.of(farmerService.getFarmerByUserId(userId)));
+    }
+
+    // TODO(PHASE-JWT): {id} should be verified against the authenticated principal
+    // once JwtAuthFilter exists, so a farmer can only edit their own profile.
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<FarmerResponseDTO>> updateProfile(
+            @PathVariable Long id, @Valid @RequestBody FarmerRequestDTO request) {
+        return ResponseEntity.ok(ApiResponse.of("Profile updated", farmerService.updateFarmerProfile(id, request)));
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/controllers/AssignmentController.java
+====================
+package com.example.mroojBE.controllers;
+
+
+import com.example.mroojBE.DTOs.ResponseDTO.AssignmentLogResponseDTO;
+import com.example.mroojBE.DTOs.ApiResponse;
+import com.example.mroojBE.Service.AssignmentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/assignments")
+@RequiredArgsConstructor
+public class AssignmentController {
+
+    private final AssignmentService assignmentService;
+
+    /** Manual trigger — normally unnecessary since BookingService already calls this on creation. */
+    @PostMapping("/bookings/{bookingId}/assign")
+    public ResponseEntity<ApiResponse<AssignmentLogResponseDTO>> assignBooking(@PathVariable Long bookingId) {
+        return ResponseEntity.ok(ApiResponse.of("Consultant assigned", assignmentService.assignBooking(bookingId)));
+    }
+
+    @PostMapping("/bookings/{bookingId}/reject")
+    public ResponseEntity<ApiResponse<AssignmentLogResponseDTO>> rejectAndReassign(
+            @PathVariable Long bookingId, @RequestParam Long consultantId) {
+        AssignmentLogResponseDTO result = assignmentService.rejectAndReassign(bookingId, consultantId);
+        return ResponseEntity.ok(ApiResponse.of("Reassigned to next available consultant", result));
+    }
+
+    /** Meant to be called by a scheduled sweep of stale offers — exposed here for manual/admin use too. */
+    @PostMapping("/bookings/{bookingId}/timeout")
+    public ResponseEntity<ApiResponse<AssignmentLogResponseDTO>> timeoutAndReassign(
+            @PathVariable Long bookingId, @RequestParam Long consultantId) {
+        AssignmentLogResponseDTO result = assignmentService.timeoutAndReassign(bookingId, consultantId);
+        return ResponseEntity.ok(ApiResponse.of("Offer timed out — reassigned", result));
+    }
+
+    @GetMapping("/bookings/{bookingId}/history")
+    public ResponseEntity<ApiResponse<List<AssignmentLogResponseDTO>>> getHistory(@PathVariable Long bookingId) {
+        return ResponseEntity.ok(ApiResponse.of(assignmentService.getHistory(bookingId)));
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/controllers/BookingController.java
+====================
+package com.example.mroojBE.controllers;
+
+
+import com.example.mroojBE.DTOs.RequestDTO.BookingRequestDTO;
+import com.example.mroojBE.DTOs.RequestDTO.BookingResolveRequest;
+import com.example.mroojBE.DTOs.ResponseDTO.BookingResponseDTO;
+import com.example.mroojBE.DTOs.ApiResponse;
+import com.example.mroojBE.Entity.enums.BookingStatus;
+import com.example.mroojBE.Entity.enums.Domain;
+import com.example.mroojBE.Service.BookingService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * NOTE: farmerId/consultantId are taken as explicit request params/path
+ * segments rather than pulled from SecurityContextHolder, since no
+ * JwtAuthFilter is registered yet (see SecurityConfig's TODO(PHASE-JWT)).
+ * Swap these for the authenticated principal once that filter exists.
+ */
+@RestController
+@RequestMapping("/api/bookings")
+@RequiredArgsConstructor
+public class BookingController {
+
+    private final BookingService bookingService;
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<BookingResponseDTO>> createBooking(
+            @RequestParam Long farmerId, @Valid @RequestBody BookingRequestDTO request) {
+        BookingResponseDTO created = bookingService.createBooking(farmerId, request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of("Booking created", created));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<BookingResponseDTO>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.of(bookingService.getBookingById(id)));
+    }
+
+    @GetMapping("/farmer/{farmerId}")
+    public ResponseEntity<ApiResponse<Page<BookingResponseDTO>>> listByFarmer(
+            @PathVariable Long farmerId, @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.of(bookingService.listByFarmer(farmerId, pageable)));
+    }
+
+    @GetMapping("/consultant/{consultantId}")
+    public ResponseEntity<ApiResponse<Page<BookingResponseDTO>>> listByConsultant(
+            @PathVariable Long consultantId, @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.of(bookingService.listByConsultant(consultantId, pageable)));
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<ApiResponse<Page<BookingResponseDTO>>> listByStatus(
+            @PathVariable BookingStatus status, @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.of(bookingService.listByStatus(status, pageable)));
+    }
+
+    @GetMapping("/domain/{domain}/status/{status}")
+    public ResponseEntity<ApiResponse<Page<BookingResponseDTO>>> listByDomainAndStatus(
+            @PathVariable Domain domain, @PathVariable BookingStatus status,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.of(bookingService.listByDomainAndStatus(domain, status, pageable)));
+    }
+
+    @PutMapping("/{id}/start")
+    public ResponseEntity<ApiResponse<BookingResponseDTO>> startProgress(
+            @PathVariable Long id, @RequestParam Long consultantId) {
+        return ResponseEntity.ok(ApiResponse.of("Booking moved to IN_PROGRESS", bookingService.startProgress(id, consultantId)));
+    }
+
+    @PutMapping("/{id}/resolve")
+    public ResponseEntity<ApiResponse<BookingResponseDTO>> resolveBooking(
+            @PathVariable Long id, @RequestParam Long consultantId,
+            @Valid @RequestBody BookingResolveRequest request) {
+        return ResponseEntity.ok(ApiResponse.of("Booking resolved", bookingService.resolveBooking(id, consultantId, request)));
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<ApiResponse<BookingResponseDTO>> cancelBooking(
+            @PathVariable Long id, @RequestParam Long farmerId, @RequestParam(required = false) String reason) {
+        return ResponseEntity.ok(ApiResponse.of("Booking cancelled", bookingService.cancelBooking(id, farmerId, reason)));
+    }
+
+    /** ADMIN-only in practice — enforce via the role check once JwtAuthFilter exists. */
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<ApiResponse<BookingResponseDTO>> adminRejectBooking(
+            @PathVariable Long id, @RequestParam String reason) {
+        return ResponseEntity.ok(ApiResponse.of("Booking rejected", bookingService.adminRejectBooking(id, reason)));
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/controllers/ConsultantController.java
+====================
+package com.example.mroojBE.controllers;
+
+
+import com.example.mroojBE.DTOs.RequestDTO.ConsultantRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.ConsultantResponseDTO;
+import com.example.mroojBE.DTOs.ApiResponse;
+import com.example.mroojBE.Entity.enums.Domain;
+import com.example.mroojBE.Service.ConsultantService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/consultants")
+@RequiredArgsConstructor
+public class ConsultantController {
+
+    private final ConsultantService consultantService;
+
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<ConsultantResponseDTO>> register(@Valid @RequestBody ConsultantRequestDTO request) {
+        ConsultantResponseDTO created = consultantService.registerConsultant(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of("Consultant account created", created));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ConsultantResponseDTO>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.of(consultantService.getConsultantById(id)));
+    }
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<ApiResponse<ConsultantResponseDTO>> getByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(ApiResponse.of(consultantService.getConsultantByUserId(userId)));
+    }
+
+    // TODO(PHASE-JWT): {id} should be verified against the authenticated principal
+    // once JwtAuthFilter exists, so a consultant can only edit their own profile.
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<ConsultantResponseDTO>> updateProfile(
+            @PathVariable Long id, @Valid @RequestBody ConsultantRequestDTO request) {
+        return ResponseEntity.ok(ApiResponse.of("Profile updated", consultantService.updateConsultantProfile(id, request)));
+    }
+
+    @PatchMapping("/{id}/availability")
+    public ResponseEntity<ApiResponse<ConsultantResponseDTO>> setAvailability(
+            @PathVariable Long id, @RequestParam boolean available) {
+        String message = available ? "Marked as available" : "Marked as unavailable";
+        return ResponseEntity.ok(ApiResponse.of(message, consultantService.setAvailability(id, available)));
+    }
+
+    /** Admin/debug preview of who the assignment engine would currently match — doesn't commit anything. */
+    @GetMapping("/nearest")
+    public ResponseEntity<ApiResponse<List<ConsultantResponseDTO>>> findNearestAvailable(
+            @RequestParam Domain domain,
+            @RequestParam double lat,
+            @RequestParam double lng,
+            @RequestParam(required = false) Double radiusMeters) {
+        List<ConsultantResponseDTO> results = consultantService.findNearestAvailable(domain, lat, lng, radiusMeters);
+        return ResponseEntity.ok(ApiResponse.of(results));
+    }
+}
+====================
+FILE: src/main/java/com/example/mroojBE/controllers/UserController.java
+====================
+package com.example.mroojBE.controllers;
+
+
+import com.example.mroojBE.DTOs.RequestDTO.UserRequestDTO;
+import com.example.mroojBE.DTOs.ResponseDTO.UserResponseDTO;
+import com.example.mroojBE.DTOs.ApiResponse;
+import com.example.mroojBE.Service.UserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
+public class UserController {
+
+    private final UserService userService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.of(userService.getById(id)));
+    }
+
+    @GetMapping("/by-email")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> getByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(ApiResponse.of(userService.getByEmail(email)));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> updateProfile(
+            @PathVariable Long id, @Valid @RequestBody UserRequestDTO request) {
+        return ResponseEntity.ok(ApiResponse.of("Profile updated", userService.updateProfile(id, request)));
+    }
+
+    /** ADMIN-only in practice — enforce via the role check once JwtAuthFilter exists. */
+    @PatchMapping("/{id}/enabled")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> setEnabled(
+            @PathVariable Long id, @RequestParam boolean enabled) {
+        String message = enabled ? "Account enabled" : "Account disabled";
+        return ResponseEntity.ok(ApiResponse.of(message, userService.setEnabled(id, enabled)));
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+====================
+FILE: src/main/resources/db/migration/V1__init_schema.sql
+====================
+-- =====================================================================
+-- V1__init_schema.sql
+-- Initial schema for Mrooj — matches the ERD and JPA entities exactly.
+--
+-- Place this file at: src/main/resources/db/migration/V1__init_schema.sql
+-- (must match spring.flyway.locations=classpath:db/migration)
+--
+-- Notes:
+--   - utf8mb4 is used throughout since the platform serves Arabic content
+--     (preferred_language, learning_articles.title/content) alongside English.
+--   - POINT columns use SRID 4326 (WGS84 lat/lng), matching GPS/browser
+--     geolocation output and the @Column(columnDefinition = "POINT SRID 4326")
+--     annotations on the entities.
+--   - FK ON DELETE behavior is a sensible default, not dictated by the ERD —
+--     review before going to production. RESTRICT protects against orphaned
+--     child rows; SET NULL is used only where the FK itself is nullable.
+-- =====================================================================
+
+-- ---------------------------------------------------------------------
+-- USERS
+-- ---------------------------------------------------------------------
+CREATE TABLE users
+(
+    id                 BIGINT       NOT NULL AUTO_INCREMENT,
+    email              VARCHAR(150) NOT NULL,
+    password           VARCHAR(255) NOT NULL,
+    first_name         VARCHAR(100) NOT NULL,
+    last_name          VARCHAR(100) NOT NULL,
+    phone              VARCHAR(20) NULL,
+    role               VARCHAR(20)  NOT NULL,
+    enabled            BOOLEAN      NOT NULL DEFAULT TRUE,
+    preferred_language VARCHAR(5)   NOT NULL DEFAULT 'ar',
+    created_at         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_users_email (email)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- FARMERS  (One-to-One with USERS; owning side holds user_id)
+-- ---------------------------------------------------------------------
+CREATE TABLE farmers
+(
+    id            BIGINT       NOT NULL AUTO_INCREMENT,
+    user_id       BIGINT       NOT NULL,
+    farm_name     VARCHAR(150) NOT NULL,
+    farm_location POINT        NOT NULL SRID 4326,
+    region        VARCHAR(100) NULL,
+    farm_size_acres DOUBLE NULL,
+    crop_types    VARCHAR(255) NULL,
+    created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_farmers_user_id (user_id),
+    CONSTRAINT fk_farmers_user
+        FOREIGN KEY (user_id) REFERENCES users (id)
+            ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- CONSULTANTS  (One-to-One with USERS; owning side holds user_id)
+-- ERD requires a SPATIAL INDEX on location for the nearest-expert query.
+-- ---------------------------------------------------------------------
+CREATE TABLE consultants
+(
+    id               BIGINT      NOT NULL AUTO_INCREMENT,
+    user_id          BIGINT      NOT NULL,
+    specialty_domain VARCHAR(20) NOT NULL,
+    specialty_tags   VARCHAR(255) NULL,
+    location         POINT       NOT NULL SRID 4326,
+    current_load     INT         NOT NULL DEFAULT 0,
+    experience_years INT NULL,
+    rating DOUBLE NOT NULL DEFAULT 0,
+    available        BOOLEAN     NOT NULL DEFAULT TRUE,
+    created_at       DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_consultants_user_id (user_id),
+    SPATIAL          INDEX idx_consultants_location (location),
+    CONSTRAINT fk_consultants_user
+        FOREIGN KEY (user_id) REFERENCES users (id)
+            ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- BOOKINGS  (many per Farmer; optionally assigned to one Consultant)
+-- ---------------------------------------------------------------------
+CREATE TABLE bookings
+(
+    id                     BIGINT       NOT NULL AUTO_INCREMENT,
+    farmer_id              BIGINT       NOT NULL,
+    assigned_consultant_id BIGINT NULL,
+    domain                 VARCHAR(20)  NOT NULL,
+    subject_type           VARCHAR(100) NOT NULL,
+    issue_category         VARCHAR(100) NULL,
+    description            TEXT NULL,
+    symptoms_image_url     VARCHAR(500) NULL,
+    ai_report              JSON NULL,
+    location               POINT        NOT NULL SRID 4326,
+    consultant_response    TEXT NULL,
+    status                 VARCHAR(20)  NOT NULL DEFAULT 'PENDING',
+    created_at             DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at             DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY                    idx_bookings_farmer_id (farmer_id),
+    KEY                    idx_bookings_assigned_consultant_id (assigned_consultant_id),
+    KEY                    idx_bookings_status (status),
+    CONSTRAINT fk_bookings_farmer
+        FOREIGN KEY (farmer_id) REFERENCES farmers (id)
+            ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_bookings_consultant
+        FOREIGN KEY (assigned_consultant_id) REFERENCES consultants (id)
+            ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- APPOINTMENTS  (tied to a Booking; farmer/consultant denormalized per ERD)
+-- ---------------------------------------------------------------------
+CREATE TABLE appointments
+(
+    id               BIGINT      NOT NULL AUTO_INCREMENT,
+    booking_id       BIGINT      NOT NULL,
+    farmer_id        BIGINT      NOT NULL,
+    consultant_id    BIGINT      NOT NULL,
+    scheduled_at     DATETIME    NOT NULL,
+    duration_minutes INT         NOT NULL DEFAULT 30,
+    status           VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED',
+    meeting_link     VARCHAR(500) NULL,
+    location         VARCHAR(255) NULL,
+    created_at       DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY              idx_appointments_booking_id (booking_id),
+    KEY              idx_appointments_farmer_id (farmer_id),
+    KEY              idx_appointments_consultant_id (consultant_id),
+    CONSTRAINT fk_appointments_booking
+        FOREIGN KEY (booking_id) REFERENCES bookings (id)
+            ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_appointments_farmer
+        FOREIGN KEY (farmer_id) REFERENCES farmers (id)
+            ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_appointments_consultant
+        FOREIGN KEY (consultant_id) REFERENCES consultants (id)
+            ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- ASSIGNMENT_LOG  (audit trail; no created_at/updated_at per ERD —
+-- assigned_at is the meaningful creation moment, set by the app)
+-- ---------------------------------------------------------------------
+CREATE TABLE assignment_log
+(
+    id            BIGINT      NOT NULL AUTO_INCREMENT,
+    booking_id    BIGINT      NOT NULL,
+    consultant_id BIGINT      NOT NULL,
+    assigned_at   DATETIME    NOT NULL,
+    responded_at  DATETIME NULL,
+    outcome       VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    PRIMARY KEY (id),
+    KEY           idx_assignment_log_booking_id (booking_id),
+    KEY           idx_assignment_log_consultant_id (consultant_id),
+    CONSTRAINT fk_assignment_log_booking
+        FOREIGN KEY (booking_id) REFERENCES bookings (id)
+            ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_assignment_log_consultant
+        FOREIGN KEY (consultant_id) REFERENCES consultants (id)
+            ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- LEARNING_ARTICLES  (standalone — no FKs per ERD)
+-- ---------------------------------------------------------------------
+CREATE TABLE learning_articles
+(
+    id            BIGINT       NOT NULL AUTO_INCREMENT,
+    title         VARCHAR(255) NOT NULL,
+    slug          VARCHAR(255) NOT NULL,
+    content       TEXT         NOT NULL,
+    category      VARCHAR(100) NULL,
+    target_domain VARCHAR(20)  NOT NULL,
+    language      VARCHAR(5)   NOT NULL DEFAULT 'ar',
+    author_name   VARCHAR(100) NULL,
+    published     BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    published_at  DATETIME NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_learning_articles_slug (slug),
+    KEY           idx_learning_articles_target_domain (target_domain)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+====================
+FILE: src/main/resources/application.properties
+====================
+spring.application.name=mroojBE
+
+# ===================================
+# Database Configuration
+# ===================================
+spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/mrooj_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+spring.datasource.username=${DB_USERNAME:mrooj_user}
+spring.datasource.password=${DB_PASSWORD:MroojDB@2026}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# ===================================
+# JPA / Hibernate Rules
+# ===================================
+# نستخدم validate بدلاً من update لتفادي التعارض مع Flyway
+#spring.jpa.hibernate.ddl-auto=update
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.open-in-view=false
+
+# ===================================
+# Flyway Migration Configuration
+# ===================================
+spring.flyway.enabled=true
+spring.flyway.baseline-on-migrate=true
+spring.flyway.locations=classpath:db/migration
+
+# ===================================
+# Server Configuration
+# ===================================
+server.port=${SERVER_PORT:8080}
+
+# ===================================
+# JWT Configuration
+# ===================================
+jwt.secret=${JWT_SECRET:MroojSuperSecretKeyForJWTSigning2026ChangeInProduction123456}
+jwt.expiration-ms=${JWT_EXPIRATION_MS:86400000}
+====================
+FILE: pom.xml
+====================
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.1.0</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>mroojBE</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name/>
+	<description/>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<!-- MySQL -->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!--  (POINT / SRID 4326) -->
+		<dependency>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-spatial</artifactId>
+		</dependency>
+
+		<!--  Point/Geometry  ( transitive with hibernate-spatial،) -->
+		<dependency>
+			<groupId>org.locationtech.jts</groupId>
+			<artifactId>jts-core</artifactId>
+			<version>1.20.0</version>
+		</dependency>
+
+		<!--  JSON (ai_report in Booking) -->
+		<dependency>
+			<groupId>io.hypersistence</groupId>
+			<artifactId>hypersistence-utils-hibernate-70</artifactId>
+			<version>3.15.3</version>
+		</dependency>
+
+			<!--. Flyway Migration  -->
+			<dependency>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-core</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-mysql</artifactId>
+			</dependency>
+
+		<!-- Security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<!-- JWT -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+
+	</dependencies>
+
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+
+====================
+FILE: docker-compose.yml
+====================
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mrooj-mysql
+    restart: unless-stopped
+
+    environment:
+      MYSQL_DATABASE: mrooj_db
+      MYSQL_USER: mrooj_user
+      MYSQL_PASSWORD: MroojDB@2026
+      MYSQL_ROOT_PASSWORD: MroojRoot@2026
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - mrooj_mysql_data:/var/lib/mysql
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pMroojRoot@2026"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mrooj_mysql_data:

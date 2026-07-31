@@ -20,9 +20,10 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+
 public abstract class BaseEntity {
 
     @Id
