@@ -13,7 +13,7 @@ services:
       MYSQL_ROOT_PASSWORD: MroojRoot@2026
 
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
     volumes:
       - mrooj_mysql_data:/var/lib/mysql

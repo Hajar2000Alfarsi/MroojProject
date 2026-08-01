@@ -37,13 +37,18 @@ public class SecurityConfig {
     // restrict by role (FARMER / CONSULTANT / ADMIN) per endpoint.
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
+                .cors(cors -> {})   // أضيفي هذا السطر
                 .csrf(csrf -> csrf.disable())
+
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
                 )
+
                 .httpBasic(basic -> basic.disable())
                 .formLogin(form -> form.disable());
 
