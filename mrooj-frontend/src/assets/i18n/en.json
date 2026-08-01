@@ -365,7 +365,40 @@
     "DOMAIN_REQUIRED": "Please select specialty domain",
     "INVALID_PHONE": "Enter a valid Oman phone number",
     "PASSWORD_PATTERN": "Password must contain uppercase, lowercase letters and a number"
-  }
+  },
+
+
+  
+  "login": {
+    "brandName": "MROOJ",
+    "title": "Welcome Back!",
+    "subtitle": "Access your smart agricultural and veterinary support platform.",
+    "email": {
+      "label": "Email Address",
+      "placeholder": "user@gmail.com",
+      "errors": {
+        "required": "Email address is required.",
+        "invalid": "Please enter a valid email address."
+      }
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password",
+      "forgotPassword": "Forgot Password?",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "errors": {
+        "required": "Password is required."
+      }
+    },
+    "submitButton": "Login",
+    "loadingText": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create Account",
+    "errors": {
+      "invalidLogin": "Invalid email or password. Please try again."
+    }
+  }  
 
 }
 

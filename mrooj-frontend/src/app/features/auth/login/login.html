@@ -1,0 +1,322 @@
+<div class="login-page" [dir]="currentDirection">
+
+  <div class="login-card">
+
+    <!-- Brand -->
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"
+             fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+
+          <path 
+            d="M20 4C13 4 4 9 4 18c0 1.1.9 2 2 2 9 0 14-9 14-14 0-1.1-.9-2-2-2Z"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round" />
+
+          <path 
+            d="M6 18C10 14 15 9 20 4"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round" />
+
+        </svg>
+      </span>
+
+      <span class="brand-name">
+        {{ 'login.brandName' | translate }}
+      </span>
+
+    </div>
+
+
+    <!-- Header -->
+
+    <h1 class="welcome-title">
+      {{ 'login.title' | translate }}
+    </h1>
+
+    <p class="welcome-subtitle">
+      {{ 'login.subtitle' | translate }}
+    </p>
+
+
+
+    <form 
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+
+      <!-- Email -->
+
+      <div class="form-group">
+
+        <label 
+          for="email"
+          class="form-label">
+
+          {{ 'login.email.label' | translate }}
+
+        </label>
+
+
+        <div 
+          class="input-wrapper"
+          [class.has-error]="emailControl?.invalid && emailControl?.touched">
+
+
+          <input
+
+            id="email"
+
+            type="email"
+
+            formControlName="email"
+
+            class="form-input"
+
+            [placeholder]="'login.email.placeholder' | translate"
+
+            autocomplete="email"
+
+          />
+
+
+        </div>
+
+
+
+        @if(emailControl?.invalid && emailControl?.touched){
+
+          <div class="field-error">
+
+            @if(emailControl?.errors?.['required']){
+
+              {{ 'login.email.errors.required' | translate }}
+
+            }
+
+
+            @if(emailControl?.errors?.['email']){
+
+              {{ 'login.email.errors.invalid' | translate }}
+
+            }
+
+          </div>
+
+        }
+
+
+      </div>
+
+
+
+
+
+      <!-- Password -->
+
+
+      <div class="form-group">
+
+
+        <div class="label-row">
+
+
+          <label 
+            for="password"
+            class="form-label">
+
+            {{ 'login.password.label' | translate }}
+
+          </label>
+
+
+
+          <button
+            type="button"
+            class="forgot-link"
+            (click)="onForgotPassword()">
+
+            {{ 'login.password.forgotPassword' | translate }}
+
+          </button>
+
+
+        </div>
+
+
+
+        <div 
+          class="input-wrapper"
+          [class.has-error]="passwordControl?.invalid && passwordControl?.touched">
+
+
+          <input
+
+            id="password"
+
+            [type]="isPasswordVisible() ? 'text' : 'password'"
+
+            formControlName="password"
+
+            class="form-input"
+
+            [placeholder]="'login.password.placeholder' | translate"
+
+            autocomplete="current-password"
+
+          />
+
+
+
+          <button
+
+            type="button"
+
+            class="toggle-visibility-btn"
+
+            (click)="togglePasswordVisibility()"
+
+            [attr.aria-label]="
+            (isPasswordVisible()
+            ? 'login.password.hidePassword'
+            : 'login.password.showPassword') | translate"
+
+          >
+
+
+            @if(!isPasswordVisible()){
+
+              👁
+
+            }
+            @else {
+
+              🙈
+
+            }
+
+
+          </button>
+
+
+        </div>
+
+
+
+
+        @if(passwordControl?.invalid && passwordControl?.touched){
+
+          <div class="field-error">
+
+            {{ 'login.password.errors.required' | translate }}
+
+          </div>
+
+        }
+
+
+      </div>
+
+
+
+
+      <!-- Backend Error -->
+
+      @if(errorMessage()){
+
+        <div 
+          class="server-error"
+          role="alert">
+
+          {{ errorMessage()! | translate }}
+
+        </div>
+
+      }
+
+
+
+
+
+
+      <!-- Submit Button -->
+
+
+      <button
+
+        type="submit"
+
+        class="login-btn"
+
+        [disabled]="loginForm.invalid || isLoading()">
+
+
+        @if(!isLoading()){
+
+          {{ 'login.submitButton' | translate }}
+
+        }
+        @else {
+
+
+          <span class="btn-loading">
+
+            <span class="spinner"></span>
+
+            {{ 'login.loadingText' | translate }}
+
+          </span>
+
+
+        }
+
+
+      </button>
+
+
+
+    </form>
+
+
+
+
+
+    <!-- Register Link -->
+
+    <div class="create-account-row">
+
+
+      <span>
+
+        {{ 'login.noAccount' | translate }}
+
+      </span>
+
+
+
+      <a
+
+        routerLink="/auth/registration"
+
+        class="create-account-link">
+
+
+        {{ 'login.createAccount' | translate }}
+
+
+      </a>
+
+
+    </div>
+
+
+
+  </div>
+
+
+</div>
