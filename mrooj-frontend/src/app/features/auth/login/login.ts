@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 import {
   FormBuilder,
@@ -42,6 +43,7 @@ export class Login {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
+  private readonly authService = inject(AuthService);
 
   get currentDirection(): 'rtl' | 'ltr' {
 
@@ -133,7 +135,7 @@ export class Login {
       Here we will connect with backend:
 
       POST /api/auth/login
-
+    
       Body:
       {
         email:"",
@@ -158,13 +160,42 @@ export class Login {
 
 
 
-    // Temporary until AuthService is created
+    this.authService.login(payload)
+.subscribe({
 
-    setTimeout(() => {
+  next: (response: LoginResponse) => {
 
-      this.isLoading.set(false);
+    console.log(
+      'Login successful:',
+      response
+    );
 
-    }, 1000);
+    this.isLoading.set(false);
+
+    // لاحقاً نخزن الـ token وننقل المستخدم للـ dashboard
+    // localStorage.setItem('token', response.token);
+
+    this.router.navigate(['/']);
+
+  },
+
+
+  error: (error) => {
+
+    console.error(
+      'Login failed:',
+      error
+    );
+
+    this.errorMessage.set(
+      'Invalid email or password'
+    );
+
+    this.isLoading.set(false);
+
+  }
+
+});
 
 
 
