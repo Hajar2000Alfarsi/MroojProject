@@ -409,6 +409,20 @@
     "errors": {
       "invalidLogin": "البريد الإلكتروني أو كلمة المرور غير صحيحة. حاول مرة أخرى."
     }
+  },
+
+  
+  "farmer": {
+    "sidebar": {
+      "brandName": "مروج",
+      "brandSubtitle": "الإدارة الزراعية",
+      "dashboard": "لوحة التحكم",
+      "createBooking": "إنشاء حجز",
+      "myBookings": "حجوزاتي",
+      "profile": "الملف الشخصي",
+      "logout": "تسجيل الخروج"
+    }
   }
+
 
 }

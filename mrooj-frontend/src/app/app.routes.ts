@@ -1,56 +1,77 @@
 import { Routes } from '@angular/router';
-import { Home } from './features/home/home';
+
+import { Layout } from './core/layout/layout';
+import { FarmerLayout } from './layouts/farmer-layout/farmer-layout';
 
 export const routes: Routes = [
 
+  // ===========================
+  // Public Layout
+  // ===========================
   {
     path: '',
-    component: Home
+    component: Layout,
+
+    children: [
+
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/home/home')
+            .then(m => m.Home)
+      },
+
+      {
+        path: 'about',
+        loadComponent: () =>
+          import('./features/about/about')
+            .then(m => m.About)
+      },
+
+      {
+        path: 'auth/login',
+        loadComponent: () =>
+          import('./features/auth/login/login')
+            .then(m => m.Login)
+      },
+
+      {
+        path: 'auth/registration',
+        loadComponent: () =>
+          import('./features/auth/registration/registration')
+            .then(m => m.Registration)
+      }
+
+    ]
   },
 
-
+  // ===========================
+  // Farmer Layout
+  // ===========================
   {
-    path: 'about',
-    loadComponent: () =>
-      import('./features/about/about')
-      .then(m => m.About)
+    path: 'farmer',
+
+    component: FarmerLayout,
+
+    children: [
+
+      {
+        path: 'dashboard',
+
+        loadComponent: () =>
+          import('./features/farmer/dashboard/dashboard')
+            .then(m => m.Dashboard)
+      },
+
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      }
+
+    ]
   },
 
-
-  // Learning Center Main Page
-  {
-    path: 'learning-center',
-    loadComponent: () =>
-      import('./features/learning-center/learning-center-landing/learning-center-landing')
-      .then(m => m.LearningCenterLanding)
-  },
-
-
-  // Learning Articles Page
-  {
-    path: 'learning-center/articles/:category',
-    loadComponent: () =>
-      import('./features/learning-center/learning-articles/learning-articles')
-      .then(m => m.LearningArticles)
-  },
-
-  // Registration Page
-{
-  path: 'auth/registration',
-  loadComponent: () =>
-    import('./features/auth/registration/registration')
-    .then(m => m.Registration)
-},
-
-  // Login Page
-{
-  path: 'auth/login',
-  loadComponent: () =>
-    import('./features/auth/login/login')
-    .then(m => m.Login)
-},
-
-  // أي رابط غير موجود يرجع للـ Home
   {
     path: '**',
     redirectTo: ''

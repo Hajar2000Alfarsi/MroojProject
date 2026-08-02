@@ -398,7 +398,21 @@
     "errors": {
       "invalidLogin": "Invalid email or password. Please try again."
     }
-  }  
+  }  ,
+
+
+  "farmer": {
+    "sidebar": {
+      "brandName": "MROOJ",
+      "brandSubtitle": "Agricultural Management",
+      "dashboard": "Dashboard",
+      "createBooking": "Create Booking",
+      "myBookings": "My Bookings",
+      "profile": "Profile",
+      "logout": "Logout"
+    }
+  }
+
 
 }
 

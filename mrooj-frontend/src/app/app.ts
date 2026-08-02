@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
-
-// Layout component
-import { Layout } from './core/layout/layout';
+import { Component, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @Component({
@@ -9,14 +8,29 @@ import { Layout } from './core/layout/layout';
 
   standalone: true,
 
-  imports: [
-    Layout
+  imports:[
+    RouterOutlet
   ],
 
-  templateUrl: './app.html',
+  templateUrl:'./app.html',
 
-  styleUrl: './app.css'
+  styleUrl:'./app.css'
 })
 export class App {
+
+
+private translate = inject(TranslateService);
+
+
+constructor(){
+
+  this.translate.addLangs(['en','ar']);
+
+  this.translate.setFallbackLang('en');
+
+  this.translate.use('en');
+
+}
+
 
 }

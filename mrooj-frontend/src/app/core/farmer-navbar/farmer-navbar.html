@@ -1,0 +1,59 @@
+<header class="navbar">
+
+
+<div class="user-info">
+
+
+<div class="user-text">
+
+
+<span class="user-name">
+
+{{farmer.fullName}}
+
+</span>
+
+
+<span class="user-farm">
+
+{{farmer.farmName}}
+
+</span>
+
+
+</div>
+
+
+
+<div class="user-avatar">
+
+
+@if(farmer.avatarUrl){
+
+<img 
+[src]="farmer.avatarUrl"
+[alt]="farmer.fullName"
+/>
+
+}
+
+@else {
+
+
+<span class="avatar-fallback">
+
+{{farmer.fullName.charAt(0)}}
+
+</span>
+
+
+}
+
+
+</div>
+
+
+</div>
+
+
+</header>
