@@ -1,16 +1,5 @@
 <div class="dashboard">
 
-<h1>
-Farmer Dashboard
-</h1>
-
-
-<p>
-Welcome to MROOJ Farmer Area
-</p>
-
-
-</div><div class="dashboard">
 
 
 <section class="welcome-banner">
@@ -25,6 +14,7 @@ Welcome to MROOJ Farmer Area
 </h1>
 
 
+
 <p class="welcome-subtitle">
 
 {{'farmer.dashboard.subtitle' | translate}}
@@ -37,12 +27,17 @@ Welcome to MROOJ Farmer Area
 
 
 
+
 <section class="stats-grid">
+
 
 
 @for(stat of stats(); track stat.titleKey){
 
+
+
 <div class="stat-card">
+
 
 
 <span class="stat-title">
@@ -63,14 +58,22 @@ Welcome to MROOJ Farmer Area
 
 </div>
 
+
+
 }
+
 
 
 </section>
 
 
 
+
+
+
+
 <section class="bookings-section">
+
 
 
 <h2 class="bookings-title">
@@ -82,19 +85,26 @@ Welcome to MROOJ Farmer Area
 
 
 
+
+
 <div class="table-wrapper">
+
 
 
 <table>
 
 
+
 <thead>
 
+
 <tr>
+
 
 <th>
 {{'farmer.dashboard.bookings.columns.bookingId' | translate}}
 </th>
+
 
 
 <th>
@@ -102,9 +112,11 @@ Welcome to MROOJ Farmer Area
 </th>
 
 
+
 <th>
 {{'farmer.dashboard.bookings.columns.consultant' | translate}}
 </th>
+
 
 
 <th>
@@ -114,16 +126,24 @@ Welcome to MROOJ Farmer Area
 
 </tr>
 
+
 </thead>
+
+
+
 
 
 <tbody>
 
 
+
+
 @for(booking of bookings(); track booking.id){
 
 
+
 <tr>
+
 
 
 <td>
@@ -134,11 +154,14 @@ Welcome to MROOJ Farmer Area
 
 
 
+
 <td>
 
 {{booking.problemType}}
 
 </td>
+
+
 
 
 <td>
@@ -147,14 +170,17 @@ Welcome to MROOJ Farmer Area
 
 </td>
 
+
+
+
 <td>
 
 
-<span class="status"
+<span class="status-badge"
 [attr.data-status]="booking.status">
 
 
-{{statusLabelKey(booking.status)|translate}}
+{{statusLabelKey(booking.status) | translate}}
 
 
 </span>
@@ -163,35 +189,53 @@ Welcome to MROOJ Farmer Area
 </td>
 
 
+
+
 </tr>
 
 
+
 }
+
 
 
 @empty {
 
 
+
 <tr>
 
-<td colspan="4">
+
+<td colspan="4" class="empty-row">
+
 
 {{'farmer.dashboard.bookings.empty' | translate}}
 
+
 </td>
+
 
 </tr>
 
 
 }
 
+
+
 </tbody>
+
+
 
 </table>
 
 
+
 </div>
 
+
+
 </section>
+
+
 
 </div>

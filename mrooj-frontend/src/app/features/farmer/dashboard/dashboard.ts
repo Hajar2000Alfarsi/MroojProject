@@ -2,18 +2,29 @@ import { Component, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 
+
 interface DashboardStat {
-  titleKey: string;
-  value: number;
+
+  titleKey:string;
+
+  value:number;
+
 }
+
 
 
 interface BookingRow {
-  id: number;
-  problemType: string;
-  consultant: string;
-  status: 'confirmed' | 'pending' | 'completed';
+
+  id:number;
+
+  problemType:string;
+
+  consultant:string;
+
+  status:'confirmed'|'pending'|'completed';
+
 }
+
 
 
 interface User {
@@ -32,19 +43,22 @@ interface User {
 
 
 
+
 @Component({
 
-  selector:'app-dashboard',
+selector:'app-dashboard',
 
-  standalone:true,
+standalone:true,
 
-  imports:[
-    TranslatePipe
-  ],
+imports:[
 
-  templateUrl:'./dashboard.html',
+TranslatePipe
 
-  styleUrl:'./dashboard.css'
+],
+
+templateUrl:'./dashboard.html',
+
+styleUrl:'./dashboard.css'
 
 })
 
@@ -52,103 +66,129 @@ interface User {
 export class Dashboard {
 
 
-  user = signal<User | null>(null);
+
+user = signal<User | null>(null);
 
 
 
-  farmerName = signal('');
-
-
-
-  constructor(){
-
-
-    this.loadUser();
-
-
-  }
-
-
-
-
-  private loadUser(){
-
-
-    const storedUser = localStorage.getItem('user');
-
-
-    if(storedUser){
-
-
-      const userData:User = JSON.parse(storedUser);
-
-
-      this.user.set(userData);
-
-
-
-      this.farmerName.set(
-
-        `${userData.firstName} ${userData.lastName}`
-
-      );
-
-
-    }
-
-
-  }
+farmerName = signal('');
 
 
 
 
 
-  stats = signal<DashboardStat[]>([
+stats = signal<DashboardStat[]>([
 
 
-    {
-      titleKey:'farmer.dashboard.stats.totalRequests',
-      value:0
-    },
+{
 
+titleKey:'farmer.dashboard.stats.totalRequests',
 
-    {
-      titleKey:'farmer.dashboard.stats.pendingRequests',
-      value:0
-    },
+value:0
 
-
-    {
-      titleKey:'farmer.dashboard.stats.resolvedRequests',
-      value:0
-    },
-
-
-    {
-      titleKey:'farmer.dashboard.stats.upcomingAppointments',
-      value:0
-    }
-
-
-  ]);
+},
 
 
 
+{
+
+titleKey:'farmer.dashboard.stats.pendingRequests',
+
+value:0
+
+},
 
 
-  bookings = signal<BookingRow[]>([]);
+
+{
+
+titleKey:'farmer.dashboard.stats.resolvedRequests',
+
+value:0
+
+},
+
+
+
+{
+
+titleKey:'farmer.dashboard.stats.upcomingAppointments',
+
+value:0
+
+}
+
+
+]);
 
 
 
 
 
-  statusLabelKey(status:BookingRow['status']){
+bookings = signal<BookingRow[]>([]);
 
 
-    return `farmer.dashboard.bookings.status.${status}`;
 
 
-  }
+
+
+
+constructor(){
+
+
+this.loadUser();
+
+
+}
+
+
+
+
+
+private loadUser(){
+
+
+const storedUser = localStorage.getItem('user');
+
+
+
+if(storedUser){
+
+
+const userData:User = JSON.parse(storedUser);
+
+
+
+this.user.set(userData);
+
+
+
+this.farmerName.set(
+
+`${userData.firstName} ${userData.lastName}`
+
+);
+
+
+
+}
+
+
+}
+
+
+
+
+
+statusLabelKey(status:BookingRow['status']){
+
+
+return `farmer.dashboard.bookings.status.${status}`;
+
+
+}
+
+
 
 
 }
