@@ -19,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.mroojBE.DTOs.FarmerDashboardResponse;
 import com.example.mroojBE.repository.AppointmentRepository;
 import com.example.mroojBE.Entity.enums.BookingStatus;
+import com.example.mroojBE.Entity.Booking;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import java.util.List;
 import java.time.LocalDateTime;
@@ -175,9 +178,73 @@ public class FarmerService {
 
 
 
+        // ==========================
+        // Recent Bookings
+        // ==========================
+
+        List<Booking> bookings =
+                bookingRepository.findTop5ByFarmerIdOrderByCreatedAtDesc(
+                        farmerId
+                );
+
+
+        List<FarmerDashboardResponse.BookingSummary> recentBookings =
+                bookings.stream()
+                        .map(booking ->
+                                FarmerDashboardResponse.BookingSummary.builder()
+
+                                        .bookingId(
+                                                booking.getId()
+                                        )
+
+                                        .problemType(
+                                                booking.getSubjectType()
+                                        )
+
+
+                                        .consultantName(
+                                                booking.getAssignedConsultant() != null
+                                                        ?
+                                                        booking.getAssignedConsultant()
+                                                                .getUser()
+                                                                .getFirstName()
+                                                                + " "
+                                                                +
+                                                                booking.getAssignedConsultant()
+                                                                        .getUser()
+                                                                        .getLastName()
+                                                        :
+                                                        "Not Assigned"
+                                        )
+
+
+                                        .status(
+                                                booking.getStatus().name()
+                                        )
+
+
+                                        .build()
+                        )
+                        .collect(Collectors.toList());
+
+
+
+
         return FarmerDashboardResponse.builder()
 
-                .farmName(farmer.getFarmName())
+                .farmerId(farmerId)
+
+                .firstName(
+                        farmer.getUser().getFirstName()
+                )
+
+                .lastName(
+                        farmer.getUser().getLastName()
+                )
+
+                .farmName(
+                        farmer.getFarmName()
+                )
 
                 .totalRequests(totalRequests)
 
@@ -186,6 +253,8 @@ public class FarmerService {
                 .resolvedRequests(resolvedRequests)
 
                 .upcomingAppointments(upcomingAppointments)
+
+                .recentBookings(recentBookings)
 
                 .build();
 

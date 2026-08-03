@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     Page<Booking> findByFarmerId(Long farmerId, Pageable pageable);
@@ -17,21 +19,31 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     Page<Booking> findByDomainAndStatus(Domain domain, BookingStatus status, Pageable pageable);
 
-    long countByAssignedConsultantIdAndStatusIn(Long consultantId, java.util.List<BookingStatus> statuses);
+    long countByAssignedConsultantIdAndStatusIn(Long consultantId,
+                                                List<BookingStatus> statuses);
 
     // ==========================
     // Farmer Dashboard Queries
     // ==========================
 
 
-    // Total requests created by farmer
-    long countByFarmerId(Long farmerId);
+    // Total number of farmer bookings
+    long countByFarmerId(
+            Long farmerId
+    );
 
 
 
-    // Requests by status
+    // Count bookings by status
     long countByFarmerIdAndStatus(
             Long farmerId,
             BookingStatus status
+    );
+
+
+
+    // Recent 5 bookings for farmer dashboard
+    List<Booking> findTop5ByFarmerIdOrderByCreatedAtDesc(
+            Long farmerId
     );
 }
