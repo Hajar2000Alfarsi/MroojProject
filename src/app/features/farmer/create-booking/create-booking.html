@@ -1,0 +1,147 @@
+<div class="booking-page">
+
+  <div class="booking-card">
+
+    <div class="header">
+      <h1>{{ 'booking.title' | translate }}</h1>
+      <p>{{ 'booking.subtitle' | translate }}</p>
+    </div>
+
+    <!-- ⚠️ مؤقت للاختبار فقط -->
+    <div class="form-group">
+      <label>{{ 'booking.farmerIdLabel' | translate }}</label>
+      <input
+        type="number"
+        [formControl]="farmerIdControl"
+        [placeholder]="'booking.farmerIdPlaceholder' | translate">
+
+      @if(farmerIdControl.invalid && farmerIdControl.touched){
+        <p class="error">{{ 'booking.farmerIdRequired' | translate }}</p>
+      }
+    </div>
+
+    <!-- Domain Selection -->
+    <div class="domain-section">
+
+      <label class="section-label">{{ 'booking.domain' | translate }}</label>
+
+      <div class="domain-buttons">
+
+        <button
+          type="button"
+          [class.active]="selectedDomain() === 'PLANT'"
+          (click)="selectDomain('PLANT')">
+          🌱 {{ 'booking.plant' | translate }}
+        </button>
+
+        <button
+          type="button"
+          [class.active]="selectedDomain() === 'LIVESTOCK'"
+          (click)="selectDomain('LIVESTOCK')">
+          🐄 {{ 'booking.livestock' | translate }}
+        </button>
+
+      </div>
+
+    </div>
+
+    <form [formGroup]="bookingForm" (ngSubmit)="submit()">
+
+      <!-- Subject Type -->
+      <div class="form-group">
+        <label>{{ 'booking.subjectType' | translate }}</label>
+        <input
+          type="text"
+          formControlName="subjectType"
+          [placeholder]="'booking.subjectTypePlaceholder' | translate">
+
+        @if(hasError('subjectType','required')){
+          <p class="error">{{ 'booking.subjectTypeRequired' | translate }}</p>
+        }
+      </div>
+
+      <!-- Issue Category -->
+      <div class="form-group">
+        <label>{{ 'booking.issueCategory' | translate }}</label>
+        <input
+          type="text"
+          formControlName="issueCategory"
+          [placeholder]="'booking.issueCategoryPlaceholder' | translate">
+      </div>
+
+      <!-- Crop Type -->
+      <div class="form-group">
+        <label>{{ 'booking.cropType' | translate }}</label>
+        <input
+          type="text"
+          formControlName="cropType">
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label>{{ 'booking.description' | translate }}</label>
+        <textarea
+          rows="5"
+          formControlName="description"
+          [placeholder]="'booking.descriptionPlaceholder' | translate">
+        </textarea>
+
+        @if(hasError('description','required')){
+          <p class="error">{{ 'booking.descriptionRequired' | translate }}</p>
+        }
+      </div>
+
+      <!-- Location -->
+      <div class="form-group">
+
+        <label>{{ 'booking.location' | translate }}</label>
+
+        <button
+          type="button"
+          class="location-btn"
+          (click)="useCurrentLocation()">
+          📍 {{ 'booking.useLocation' | translate }}
+        </button>
+
+        @if(locationStatus() === 'loading'){
+          <p>{{ 'booking.locationLoading' | translate }}</p>
+        }
+
+        @if(locationStatus() === 'success'){
+          <p class="success">{{ 'booking.locationSuccess' | translate }}</p>
+        }
+
+        @if(locationStatus() === 'error'){
+          <p class="error">{{ 'booking.locationError' | translate }}</p>
+        }
+
+      </div>
+
+      <!-- Messages -->
+      @if(successMessage()){
+        <p class="success">{{ successMessage() }}</p>
+      }
+
+      @if(errorMessage()){
+        <p class="error">{{ errorMessage() }}</p>
+      }
+
+      <!-- Submit -->
+      <button
+        type="submit"
+        class="submit-btn"
+        [disabled]="isLoading()">
+
+        @if(isLoading()){
+          {{ 'booking.submitting' | translate }}
+        } @else {
+          {{ 'booking.submit' | translate }}
+        }
+
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
