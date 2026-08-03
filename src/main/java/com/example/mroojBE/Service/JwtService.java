@@ -1,4 +1,4 @@
-package com.example.mroojBE.Security;
+package com.example.mroojBE.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -17,7 +17,7 @@ import java.util.Date;
  * permitAll()) is a separate follow-up, tracked there as TODO(PHASE-JWT).
  */
 @Component
-public class JwtService {
+public class  JwtService {
 
     private final SecretKey key;
     private final long expirationMs;

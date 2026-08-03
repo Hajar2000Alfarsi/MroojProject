@@ -5,7 +5,7 @@ import com.example.mroojBE.DTOs.RequestDTO.RegisterRequestDTO;
 import com.example.mroojBE.DTOs.ResponseDTO.AuthResponseDTO;
 import com.example.mroojBE.DTOs.ResponseDTO.UserResponseDTO;
 import com.example.mroojBE.Entity.User;
-import com.example.mroojBE.Security.JwtService;
+import com.example.mroojBE.Service.JwtService;
 import com.example.mroojBE.exceptions.DuplicateResourceException;
 import com.example.mroojBE.exceptions.ResourceNotFoundException;
 import com.example.mroojBE.repository.UserRepository;

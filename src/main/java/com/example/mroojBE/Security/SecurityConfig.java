@@ -8,6 +8,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * TEMPORARY / PHASE-0 security config.
@@ -33,11 +34,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // TODO(PHASE-JWT): remove permitAll(), wire JwtAuthFilter here,
+
     // restrict by role (FARMER / CONSULTANT / ADMIN) per endpoint.
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))   // ← ADD THIS LINE
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -48,13 +50,8 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable());
 
         return http.build();
-    }
 
-    /**
-     * Registered now (not in Phase-JWT) because AuthService will need it
-     * for password hashing regardless of when JWT lands — RegisterRequestDTO
-     * already documents that the caller must pass an encoded password.
-     */
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
