@@ -63,6 +63,15 @@ export const routes: Routes = [
             .then(m => m.Dashboard)
       },
 
+      // ⬇️ الروت الجديد (Booking)
+      {
+        path: 'create-booking',
+
+        loadComponent: () =>
+          import('./features/farmer/create-booking/create-booking')
+            .then(m => m.CreateBooking)
+      },
+
       {
         path: '',
         redirectTo: 'dashboard',
