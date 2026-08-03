@@ -8,25 +8,39 @@ interface ApiResponse<T> {
   data: T;
 }
 
-@Injectable({ providedIn: 'root' })
+export interface Farmer {
+  id: number;
+  farmName: string;
+  region: string;
+  cropTypes: string;
+  farmSizeAcres: number;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
 export class FarmerService {
 
-  private apiUrl = 'http://localhost:8080/api/farmers';
+  private readonly apiUrl = 'http://localhost:8080/api/farmers';
 
   constructor(private http: HttpClient) {}
 
-  getByUserId(userId: string): Observable<any> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/by-user/${userId}`)
-      .pipe(map(r => r.data));
+  getByUserId(userId: number): Observable<Farmer> {
+    return this.http
+      .get<ApiResponse<Farmer>>(`${this.apiUrl}/by-user/${userId}`)
+      .pipe(map(response => response.data));
   }
 
-  getById(id: string): Observable<any> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/${id}`)
-      .pipe(map(r => r.data));
+  getById(id: number): Observable<Farmer> {
+    return this.http
+      .get<ApiResponse<Farmer>>(`${this.apiUrl}/${id}`)
+      .pipe(map(response => response.data));
   }
 
-  update(id: string, data: any): Observable<any> {
-    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/${id}`, data)
-      .pipe(map(r => r.data));
+  update(id: number, data: Partial<Farmer>): Observable<Farmer> {
+    return this.http
+      .put<ApiResponse<Farmer>>(`${this.apiUrl}/${id}`, data)
+      .pipe(map(response => response.data));
   }
+
 }
