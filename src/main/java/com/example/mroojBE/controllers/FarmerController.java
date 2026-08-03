@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.mroojBE.DTOs.FarmerDashboardResponse;
 
 @RestController
 @RequestMapping("/api/farmers")
@@ -41,5 +42,19 @@ public class FarmerController {
     public ResponseEntity<ApiResponse<FarmerResponseDTO>> updateProfile(
             @PathVariable Long id, @Valid @RequestBody FarmerRequestDTO request) {
         return ResponseEntity.ok(ApiResponse.of("Profile updated", farmerService.updateFarmerProfile(id, request)));
+    }
+
+    //dashboard
+    @GetMapping("/dashboard/{userId}")
+    public ResponseEntity<ApiResponse<FarmerDashboardResponse>> getDashboard(
+            @PathVariable Long userId
+    ){
+
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        farmerService.getFarmerDashboard(userId)
+                )
+        );
+
     }
 }

@@ -35,4 +35,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             @Param("windowEnd") LocalDateTime windowEnd
     );
 
+
+    // Dashboard
+    long countByFarmerIdAndScheduledAtAfter(
+            Long farmerId,
+            LocalDateTime dateTime
+    );
 }

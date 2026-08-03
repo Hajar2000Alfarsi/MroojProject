@@ -18,4 +18,20 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findByDomainAndStatus(Domain domain, BookingStatus status, Pageable pageable);
 
     long countByAssignedConsultantIdAndStatusIn(Long consultantId, java.util.List<BookingStatus> statuses);
+
+    // ==========================
+    // Farmer Dashboard Queries
+    // ==========================
+
+
+    // Total requests created by farmer
+    long countByFarmerId(Long farmerId);
+
+
+
+    // Requests by status
+    long countByFarmerIdAndStatus(
+            Long farmerId,
+            BookingStatus status
+    );
 }

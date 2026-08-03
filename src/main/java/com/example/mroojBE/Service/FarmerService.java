@@ -8,6 +8,7 @@ import com.example.mroojBE.Entity.enums.Role;
 import com.example.mroojBE.UtilityHelperClass.GeoUtils;
 import com.example.mroojBE.exceptions.DuplicateResourceException;
 import com.example.mroojBE.exceptions.ResourceNotFoundException;
+import com.example.mroojBE.repository.BookingRepository;
 import com.example.mroojBE.repository.FarmerRepository;
 import com.example.mroojBE.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,12 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.mroojBE.DTOs.FarmerDashboardResponse;
+import com.example.mroojBE.repository.AppointmentRepository;
+import com.example.mroojBE.Entity.enums.BookingStatus;
+
+import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +31,9 @@ public class FarmerService {
     private final FarmerRepository farmerRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final BookingRepository bookingRepository;
+    private final AppointmentRepository appointmentRepository;
 
     /**
      * One-shot registration: FarmerRequestDTO carries both the USERS fields
@@ -117,5 +127,67 @@ public class FarmerService {
                 farmer.getFarmSizeAcres(),
                 farmer.getCropTypes()
         );
+    }
+
+
+    @Transactional(readOnly = true)
+    public FarmerDashboardResponse getFarmerDashboard(Long userId) {
+
+
+        Farmer farmer = farmerRepository.findByUserId(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Farmer profile not found"
+                        )
+                );
+
+
+        Long farmerId = farmer.getId();
+
+
+
+        long totalRequests =
+                bookingRepository.countByFarmerId(farmerId);
+
+
+
+        long pendingRequests =
+                bookingRepository.countByFarmerIdAndStatus(
+                        farmerId,
+                        BookingStatus.PENDING
+                );
+
+
+
+        long resolvedRequests =
+                bookingRepository.countByFarmerIdAndStatus(
+                        farmerId,
+                        BookingStatus.RESOLVED
+                );
+
+
+
+        long upcomingAppointments =
+                appointmentRepository.countByFarmerIdAndScheduledAtAfter(
+                        farmerId,
+                        LocalDateTime.now()
+                );
+
+
+
+        return FarmerDashboardResponse.builder()
+
+                .farmName(farmer.getFarmName())
+
+                .totalRequests(totalRequests)
+
+                .pendingRequests(pendingRequests)
+
+                .resolvedRequests(resolvedRequests)
+
+                .upcomingAppointments(upcomingAppointments)
+
+                .build();
+
     }
 }
