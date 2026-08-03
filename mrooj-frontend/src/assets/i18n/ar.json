@@ -413,63 +413,97 @@
 
   
   "farmer": {
-    "sidebar": {
-      "brandName": "مروج",
-      "brandSubtitle": "الإدارة الزراعية",
-      "dashboard": "لوحة التحكم",
-      "createBooking": "إنشاء حجز",
-      "myBookings": "حجوزاتي",
-      "profile": "الملف الشخصي",
-      "logout": "تسجيل الخروج"
-    }
+
+  "sidebar": {
+
+    "brandName": "مروج",
+
+    "brandSubtitle": "الإدارة الزراعية",
+
+    "dashboard": "لوحة التحكم",
+
+    "createBooking": "إنشاء حجز",
+
+    "myBookings": "حجوزاتي",
+
+    "profile": "الملف الشخصي",
+
+    "logout": "تسجيل الخروج"
+
   },
+
 
   "dashboard": {
 
 
-"welcome":"مرحبًا {{name}}",
-
-"subtitle":"أدر مزرعتك بذكاء أكبر",
+    "welcome": "مرحبًا {{name}}",
 
 
-"stats":{
-
-"totalRequests":"إجمالي الطلبات",
-"pendingRequests":"الطلبات المعلقة",
-"resolvedRequests":"الطلبات المنجزة",
-"upcomingAppointments":"المواعيد القادمة"
-
-},
+    "subtitle": "أدر مزرعتك بذكاء أكبر",
 
 
-"bookings":{
 
-"title":"الحجوزات الأخيرة",
-
-"empty":"لا توجد حجوزات بعد.",
+    "stats": {
 
 
-"columns":{
+      "totalRequests": "إجمالي الطلبات",
 
-"bookingId":"رقم الحجز",
-"problemType":"نوع المشكلة",
-"consultant":"المستشار",
-"status":"الحالة"
+      "pendingRequests": "الطلبات المعلقة",
 
-},
+      "resolvedRequests": "الطلبات المنجزة",
 
-
-"status":{
-
-"confirmed":"مؤكد",
-"pending":"قيد الانتظار",
-"completed":"مكتمل"
-
-}
+      "upcomingAppointments": "المواعيد القادمة"
 
 
-}
+    },
+
+
+
+    "bookings": {
+
+
+      "title": "الحجوزات الأخيرة",
+
+
+      "empty": "لا توجد حجوزات بعد.",
+
+
+
+      "columns": {
+
+
+        "bookingId": "رقم الحجز",
+
+        "problemType": "نوع المشكلة",
+
+        "consultant": "المستشار",
+
+        "status": "الحالة"
+
+
+      },
+
+
+
+      "status": {
+
+
+        "confirmed": "مؤكد",
+
+        "pending": "قيد الانتظار",
+
+        "completed": "مكتمل"
+
+
+      }
+
+
+    }
+
+
   }
+
+}
 
 
 }

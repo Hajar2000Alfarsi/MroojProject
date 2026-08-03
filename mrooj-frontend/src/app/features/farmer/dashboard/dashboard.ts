@@ -3,11 +3,12 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { FarmerDashboardService } from '../../../core/services/farmer-dashboard';
 
 
+
 interface DashboardStat {
 
-  titleKey:string;
+  titleKey: string;
 
-  value:number;
+  value: number;
 
 }
 
@@ -15,13 +16,13 @@ interface DashboardStat {
 
 interface BookingRow {
 
-  id:number;
+  bookingId: number;
 
-  problemType:string;
+  problemType: string;
 
-  consultant:string;
+  consultantName: string;
 
-  status:'confirmed'|'pending'|'completed';
+  status: string;
 
 }
 
@@ -29,229 +30,293 @@ interface BookingRow {
 
 interface User {
 
-  id:number;
+  id: number;
 
-  email:string;
+  email: string;
 
-  firstName:string;
+  firstName: string;
 
-  lastName:string;
+  lastName: string;
 
-  role:string;
+  role: string;
 
 }
 
 
 
+
+
 @Component({
 
-  selector:'app-dashboard',
+  selector: 'app-dashboard',
 
-  standalone:true,
+  standalone: true,
 
-  imports:[
+  imports: [
 
     TranslatePipe
 
   ],
 
-  templateUrl:'./dashboard.html',
+  templateUrl: './dashboard.html',
 
-  styleUrl:'./dashboard.css'
+  styleUrl: './dashboard.css'
 
 })
+
 
 
 export class Dashboard {
 
 
 
-private dashboardService = inject(FarmerDashboardService);
+  private dashboardService = inject(FarmerDashboardService);
 
 
 
-user = signal<User | null>(null);
+  user = signal<User | null>(null);
 
 
 
-farmerName = signal('');
-
-
-
-
-stats = signal<DashboardStat[]>([
-
-
-  {
-    titleKey:'farmer.dashboard.stats.totalRequests',
-    value:0
-  },
-
-
-  {
-    titleKey:'farmer.dashboard.stats.pendingRequests',
-    value:0
-  },
-
-
-  {
-    titleKey:'farmer.dashboard.stats.resolvedRequests',
-    value:0
-  },
-
-
-  {
-    titleKey:'farmer.dashboard.stats.upcomingAppointments',
-    value:0
-  }
-
-
-]);
-
-
-bookings = signal<BookingRow[]>([]);
-
-
-constructor(){
-
-
-  this.loadUser();
-
-
-}
+  farmerName = signal('');
 
 
 
 
-
-private loadUser(){
-
-
-  const storedUser = localStorage.getItem('user');
+  stats = signal<DashboardStat[]>([
 
 
+    {
 
-  if(storedUser){
+      titleKey: 'farmer.dashboard.stats.totalRequests',
 
+      value: 0
 
-    const userData:User = JSON.parse(storedUser);
-
-
-
-    this.user.set(userData);
+    },
 
 
+    {
 
-    this.farmerName.set(
+      titleKey: 'farmer.dashboard.stats.pendingRequests',
 
-      `${userData.firstName} ${userData.lastName}`
+      value: 0
 
-    );
+    },
+
+
+    {
+
+      titleKey: 'farmer.dashboard.stats.resolvedRequests',
+
+      value: 0
+
+    },
+
+
+    {
+
+      titleKey: 'farmer.dashboard.stats.upcomingAppointments',
+
+      value: 0
+
+    }
+
+
+  ]);
 
 
 
-    // بعد تحميل المستخدم نجلب بيانات الداشبورد
 
-    this.loadDashboard(userData.id);
+  bookings = signal<BookingRow[]>([]);
 
+
+
+
+
+  constructor(){
+
+
+    this.loadUser();
 
 
   }
 
 
 
-}
+
+
+  private loadUser(){
 
 
 
-
-
-private loadDashboard(userId:number){
-
-
-
-  this.dashboardService
-    .getDashboard(userId)
-    .subscribe({
+    const storedUser = localStorage.getItem('user');
 
 
 
-      next:(response)=>{
-
-
-        console.log(
-          "Farmer dashboard response:",
-          response
-        );
+    if(storedUser){
 
 
 
-        this.stats.set([
-
-
-          {
-            titleKey:'farmer.dashboard.stats.totalRequests',
-            value:response.totalRequests
-          },
-
-
-          {
-            titleKey:'farmer.dashboard.stats.pendingRequests',
-            value:response.pendingRequests
-          },
-
-
-          {
-            titleKey:'farmer.dashboard.stats.resolvedRequests',
-            value:response.resolvedRequests
-          },
-
-
-          {
-            titleKey:'farmer.dashboard.stats.upcomingAppointments',
-            value:response.upcomingAppointments
-          }
-
-
-        ]);
+      const userData: User = JSON.parse(storedUser);
 
 
 
-      },
+      this.user.set(userData);
 
 
 
-      error:(error)=>{
+      this.farmerName.set(
 
+        `${userData.firstName} ${userData.lastName}`
 
-        console.error(
-          "Failed to load farmer dashboard",
-          error
-        );
-
-
-      }
+      );
 
 
 
-    });
+      this.loadDashboard(userData.id);
 
 
 
-}
+    }
+
+
+  }
 
 
 
 
 
 
-statusLabelKey(status:BookingRow['status']){
+  private loadDashboard(userId:number){
 
 
-  return `farmer.dashboard.bookings.status.${status}`;
+
+    this.dashboardService
+
+      .getDashboard(userId)
+
+      .subscribe({
 
 
-}
+
+        next:(response)=>{
+
+
+
+          console.log(
+
+            "Farmer dashboard response:",
+
+            response
+
+          );
+
+
+
+
+          this.stats.set([
+
+
+
+            {
+
+              titleKey:'farmer.dashboard.stats.totalRequests',
+
+              value: response.totalRequests ?? 0
+
+            },
+
+
+
+            {
+
+              titleKey:'farmer.dashboard.stats.pendingRequests',
+
+              value: response.pendingRequests ?? 0
+
+            },
+
+
+
+            {
+
+              titleKey:'farmer.dashboard.stats.resolvedRequests',
+
+              value: response.resolvedRequests ?? 0
+
+            },
+
+
+
+            {
+
+              titleKey:'farmer.dashboard.stats.upcomingAppointments',
+
+              value: response.upcomingAppointments ?? 0
+
+            }
+
+
+
+          ]);
+
+
+
+
+
+
+          this.bookings.set(
+
+            response.recentBookings ?? []
+
+          );
+
+
+
+
+        },
+
+
+
+
+        error:(error)=>{
+
+
+
+          console.error(
+
+            "Failed to load farmer dashboard",
+
+            error
+
+          );
+
+
+        }
+
+
+
+      });
+
+
+
+  }
+
+
+
+
+
+
+
+  statusLabelKey(status:string){
+
+
+
+    return `farmer.dashboard.bookings.status.${status.toLowerCase()}`;
+
+
+
+  }
 
 
 

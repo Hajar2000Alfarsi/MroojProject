@@ -1,7 +1,6 @@
 <div class="dashboard">
 
 
-
 <section class="welcome-banner">
 
 
@@ -12,7 +11,6 @@
 👋
 
 </h1>
-
 
 
 <p class="welcome-subtitle">
@@ -31,13 +29,10 @@
 <section class="stats-grid">
 
 
-
 @for(stat of stats(); track stat.titleKey){
 
 
-
 <div class="stat-card">
-
 
 
 <span class="stat-title">
@@ -59,9 +54,7 @@
 </div>
 
 
-
 }
-
 
 
 </section>
@@ -75,7 +68,6 @@
 <section class="bookings-section">
 
 
-
 <h2 class="bookings-title">
 
 {{'farmer.dashboard.bookings.title' | translate}}
@@ -86,13 +78,10 @@
 
 
 
-
 <div class="table-wrapper">
 
 
-
 <table>
-
 
 
 <thead>
@@ -137,8 +126,7 @@
 
 
 
-
-@for(booking of bookings(); track booking.id){
+@for(booking of bookings(); track booking.bookingId){
 
 
 
@@ -148,7 +136,7 @@
 
 <td>
 
-#BK-{{booking.id}}
+#BK-{{booking.bookingId}}
 
 </td>
 
@@ -166,7 +154,7 @@
 
 <td>
 
-{{booking.consultant}}
+{{booking.consultantName || ('farmer.dashboard.bookings.noConsultant' | translate)}}
 
 </td>
 
@@ -176,11 +164,12 @@
 <td>
 
 
-<span class="status-badge"
-[attr.data-status]="booking.status">
+<span 
+class="status-badge"
+[attr.data-status]="booking.status.toLowerCase()">
 
 
-{{statusLabelKey(booking.status) | translate}}
+{{statusLabelKey(booking.status.toLowerCase()) | translate}}
 
 
 </span>
@@ -192,7 +181,6 @@
 
 
 </tr>
-
 
 
 }

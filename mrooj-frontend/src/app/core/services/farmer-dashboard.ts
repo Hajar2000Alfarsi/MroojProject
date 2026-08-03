@@ -2,35 +2,76 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface FarmerDashboardResponse {
 
-  farmName: string;
 
-  totalRequests: number;
+export interface BookingSummary {
 
-  pendingRequests: number;
+  bookingId:number;
 
-  resolvedRequests: number;
+  problemType:string;
 
-  upcomingAppointments: number;
+  consultantName:string;
+
+  status:string;
 
 }
 
+
+
+export interface FarmerDashboardResponse {
+
+
+  farmerId:number;
+
+  firstName:string;
+
+  lastName:string;
+
+  farmName:string;
+
+
+  totalRequests:number;
+
+  pendingRequests:number;
+
+  resolvedRequests:number;
+
+  upcomingAppointments:number;
+
+
+  recentBookings: BookingSummary[];
+
+}
+
+
+
+
 @Injectable({
-  providedIn: 'root'
+  providedIn:'root'
 })
 export class FarmerDashboardService {
 
-  private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:8080/api/farmers/dashboard';
+private http = inject(HttpClient);
 
-  getDashboard(userId: number): Observable<FarmerDashboardResponse> {
 
-    return this.http.get<FarmerDashboardResponse>(
-      `${this.apiUrl}/${userId}`
-    );
 
-  }
+private apiUrl =
+'http://localhost:8080/api/farmers/dashboard';
+
+
+
+getDashboard(userId:number):Observable<FarmerDashboardResponse>{
+
+
+return this.http.get<FarmerDashboardResponse>(
+
+`${this.apiUrl}/${userId}`
+
+);
+
+
+}
+
 
 }
