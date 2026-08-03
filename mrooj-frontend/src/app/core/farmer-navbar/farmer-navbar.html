@@ -1,7 +1,9 @@
-<header class="navbar">
+<header class="navbar" [attr.dir]="direction()">
+
 
 
 <div class="user-info">
+
 
 
 <div class="user-text">
@@ -9,31 +11,36 @@
 
 <span class="user-name">
 
-{{farmer.fullName}}
+{{farmer().fullName}}
 
 </span>
+
 
 
 <span class="user-farm">
 
-{{farmer.farmName}}
+{{farmer().farmName}}
 
 </span>
+
 
 
 </div>
 
 
 
+
 <div class="user-avatar">
 
 
-@if(farmer.avatarUrl){
+@if(farmer().avatarUrl){
 
-<img 
-[src]="farmer.avatarUrl"
-[alt]="farmer.fullName"
+
+<img
+[src]="farmer().avatarUrl"
+[alt]="farmer().fullName"
 />
+
 
 }
 
@@ -42,7 +49,7 @@
 
 <span class="avatar-fallback">
 
-{{farmer.fullName.charAt(0)}}
+{{farmer().fullName.charAt(0)}}
 
 </span>
 
@@ -53,7 +60,9 @@
 </div>
 
 
+
 </div>
+
 
 
 </header>

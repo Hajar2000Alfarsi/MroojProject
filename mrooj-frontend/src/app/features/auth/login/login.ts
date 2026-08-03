@@ -19,11 +19,45 @@ interface LoginRequest {
 }
 
 
-interface LoginResponse {
-  token: string;
-  tokenType: string;
-  user: unknown;
+interface User {
+
+  id: number;
+
+  email: string;
+
+  firstName: string;
+
+  lastName: string;
+
+  phone: string;
+
+  role: string;
+
+  enabled: boolean;
+
+  preferredLanguage: string;
+
 }
+
+
+interface LoginResponse {
+
+  success: boolean;
+
+  message: string;
+
+  data: {
+
+    token: string;
+
+    tokenType: string;
+
+    user: User;
+
+  };
+
+}
+
 
 
 @Component({
@@ -40,18 +74,26 @@ interface LoginResponse {
 })
 export class Login {
 
+
   private readonly fb = inject(FormBuilder);
+
   private readonly router = inject(Router);
+
   private readonly translate = inject(TranslateService);
+
   private readonly authService = inject(AuthService);
+
+
 
   get currentDirection(): 'rtl' | 'ltr' {
 
-  return this.translate.currentLang() === 'ar'
-    ? 'rtl'
-    : 'ltr';
+    return this.translate.currentLang() === 'ar'
+      ? 'rtl'
+      : 'ltr';
 
-}
+  }
+
+
 
   readonly isPasswordVisible = signal(false);
 
@@ -61,52 +103,75 @@ export class Login {
 
 
 
+
   readonly loginForm: FormGroup = this.fb.group({
 
     email: [
+
       '',
+
       [
+
         Validators.required,
+
         Validators.email
+
       ]
+
     ],
 
+
     password: [
+
       '',
+
       [
+
         Validators.required
+
       ]
+
     ]
 
   });
 
 
 
-  get emailControl() {
+
+  get emailControl(){
+
     return this.loginForm.get('email');
+
   }
 
 
-  get passwordControl() {
+
+  get passwordControl(){
+
     return this.loginForm.get('password');
+
   }
 
 
 
-  togglePasswordVisibility(): void {
+
+
+  togglePasswordVisibility(){
 
     this.isPasswordVisible.update(
-      visible => !visible
+      value => !value
     );
 
   }
 
 
 
-  onSubmit(): void {
 
 
-    if (this.loginForm.invalid) {
+  onSubmit(){
+
+
+    if(this.loginForm.invalid){
 
       this.loginForm.markAllAsTouched();
 
@@ -115,13 +180,14 @@ export class Login {
     }
 
 
+
     this.errorMessage.set(null);
 
     this.isLoading.set(true);
 
 
 
-    const payload: LoginRequest = {
+    const request: LoginRequest = {
 
       email: this.emailControl?.value,
 
@@ -131,83 +197,142 @@ export class Login {
 
 
 
-    /*
-      Here we will connect with backend:
 
-      POST /api/auth/login
-    
-      Body:
-      {
-        email:"",
-        password:""
+    this.authService.login(request)
+
+    .subscribe({
+
+
+
+      next:(response: LoginResponse)=>{
+
+
+        console.log(
+          "Login response:",
+          response
+        );
+
+
+
+        const authData = response.data;
+
+
+
+        // Save token
+
+        localStorage.setItem(
+
+          'token',
+
+          authData.token
+
+        );
+
+
+
+
+        // Save user information
+
+        localStorage.setItem(
+
+          'user',
+
+          JSON.stringify(authData.user)
+
+        );
+
+
+
+
+        this.isLoading.set(false);
+
+
+
+        const role = authData.user.role;
+
+
+
+        switch(role){
+
+
+          case 'FARMER':
+
+            this.router.navigate([
+              '/farmer/dashboard'
+            ]);
+
+            break;
+
+
+
+          case 'CONSULTANT':
+
+            this.router.navigate([
+              '/consultant/dashboard'
+            ]);
+
+            break;
+
+
+
+          case 'ADMIN':
+
+            this.router.navigate([
+              '/admin/dashboard'
+            ]);
+
+            break;
+
+
+
+          default:
+
+            this.router.navigate([
+              '/'
+            ]);
+
+        }
+
+
+
+      },
+
+
+
+      error:(error)=>{
+
+
+        console.error(
+          "Login error:",
+          error
+        );
+
+
+        this.errorMessage.set(
+          'Invalid email or password'
+        );
+
+
+        this.isLoading.set(false);
+
+
       }
 
-      Response:
-      {
-        token:"",
-        tokenType:"Bearer",
-        user:{}
-      }
 
-    */
+    });
 
 
-
-    console.log(
-      'Login payload:',
-      payload
-    );
-
-
-
-    this.authService.login(payload)
-.subscribe({
-
-  next: (response: LoginResponse) => {
-
-    console.log(
-      'Login successful:',
-      response
-    );
-
-    this.isLoading.set(false);
-
-    // لاحقاً نخزن الـ token وننقل المستخدم للـ dashboard
-    // localStorage.setItem('token', response.token);
-
-    this.router.navigate(['/']);
-
-  },
-
-
-  error: (error) => {
-
-    console.error(
-      'Login failed:',
-      error
-    );
-
-    this.errorMessage.set(
-      'Invalid email or password'
-    );
-
-    this.isLoading.set(false);
 
   }
 
-});
-
-
-
-  }
 
 
 
 
-  onForgotPassword(): void {
+  onForgotPassword(){
 
     console.log(
-      'Forgot password clicked'
+      "Forgot password clicked"
     );
 
   }

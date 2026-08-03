@@ -410,9 +410,52 @@
       "myBookings": "My Bookings",
       "profile": "Profile",
       "logout": "Logout"
-    }
-  }
+    },
 
+    "dashboard": {
+
+"welcome":"Welcome {{name}}",
+
+"subtitle":"Manage your farm smarter",
+
+"stats":{
+
+"totalRequests":"Total Requests",
+"pendingRequests":"Pending Requests",
+"resolvedRequests":"Resolved Requests",
+"upcomingAppointments":"Upcoming Appointments"
+
+},
+
+
+"bookings":{
+
+"title":"Recent Bookings",
+
+"empty":"No bookings yet.",
+
+
+"columns":{
+
+"bookingId":"Booking ID",
+"problemType":"Problem Type",
+"consultant":"Consultant",
+"status":"Status"
+
+},
+
+
+"status":{
+
+"confirmed":"Confirmed",
+"pending":"Pending",
+"completed":"Completed"
+
+}
+
+}
+}
+  }
 
 }
 

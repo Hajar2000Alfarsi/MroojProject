@@ -2,30 +2,40 @@
      [attr.dir]="direction()">
 
 
-<app-farmer-sidebar></app-farmer-sidebar>
+
+  <div class="sidebar-wrapper">
+
+    <app-farmer-sidebar></app-farmer-sidebar>
+
+  </div>
 
 
-<div class="content">
 
 
-<app-farmer-navbar></app-farmer-navbar>
+  <div class="content">
 
 
-<main>
-
-<router-outlet></router-outlet>
-
-</main>
+    <app-farmer-navbar></app-farmer-navbar>
 
 
-<footer>
 
-© 2026 MROOJ AI Agriculture. All rights reserved.
+    <main>
 
-</footer>
+      <router-outlet></router-outlet>
+
+    </main>
 
 
-</div>
+
+    <footer>
+
+      © 2026 MROOJ AI Agriculture. All rights reserved.
+
+    </footer>
+
+
+  </div>
+
 
 
 </div>

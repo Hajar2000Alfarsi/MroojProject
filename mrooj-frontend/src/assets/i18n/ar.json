@@ -422,6 +422,53 @@
       "profile": "الملف الشخصي",
       "logout": "تسجيل الخروج"
     }
+  },
+
+  "dashboard": {
+
+
+"welcome":"مرحبًا {{name}}",
+
+"subtitle":"أدر مزرعتك بذكاء أكبر",
+
+
+"stats":{
+
+"totalRequests":"إجمالي الطلبات",
+"pendingRequests":"الطلبات المعلقة",
+"resolvedRequests":"الطلبات المنجزة",
+"upcomingAppointments":"المواعيد القادمة"
+
+},
+
+
+"bookings":{
+
+"title":"الحجوزات الأخيرة",
+
+"empty":"لا توجد حجوزات بعد.",
+
+
+"columns":{
+
+"bookingId":"رقم الحجز",
+"problemType":"نوع المشكلة",
+"consultant":"المستشار",
+"status":"الحالة"
+
+},
+
+
+"status":{
+
+"confirmed":"مؤكد",
+"pending":"قيد الانتظار",
+"completed":"مكتمل"
+
+}
+
+
+}
   }
 
 

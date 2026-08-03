@@ -1,40 +1,63 @@
-<aside class="sidebar">
+<aside class="sidebar"
+       [attr.dir]="direction()">
+
 
 
   <div class="brand">
 
+
     <h2 class="brand-name">
+
       {{ 'farmer.sidebar.brandName' | translate }}
+
     </h2>
 
 
+
     <p class="brand-subtitle">
+
       {{ 'farmer.sidebar.brandSubtitle' | translate }}
+
     </p>
 
+
   </div>
+
+
 
 
 
   <nav class="nav-list">
 
 
+
     @for(item of items; track item.link){
 
+
       <a
+
         [routerLink]="item.link"
+
         routerLinkActive="active"
+
         class="nav-item">
 
 
+
         <span class="nav-label">
+
           {{ item.name | translate }}
+
         </span>
+
 
 
       </a>
 
+
+
     }
+
 
 
   </nav>
@@ -42,22 +65,35 @@
 
 
 
+
+
+
   <div class="sidebar-bottom">
 
+
     <button
+
       type="button"
+
       class="logout-btn"
+
       (click)="logout()">
 
 
+
       <span class="nav-label">
+
         {{ 'farmer.sidebar.logout' | translate }}
+
       </span>
+
 
 
     </button>
 
+
   </div>
+
 
 
 </aside>

@@ -10,4 +10,188 @@ Welcome to MROOJ Farmer Area
 </p>
 
 
+</div><div class="dashboard">
+
+
+<section class="welcome-banner">
+
+
+<h1 class="welcome-title">
+
+{{'farmer.dashboard.welcome' | translate:{name: farmerName()} }}
+
+👋
+
+</h1>
+
+
+<p class="welcome-subtitle">
+
+{{'farmer.dashboard.subtitle' | translate}}
+
+</p>
+
+
+</section>
+
+
+
+
+<section class="stats-grid">
+
+
+@for(stat of stats(); track stat.titleKey){
+
+<div class="stat-card">
+
+
+<span class="stat-title">
+
+{{stat.titleKey | translate}}
+
+</span>
+
+
+
+<span class="stat-value">
+
+{{stat.value}}
+
+</span>
+
+
+
+</div>
+
+}
+
+
+</section>
+
+
+
+<section class="bookings-section">
+
+
+<h2 class="bookings-title">
+
+{{'farmer.dashboard.bookings.title' | translate}}
+
+</h2>
+
+
+
+
+<div class="table-wrapper">
+
+
+<table>
+
+
+<thead>
+
+<tr>
+
+<th>
+{{'farmer.dashboard.bookings.columns.bookingId' | translate}}
+</th>
+
+
+<th>
+{{'farmer.dashboard.bookings.columns.problemType' | translate}}
+</th>
+
+
+<th>
+{{'farmer.dashboard.bookings.columns.consultant' | translate}}
+</th>
+
+
+<th>
+{{'farmer.dashboard.bookings.columns.status' | translate}}
+</th>
+
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+@for(booking of bookings(); track booking.id){
+
+
+<tr>
+
+
+<td>
+
+#BK-{{booking.id}}
+
+</td>
+
+
+
+<td>
+
+{{booking.problemType}}
+
+</td>
+
+
+<td>
+
+{{booking.consultant}}
+
+</td>
+
+<td>
+
+
+<span class="status"
+[attr.data-status]="booking.status">
+
+
+{{statusLabelKey(booking.status)|translate}}
+
+
+</span>
+
+
+</td>
+
+
+</tr>
+
+
+}
+
+
+@empty {
+
+
+<tr>
+
+<td colspan="4">
+
+{{'farmer.dashboard.bookings.empty' | translate}}
+
+</td>
+
+</tr>
+
+
+}
+
+</tbody>
+
+</table>
+
+
+</div>
+
+</section>
+
 </div>
