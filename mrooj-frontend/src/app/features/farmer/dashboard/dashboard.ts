@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-
+import { FarmerDashboardService } from '../../../core/services/farmer-dashboard';
 
 
 interface DashboardStat {
@@ -43,27 +43,30 @@ interface User {
 
 
 
-
 @Component({
 
-selector:'app-dashboard',
+  selector:'app-dashboard',
 
-standalone:true,
+  standalone:true,
 
-imports:[
+  imports:[
 
-TranslatePipe
+    TranslatePipe
 
-],
+  ],
 
-templateUrl:'./dashboard.html',
+  templateUrl:'./dashboard.html',
 
-styleUrl:'./dashboard.css'
+  styleUrl:'./dashboard.css'
 
 })
 
 
 export class Dashboard {
+
+
+
+private dashboardService = inject(FarmerDashboardService);
 
 
 
@@ -76,67 +79,43 @@ farmerName = signal('');
 
 
 
-
 stats = signal<DashboardStat[]>([
 
 
-{
-
-titleKey:'farmer.dashboard.stats.totalRequests',
-
-value:0
-
-},
+  {
+    titleKey:'farmer.dashboard.stats.totalRequests',
+    value:0
+  },
 
 
-
-{
-
-titleKey:'farmer.dashboard.stats.pendingRequests',
-
-value:0
-
-},
+  {
+    titleKey:'farmer.dashboard.stats.pendingRequests',
+    value:0
+  },
 
 
-
-{
-
-titleKey:'farmer.dashboard.stats.resolvedRequests',
-
-value:0
-
-},
+  {
+    titleKey:'farmer.dashboard.stats.resolvedRequests',
+    value:0
+  },
 
 
-
-{
-
-titleKey:'farmer.dashboard.stats.upcomingAppointments',
-
-value:0
-
-}
+  {
+    titleKey:'farmer.dashboard.stats.upcomingAppointments',
+    value:0
+  }
 
 
 ]);
 
 
-
-
-
 bookings = signal<BookingRow[]>([]);
-
-
-
-
-
 
 
 constructor(){
 
 
-this.loadUser();
+  this.loadUser();
 
 
 }
@@ -148,33 +127,119 @@ this.loadUser();
 private loadUser(){
 
 
-const storedUser = localStorage.getItem('user');
+  const storedUser = localStorage.getItem('user');
 
 
 
-if(storedUser){
+  if(storedUser){
 
 
-const userData:User = JSON.parse(storedUser);
-
-
-
-this.user.set(userData);
+    const userData:User = JSON.parse(storedUser);
 
 
 
-this.farmerName.set(
+    this.user.set(userData);
 
-`${userData.firstName} ${userData.lastName}`
 
-);
+
+    this.farmerName.set(
+
+      `${userData.firstName} ${userData.lastName}`
+
+    );
+
+
+
+    // بعد تحميل المستخدم نجلب بيانات الداشبورد
+
+    this.loadDashboard(userData.id);
+
+
+
+  }
 
 
 
 }
 
 
+
+
+
+private loadDashboard(userId:number){
+
+
+
+  this.dashboardService
+    .getDashboard(userId)
+    .subscribe({
+
+
+
+      next:(response)=>{
+
+
+        console.log(
+          "Farmer dashboard response:",
+          response
+        );
+
+
+
+        this.stats.set([
+
+
+          {
+            titleKey:'farmer.dashboard.stats.totalRequests',
+            value:response.totalRequests
+          },
+
+
+          {
+            titleKey:'farmer.dashboard.stats.pendingRequests',
+            value:response.pendingRequests
+          },
+
+
+          {
+            titleKey:'farmer.dashboard.stats.resolvedRequests',
+            value:response.resolvedRequests
+          },
+
+
+          {
+            titleKey:'farmer.dashboard.stats.upcomingAppointments',
+            value:response.upcomingAppointments
+          }
+
+
+        ]);
+
+
+
+      },
+
+
+
+      error:(error)=>{
+
+
+        console.error(
+          "Failed to load farmer dashboard",
+          error
+        );
+
+
+      }
+
+
+
+    });
+
+
+
 }
+
 
 
 
@@ -183,11 +248,10 @@ this.farmerName.set(
 statusLabelKey(status:BookingRow['status']){
 
 
-return `farmer.dashboard.bookings.status.${status}`;
+  return `farmer.dashboard.bookings.status.${status}`;
 
 
 }
-
 
 
 
