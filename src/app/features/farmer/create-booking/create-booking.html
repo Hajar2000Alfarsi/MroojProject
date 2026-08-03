@@ -7,23 +7,12 @@
       <p>{{ 'booking.subtitle' | translate }}</p>
     </div>
 
-    <!-- ⚠️ مؤقت للاختبار فقط -->
-    <div class="form-group">
-      <label>{{ 'booking.farmerIdLabel' | translate }}</label>
-      <input
-        type="number"
-        [formControl]="farmerIdControl"
-        [placeholder]="'booking.farmerIdPlaceholder' | translate">
-
-      @if(farmerIdControl.invalid && farmerIdControl.touched){
-        <p class="error">{{ 'booking.farmerIdRequired' | translate }}</p>
-      }
-    </div>
-
     <!-- Domain Selection -->
     <div class="domain-section">
 
-      <label class="section-label">{{ 'booking.domain' | translate }}</label>
+      <label class="section-label">
+        {{ 'booking.domain' | translate }}
+      </label>
 
       <div class="domain-buttons">
 
@@ -50,19 +39,23 @@
       <!-- Subject Type -->
       <div class="form-group">
         <label>{{ 'booking.subjectType' | translate }}</label>
+
         <input
           type="text"
           formControlName="subjectType"
           [placeholder]="'booking.subjectTypePlaceholder' | translate">
 
         @if(hasError('subjectType','required')){
-          <p class="error">{{ 'booking.subjectTypeRequired' | translate }}</p>
+          <p class="error">
+            {{ 'booking.subjectTypeRequired' | translate }}
+          </p>
         }
       </div>
 
       <!-- Issue Category -->
       <div class="form-group">
         <label>{{ 'booking.issueCategory' | translate }}</label>
+
         <input
           type="text"
           formControlName="issueCategory"
@@ -72,6 +65,7 @@
       <!-- Crop Type -->
       <div class="form-group">
         <label>{{ 'booking.cropType' | translate }}</label>
+
         <input
           type="text"
           formControlName="cropType">
@@ -79,7 +73,9 @@
 
       <!-- Description -->
       <div class="form-group">
+
         <label>{{ 'booking.description' | translate }}</label>
+
         <textarea
           rows="5"
           formControlName="description"
@@ -87,46 +83,116 @@
         </textarea>
 
         @if(hasError('description','required')){
-          <p class="error">{{ 'booking.descriptionRequired' | translate }}</p>
+          <p class="error">
+            {{ 'booking.descriptionRequired' | translate }}
+          </p>
         }
+
       </div>
 
-      <!-- Location -->
+      <!-- Reference Photo -->
+
       <div class="form-group">
 
-        <label>{{ 'booking.location' | translate }}</label>
+        <label>{{ 'booking.referencePhoto' | translate }}</label>
 
-        <button
-          type="button"
-          class="location-btn"
-          (click)="useCurrentLocation()">
-          📍 {{ 'booking.useLocation' | translate }}
-        </button>
+        <div
+          class="drop-zone"
+          [class.drag-over]="isDragOver()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          (click)="fileInput.click()">
 
-        @if(locationStatus() === 'loading'){
-          <p>{{ 'booking.locationLoading' | translate }}</p>
-        }
+          <input
+            #fileInput
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="onFileSelected($event)">
 
-        @if(locationStatus() === 'success'){
-          <p class="success">{{ 'booking.locationSuccess' | translate }}</p>
-        }
+          @if(!selectedFile()){
 
-        @if(locationStatus() === 'error'){
-          <p class="error">{{ 'booking.locationError' | translate }}</p>
+            <div class="drop-zone-content">
+
+              <span class="upload-icon">📤</span>
+
+              <p class="drop-zone-title">
+                {{ 'booking.dropHere' | translate }}
+              </p>
+
+              <p class="drop-zone-subtitle">
+                {{ 'booking.dropHint' | translate }}
+              </p>
+
+            </div>
+
+          }
+
+          @if(selectedFile() && !uploadedImageUrl()){
+
+            <div class="preview-wrapper">
+
+              <img
+                [src]="filePreviewUrl()"
+                class="preview-image"
+                alt="preview">
+
+              <p>{{ selectedFile()!.name }}</p>
+
+              @if(isUploading()){
+                <p>{{ 'booking.uploading' | translate }}</p>
+              }
+
+            </div>
+
+          }
+
+          @if(uploadedImageUrl()){
+
+            <div class="preview-wrapper">
+
+              <img
+                [src]="filePreviewUrl()"
+                class="preview-image"
+                alt="uploaded">
+
+              <p class="success">
+                ✅ {{ 'booking.uploadSuccess' | translate }}
+              </p>
+
+            </div>
+
+          }
+
+        </div>
+
+        @if(uploadError()){
+          <p class="error">
+            {{ uploadError() }}
+          </p>
         }
 
       </div>
 
-      <!-- Messages -->
+      <!-- Success Message -->
+
       @if(successMessage()){
-        <p class="success">{{ successMessage() }}</p>
+        <p class="success">
+          {{ successMessage() }}
+        </p>
       }
 
+      <!-- Error Message -->
+
       @if(errorMessage()){
-        <p class="error">{{ errorMessage() }}</p>
+        <p class="error">
+          {{ errorMessage() }}
+        </p>
       }
 
       <!-- Submit -->
+
       <button
         type="submit"
         class="submit-btn"

@@ -440,7 +440,19 @@
     "locationRequired": "Please select a location",
     "submit": "Submit Booking",
     "submitting": "Submitting...",
-    "success": "Booking created successfully"
+    "success": "Booking created successfully",
+    "referencePhoto": "Reference Photos",
+    "dropHere": "Drag & drop images here",
+    "dropHint": "or click to browse from your device (Max 10MB per file)",
+    "uploading": "Uploading image...",
+    "uploadSuccess": "Image uploaded successfully",
+    "invalidImageType": "Please select a valid image file",
+    "fileTooLarge": "File size must not exceed 10MB",
+    "uploadFailed": "Failed to upload image, please try again",
+    "userNotFound": "User not found, please log in again",
+    "errorLoadingFarmer": "Error loading farmer data",
+    "farmerNotLoaded": "Farmer data not loaded yet",
+    "createFailed": "An error occurred while creating the booking"
   }
 
 }
