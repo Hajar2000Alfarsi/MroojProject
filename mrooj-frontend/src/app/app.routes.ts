@@ -63,6 +63,14 @@ export const routes: Routes = [
             .then(m => m.Dashboard)
       },
 
+      //farmer profile
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/farmer/profile/profile')
+            .then(m => m.Profile)
+      },
+
       {
         path: '',
         redirectTo: 'dashboard',

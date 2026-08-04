@@ -1,0 +1,551 @@
+:host {
+  display: block;
+}
+
+
+/* =========================
+   PAGE
+========================= */
+
+.profile-page {
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+}
+
+
+
+/* =========================
+   HEADER
+========================= */
+
+
+.profile-header {
+
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  padding: 22px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 20px;
+
+  box-shadow:
+  0 4px 15px rgba(0,0,0,0.06);
+
+}
+
+
+
+.profile-header h1 {
+
+  margin: 0;
+
+  color:#1e4620;
+
+  font-size:26px;
+
+  font-weight:800;
+
+}
+
+
+
+.profile-header h3 {
+
+  margin:8px 0 4px;
+
+  font-size:20px;
+
+  color:#26302a;
+
+}
+
+
+
+.profile-header p {
+
+  margin:0;
+
+  color:#6b7268;
+
+}
+
+
+
+
+
+/* =========================
+   BUTTON
+========================= */
+
+
+.edit-btn {
+
+  background:#1e4620;
+
+  color:white;
+
+  border:none;
+
+  padding:11px 22px;
+
+  border-radius:12px;
+
+  cursor:pointer;
+
+  font-weight:700;
+
+  transition:.3s;
+
+}
+
+
+.edit-btn:hover {
+
+  background:#8a5a3b;
+
+}
+
+
+
+
+
+/* =========================
+   CARDS
+========================= */
+
+
+.profile-card {
+
+
+  background:white;
+
+  padding:22px;
+
+  border-radius:18px;
+
+
+  box-shadow:
+
+  0 4px 15px rgba(0,0,0,.06);
+
+
+}
+
+
+
+
+
+.profile-card h2 {
+
+
+  margin:0 0 18px;
+
+
+  color:#1e4620;
+
+
+  font-size:20px;
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   INFORMATION GRID
+========================= */
+
+
+.info-grid {
+
+
+  display:grid;
+
+
+  grid-template-columns:
+  repeat(2, minmax(0,1fr));
+
+
+  gap:16px;
+
+
+}
+
+
+
+
+
+.info-box {
+
+
+  background:#fafaf8;
+
+
+  border:1px solid #ece9e3;
+
+
+  border-radius:14px;
+
+
+  padding:14px;
+
+
+  transition:.25s;
+
+
+}
+
+
+
+
+.info-box:hover {
+
+
+  transform:translateY(-3px);
+
+
+  border-color:#1e4620;
+
+
+  box-shadow:
+
+  0 8px 18px rgba(30,70,32,.12);
+
+
+}
+
+
+
+
+
+.info-box label {
+
+
+  display:block;
+
+
+  font-size:13px;
+
+
+  font-weight:700;
+
+
+  color:#6b7268;
+
+
+  margin-bottom:7px;
+
+
+}
+
+
+
+
+.info-box p {
+
+
+  margin:0;
+
+
+  font-size:16px;
+
+
+  font-weight:600;
+
+
+  color:#26302a;
+
+
+}
+
+
+
+
+
+/* =========================
+   LEAFLET MAP
+========================= */
+
+
+/*
+  Important:
+  Leaflet needs a fixed height.
+  Do NOT use height:100%
+  here because it causes huge maps.
+*/
+
+
+.map-container {
+
+
+  width:100%;
+
+
+  height:320px;
+
+
+  border-radius:15px;
+
+
+  overflow:hidden;
+
+
+  border:1px solid #ece9e3;
+
+
+  margin-top:10px;
+
+
+  position:relative;
+
+
+  z-index:0;
+
+
+}
+
+
+
+/*
+  Leaflet itself fills only the container
+*/
+
+
+.map-container .leaflet-container {
+
+
+  width:100%;
+
+
+  height:100%;
+
+
+  border-radius:15px;
+
+
+}
+
+
+
+/*
+  Controls above map
+*/
+
+
+.leaflet-control-container {
+
+
+  z-index:500;
+
+
+}
+
+
+
+
+
+.coordinates {
+
+
+  margin-top:12px;
+
+
+  color:#6b7268;
+
+
+  font-size:14px;
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   STATES
+========================= */
+
+
+.state-banner {
+
+
+  padding:14px;
+
+
+  border-radius:12px;
+
+
+  background:#eef3ec;
+
+
+  color:#1e4620;
+
+
+}
+
+
+
+.error {
+
+
+  background:#ffe8e8;
+
+
+  color:#b00020;
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   TABLET
+========================= */
+
+
+@media(max-width:900px){
+
+
+.profile-header {
+
+
+  flex-direction:column;
+
+
+  align-items:flex-start;
+
+
+}
+
+
+
+.info-grid {
+
+
+  grid-template-columns:1fr;
+
+
+}
+
+
+
+.map-container {
+
+
+  height:280px;
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   MOBILE
+========================= */
+
+
+@media(max-width:600px){
+
+
+.profile-page {
+
+
+  gap:15px;
+
+
+}
+
+
+
+.profile-header {
+
+
+  padding:18px;
+
+
+}
+
+
+
+.profile-header h1 {
+
+
+  font-size:22px;
+
+
+}
+
+
+
+.profile-header h3 {
+
+
+  font-size:18px;
+
+
+}
+
+
+
+.edit-btn {
+
+
+  width:100%;
+
+
+}
+
+
+
+.profile-card {
+
+
+  padding:16px;
+
+
+}
+
+
+
+.map-container {
+
+
+  height:240px;
+
+
+}
+
+
+}
