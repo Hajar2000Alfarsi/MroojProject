@@ -39,6 +39,8 @@ echo "project_dump.txt" >> .gitignore
 
 # Local environment properties
 src/main/resources/application-local.properties
-src/main/resources/application-dev.properties *.env
+src/main/resources/application-dev.properties
+*.env
+
 
 
