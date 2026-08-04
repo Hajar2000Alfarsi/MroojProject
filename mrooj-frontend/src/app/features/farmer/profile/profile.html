@@ -25,11 +25,22 @@
 
 
 
+  @if (successMessage()) {
+
+    <div class="state-banner success">
+
+      {{ successMessage() | translate }}
+
+    </div>
+
+  }
+
+
+
 
 
 
   @if (profile(); as farmer) {
-
 
 
     <!-- ================= HEADER ================= -->
@@ -72,6 +83,7 @@
 
 
 
+
       @if(!editMode()){
 
 
@@ -96,6 +108,8 @@
 
 
 
+
+
       @if(editMode()){
 
 
@@ -108,15 +122,28 @@
 
             type="button"
 
+            [disabled]="saving() || hasValidationErrors()"
+
             (click)="saveProfile()">
 
 
 
-            {{ 'farmer.profile.saveButton' | translate }}
+            @if(saving()){
+
+              {{ 'farmer.profile.saving' | translate }}
+
+            }
+
+            @else{
+
+              {{ 'farmer.profile.saveButton' | translate }}
+
+            }
 
 
 
           </button>
+
 
 
 
@@ -143,7 +170,6 @@
         </div>
 
 
-
       }
 
 
@@ -161,7 +187,6 @@
     <!-- ================= PERSONAL INFORMATION ================= -->
 
 
-
     <section class="profile-card">
 
 
@@ -174,13 +199,16 @@
 
 
 
+
       <div class="info-grid">
 
 
 
 
 
-        <!-- First Name -->
+
+        <!-- FIRST NAME -->
+
 
         <div class="info-box">
 
@@ -194,12 +222,15 @@
 
 
 
+
           @if(editMode()){
 
 
             <input
 
               type="text"
+
+              [class.invalid]="validationErrors().firstName"
 
               [value]="editedProfile()?.firstName"
 
@@ -210,6 +241,21 @@
                 $any($event.target).value
 
               )">
+
+
+            
+
+
+            @if(validationErrors().firstName){
+
+              <small class="validation-error">
+
+                {{ validationErrors().firstName | translate }}
+
+              </small>
+
+            }
+
 
 
           }
@@ -238,7 +284,7 @@
 
 
 
-        <!-- Last Name -->
+        <!-- LAST NAME -->
 
 
         <div class="info-box">
@@ -253,12 +299,15 @@
 
 
 
+
           @if(editMode()){
 
 
             <input
 
               type="text"
+
+              [class.invalid]="validationErrors().lastName"
 
               [value]="editedProfile()?.lastName"
 
@@ -270,6 +319,17 @@
 
               )">
 
+
+
+            @if(validationErrors().lastName){
+
+              <small class="validation-error">
+
+                {{ validationErrors().lastName | translate }}
+
+              </small>
+
+            }
 
 
           }
@@ -297,8 +357,7 @@
 
 
 
-
-        <!-- Email -->
+        <!-- EMAIL READ ONLY -->
 
 
         <div class="info-box">
@@ -311,27 +370,11 @@
           </label>
 
 
+          <p>
 
-          @if(editMode()){
-
-            <p>
             {{ farmer.email }}
-            </p>
 
-          }
-
-          @else{
-
-
-            <p>
-
-              {{ farmer.email }}
-
-            </p>
-
-
-          }
-
+          </p>
 
 
         </div>
@@ -344,7 +387,7 @@
 
 
 
-        <!-- Phone -->
+        <!-- PHONE -->
 
 
         <div class="info-box">
@@ -359,12 +402,15 @@
 
 
 
+
           @if(editMode()){
 
 
             <input
 
               type="text"
+
+              [class.invalid]="validationErrors().phone"
 
               [value]="editedProfile()?.phone"
 
@@ -375,6 +421,17 @@
                 $any($event.target).value
 
               )">
+
+
+            @if(validationErrors().phone){
+
+              <small class="validation-error">
+
+                {{ validationErrors().phone | translate }}
+
+              </small>
+
+            }
 
 
 
@@ -399,22 +456,17 @@
 
 
 
-
       </div>
 
 
     </section>
-
-
-
-
+    
 
 
 
 
 
     <!-- ================= FARM DETAILS ================= -->
-
 
 
     <section class="profile-card">
@@ -437,8 +489,7 @@
 
 
 
-
-        <!-- Farm Name -->
+        <!-- FARM NAME -->
 
 
         <div class="info-box">
@@ -453,12 +504,16 @@
 
 
 
+
           @if(editMode()){
+
 
 
             <input
 
               type="text"
+
+              [class.invalid]="validationErrors().farmName"
 
               [value]="editedProfile()?.farmName"
 
@@ -469,6 +524,22 @@
                 $any($event.target).value
 
               )">
+
+
+
+
+
+            @if(validationErrors().farmName){
+
+
+              <small class="validation-error">
+
+                {{ validationErrors().farmName | translate }}
+
+              </small>
+
+
+            }
 
 
 
@@ -498,7 +569,7 @@
 
 
 
-        <!-- Region -->
+        <!-- REGION -->
 
 
         <div class="info-box">
@@ -512,12 +583,17 @@
 
 
 
+
+
           @if(editMode()){
+
 
 
             <input
 
               type="text"
+
+              [class.invalid]="validationErrors().region"
 
               [value]="editedProfile()?.region"
 
@@ -528,6 +604,22 @@
                 $any($event.target).value
 
               )">
+
+
+
+
+
+            @if(validationErrors().region){
+
+
+              <small class="validation-error">
+
+                {{ validationErrors().region | translate }}
+
+              </small>
+
+
+            }
 
 
 
@@ -557,7 +649,7 @@
 
 
 
-        <!-- Farm Size -->
+        <!-- FARM SIZE -->
 
 
         <div class="info-box">
@@ -572,12 +664,18 @@
 
 
 
+
           @if(editMode()){
+
 
 
             <input
 
               type="number"
+
+              min="1"
+
+              [class.invalid]="validationErrors().farmSizeAcres"
 
               [value]="editedProfile()?.farmSizeAcres"
 
@@ -591,6 +689,22 @@
 
 
 
+
+
+            @if(validationErrors().farmSizeAcres){
+
+
+              <small class="validation-error">
+
+                {{ validationErrors().farmSizeAcres | translate }}
+
+              </small>
+
+
+            }
+
+
+
           }
 
           @else{
@@ -598,9 +712,13 @@
 
             <p>
 
+
               {{ farmer.farmSizeAcres }}
 
+
               {{ 'farmer.profile.fields.acresUnit' | translate }}
+
+
 
             </p>
 
@@ -619,7 +737,7 @@
 
 
 
-        <!-- Crop Types -->
+        <!-- CROP TYPES -->
 
 
         <div class="info-box">
@@ -634,12 +752,16 @@
 
 
 
+
           @if(editMode()){
+
 
 
             <input
 
               type="text"
+
+              [class.invalid]="validationErrors().cropTypes"
 
               [value]="editedProfile()?.cropTypes"
 
@@ -650,6 +772,22 @@
                 $any($event.target).value
 
               )">
+
+
+
+
+
+            @if(validationErrors().cropTypes){
+
+
+              <small class="validation-error">
+
+                {{ validationErrors().cropTypes | translate }}
+
+              </small>
+
+
+            }
 
 
 
@@ -692,7 +830,6 @@
     <!-- ================= LOCATION ================= -->
 
 
-
     <section class="profile-card">
 
 
@@ -701,6 +838,28 @@
         {{ 'farmer.profile.location' | translate }}
 
       </h2>
+
+
+
+
+
+      @if(editMode()){
+
+
+        <p class="map-help">
+
+
+          {{ 'farmer.profile.mapInstruction' | translate }}
+
+
+
+        </p>
+
+
+      }
+
+
+
 
 
 
@@ -729,7 +888,9 @@
 
           :
 
+
           {{ coords.lat }},
+
 
           {{ coords.lng }}
 
@@ -744,7 +905,28 @@
 
 
 
+
+      @if(validationErrors().location){
+
+
+        <small class="validation-error">
+
+
+          {{ validationErrors().location | translate }}
+
+
+        </small>
+
+
+      }
+
+
+
+
+
+
     </section>
+
 
 
 

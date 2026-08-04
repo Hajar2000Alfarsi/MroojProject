@@ -8,7 +8,9 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
 
+
   private apiUrl = 'http://localhost:8080/api/auth';
+
 
 
   constructor(
@@ -16,13 +18,44 @@ export class AuthService {
   ) {}
 
 
+
   login(data:any): Observable<any>{
 
+
     return this.http.post(
+
       `${this.apiUrl}/login`,
+
       data
+
     );
 
+
   }
+
+
+
+
+
+  logout(){
+
+
+    // Remove JWT token
+
+    localStorage.removeItem('token');
+
+
+
+    // Remove logged user information
+
+    localStorage.removeItem('user');
+
+
+
+    // Redirect will be handled from component
+
+  }
+
+
 
 }

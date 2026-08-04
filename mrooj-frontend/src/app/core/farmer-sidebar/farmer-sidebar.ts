@@ -1,7 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+
+import { AuthService } from '../services/auth.service';
+
 
 
 @Component({
@@ -32,11 +35,20 @@ import { CommonModule } from '@angular/common';
 export class FarmerSidebar {
 
 
+
   private translate = inject(TranslateService);
+
+
+  private authService = inject(AuthService);
+
+
+  private router = inject(Router);
+
 
 
 
   direction = signal<'rtl'|'ltr'>('ltr');
+
 
 
 
@@ -49,7 +61,9 @@ export class FarmerSidebar {
 
     this.translate.onLangChange.subscribe(()=>{
 
+
       this.setDirection();
+
 
     });
 
@@ -58,21 +72,29 @@ export class FarmerSidebar {
 
 
 
+
+
   private setDirection(){
 
 
     this.direction.set(
 
+
       this.translate.currentLang() === 'ar'
-    
+
+
       ? 'rtl'
 
+
       : 'ltr'
+
 
     );
 
 
   }
+
+
 
 
 
@@ -124,11 +146,19 @@ export class FarmerSidebar {
 
 
 
+
+
   logout(){
 
-    console.log("logout");
+
+    this.authService.logout();
+
+
+    this.router.navigate(['/login']);
+
 
   }
+
 
 
 }

@@ -12,9 +12,10 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import * as L from 'leaflet';
 
-import { FarmerProfileService, FarmerResponseDto } from '../../../core/services/farmer-profile';
-
-
+import {
+  FarmerProfileService,
+  FarmerResponseDto
+} from '../../../core/services/farmer-profile';
 
 
 // ===============================
@@ -42,10 +43,6 @@ L.Marker.prototype.options.icon = defaultIcon;
 
 
 
-
-
-
-
 @Component({
 
   selector:'app-profile',
@@ -70,11 +67,8 @@ L.Marker.prototype.options.icon = defaultIcon;
 export class Profile implements OnDestroy {
 
 
-
   private farmerProfileService =
     inject(FarmerProfileService);
-
-
 
 
 
@@ -83,19 +77,13 @@ export class Profile implements OnDestroy {
 
 
 
-
   loading =
     this.farmerProfileService.loading;
 
 
 
-
   error =
     this.farmerProfileService.error;
-
-
-
-
 
 
 
@@ -114,7 +102,40 @@ export class Profile implements OnDestroy {
 
 
 
+  saving =
+    signal(false);
 
+
+
+  successMessage =
+    signal<string | null>(null);
+
+
+
+  // ===============================
+  // Validation Errors
+  // ===============================
+
+
+  validationErrors = signal<{
+
+    firstName?: string;
+
+    lastName?: string;
+
+    phone?: string;
+
+    farmName?: string;
+
+    region?: string;
+
+    farmSizeAcres?: string;
+
+    cropTypes?: string;
+
+    location?: string;
+
+  }>({});
 
 
 
@@ -125,7 +146,6 @@ export class Profile implements OnDestroy {
 
 
 
-
   private map?: L.Map;
 
 
@@ -133,6 +153,11 @@ export class Profile implements OnDestroy {
 
 
 
+  private mapInitialized = false;
+
+
+
+  private mapClickEnabled = false;
 
 
 
@@ -149,38 +174,26 @@ export class Profile implements OnDestroy {
 
 
 
-
-
-
-  private mapInitialized = false;
-
-
-
-
-
-
-
   constructor(){
-
 
 
     this.farmerProfileService.loadProfile();
 
 
 
-
     effect(()=>{
-
 
 
       const farmer = this.profile();
 
 
 
-
       if(
+
         farmer &&
+
         !this.mapInitialized
+
       ){
 
 
@@ -201,7 +214,6 @@ export class Profile implements OnDestroy {
           this.mapInitialized = true;
 
 
-
         },500);
 
 
@@ -209,15 +221,10 @@ export class Profile implements OnDestroy {
       }
 
 
-
     });
 
 
-
   }
-
-
-
 
 
 
@@ -232,9 +239,7 @@ export class Profile implements OnDestroy {
   startEdit(){
 
 
-
     const farmer = this.profile();
-
 
 
 
@@ -252,14 +257,22 @@ export class Profile implements OnDestroy {
       this.editMode.set(true);
 
 
+
+      this.mapClickEnabled = true;
+
+
+
+      this.validationErrors.set({});
+
+
+
+      this.successMessage.set(null);
+
+
     }
 
 
-
   }
-
-
-
 
 
 
@@ -277,8 +290,46 @@ export class Profile implements OnDestroy {
     this.editedProfile.set(null);
 
 
+
     this.editMode.set(false);
 
+
+
+    this.mapClickEnabled = false;
+
+
+
+    this.validationErrors.set({});
+
+
+
+    const farmer = this.profile();
+
+
+
+    if(farmer){
+
+
+      this.marker?.setLatLng([
+
+        farmer.latitude,
+
+        farmer.longitude
+
+      ]);
+
+
+
+      this.map?.setView([
+
+        farmer.latitude,
+
+        farmer.longitude
+
+      ],15);
+
+
+    }
 
 
   }
@@ -288,41 +339,66 @@ export class Profile implements OnDestroy {
 
 
 
-
-
-
   // ===============================
-  // Update Input Values
+  // Update Inputs
   // ===============================
 
+updateField(
 
-  updateField(
+  field: keyof FarmerResponseDto,
 
-    field:keyof FarmerResponseDto,
+  value: string | number
 
-    value:string | number
-
-  ){
-
+){
 
 
-    const current =
-      this.editedProfile();
+  if(field === 'email'){
 
+    return;
 
-
-
-    if(current){
+  }
 
 
 
-      this.editedProfile.set({
+  const current =
 
-        ...current,
+    this.editedProfile();
 
-        [field]:value
 
-      });
+
+  if(current){
+
+
+
+    this.editedProfile.set({
+
+      ...current,
+
+      [field]: value
+
+    });
+
+
+
+
+
+    // Remove validation error after editing field
+
+    const errors = {
+
+      ...this.validationErrors()
+
+    };
+
+
+
+    if(field in errors){
+
+
+      delete errors[field as keyof typeof errors];
+
+
+      this.validationErrors.set(errors);
 
 
     }
@@ -331,6 +407,225 @@ export class Profile implements OnDestroy {
 
   }
 
+
+}
+  // ===============================
+  // Validation
+  // ===============================
+
+
+  validateProfile(): boolean {
+
+
+    const profile = this.editedProfile();
+
+
+
+    const errors: {
+
+      firstName?: string;
+
+      lastName?: string;
+
+      phone?: string;
+
+      farmName?: string;
+
+      region?: string;
+
+      farmSizeAcres?: string;
+
+      cropTypes?: string;
+
+      location?: string;
+
+    } = {};
+
+
+
+
+    if(!profile){
+
+      return false;
+
+    }
+
+
+
+    // First Name
+
+    if(
+
+      !profile.firstName ||
+
+      profile.firstName.trim().length < 2
+
+    ){
+
+      errors.firstName =
+
+        'farmer.profile.errors.firstNameRequired';
+
+    }
+
+
+
+
+
+    // Last Name
+
+    if(
+
+      !profile.lastName ||
+
+      profile.lastName.trim().length < 2
+
+    ){
+
+      errors.lastName =
+
+        'farmer.profile.errors.lastNameRequired';
+
+    }
+
+
+
+
+
+    // Phone
+
+    const phoneRegex =
+
+      /^(7|9)[0-9]{7}$/;
+
+
+
+    if(
+
+      !profile.phone ||
+
+      !phoneRegex.test(profile.phone)
+
+    ){
+
+      errors.phone =
+
+        'farmer.profile.errors.phoneInvalid';
+
+    }
+
+
+
+
+
+    // Farm Name
+
+    if(
+
+      !profile.farmName ||
+
+      profile.farmName.trim().length < 2
+
+    ){
+
+      errors.farmName =
+
+        'farmer.profile.errors.farmNameRequired';
+
+    }
+
+
+
+
+
+    // Region
+
+    if(
+
+      !profile.region ||
+
+      profile.region.trim().length < 2
+
+    ){
+
+      errors.region =
+
+        'farmer.profile.errors.regionRequired';
+
+    }
+
+
+
+
+
+    // Farm Size
+
+    if(
+
+      !profile.farmSizeAcres ||
+
+      Number(profile.farmSizeAcres) <= 0
+
+    ){
+
+      errors.farmSizeAcres =
+
+        'farmer.profile.errors.farmSizeInvalid';
+
+    }
+
+
+
+
+
+    // Crop Types
+
+    if(
+
+      !profile.cropTypes ||
+
+      profile.cropTypes.trim().length === 0
+
+    ){
+
+      errors.cropTypes =
+
+        'farmer.profile.errors.cropTypesRequired';
+
+    }
+
+
+
+
+
+    // Location
+
+    if(
+
+      profile.latitude == null ||
+
+      profile.longitude == null
+
+    ){
+
+      errors.location =
+
+        'farmer.profile.errors.locationRequired';
+
+    }
+
+
+
+
+
+    this.validationErrors.set(errors);
+
+
+
+    return Object.keys(errors).length === 0;
+
+
+  }
 
 
 
@@ -343,147 +638,226 @@ export class Profile implements OnDestroy {
   // Save Profile
   // ===============================
 
-async saveProfile(){
 
-
-  const updated =
-    this.editedProfile();
+  async saveProfile(){
 
 
 
-  if(!updated){
+    if(!this.validateProfile()){
 
-    return;
+      return;
+
+    }
+
+
+
+    const updated =
+
+      this.editedProfile();
+
+
+
+    if(!updated){
+
+      return;
+
+    }
+
+
+
+
+    this.saving.set(true);
+
+
+
+    this.successMessage.set(null);
+
+
+
+
+
+    const request = {
+
+
+
+      firstName:
+
+        updated.firstName,
+
+
+
+      lastName:
+
+        updated.lastName,
+
+
+
+      phone:
+
+        updated.phone,
+
+
+
+      farmName:
+
+        updated.farmName,
+
+
+
+      region:
+
+        updated.region,
+
+
+
+      farmSizeAcres:
+
+        Number(updated.farmSizeAcres),
+
+
+
+      cropTypes:
+
+        updated.cropTypes,
+
+
+
+      latitude:
+
+        updated.latitude,
+
+
+
+      longitude:
+
+        updated.longitude,
+
+
+
+      preferredLanguage:
+
+        localStorage.getItem('lang')
+
+        ??
+
+        'ar'
+
+
+    };
+
+
+
+
+
+    try {
+
+
+
+      await this.farmerProfileService.updateProfile(
+
+        updated.id,
+
+        request
+
+      );
+
+
+
+
+
+      this.editMode.set(false);
+
+
+
+      this.editedProfile.set(null);
+
+
+
+      this.mapClickEnabled = false;
+
+
+
+      this.validationErrors.set({});
+
+
+
+
+
+      this.marker?.setLatLng([
+
+        updated.latitude,
+
+        updated.longitude
+
+      ]);
+
+
+
+
+
+      this.map?.setView([
+
+        updated.latitude,
+
+        updated.longitude
+
+      ],15);
+
+
+
+
+
+      this.successMessage.set(
+
+        'farmer.profile.success.updated'
+
+      );
+
+
+
+    }
+
+
+
+    catch(error){
+
+
+
+      console.error(
+
+        "Update failed",
+
+        error
+
+      );
+
+
+
+      this.error.set(
+
+        'farmer.profile.errors.updateFailed'
+
+      );
+
+
+    }
+
+
+
+    finally{
+
+
+      this.saving.set(false);
+
+
+    }
+
 
   }
 
 
 
 
-
-
-  const request = {
-
-
-    firstName:
-      updated.firstName,
-
-
-    lastName:
-      updated.lastName,
-
-
-    phone:
-      updated.phone,
-
-
-
-    farmName:
-      updated.farmName,
-
-
-
-    region:
-      updated.region,
-
-
-
-    farmSizeAcres:
-      Number(updated.farmSizeAcres),
-
-
-
-    cropTypes:
-      updated.cropTypes,
-
-
-
-    latitude:
-      updated.latitude,
-
-
-
-    longitude:
-      updated.longitude,
-
-
-
-    preferredLanguage:
-
-      localStorage.getItem('lang')
-      ??
-      'ar'
-
-
-  };
-
-
-
-
-
-
-
-  try {
-
-
-
-    await this.farmerProfileService.updateProfile(
-
-
-      updated.id,
-
-
-      request
-
-
-    );
-
-
-
-
-
-    this.editMode.set(false);
-
-
-
-    this.editedProfile.set(null);
-
-
-
-
-
-    console.log(
-
-      "Profile updated successfully"
-
-    );
-
-
-
-  }
-
-
-
-  catch(error){
-
-
-
-    console.error(
-
-      "Update failed",
-
-      error
-
-    );
-
-
-
-  }
-
-
-
-
-}
 
 
 
@@ -506,9 +880,8 @@ async saveProfile(){
 
 
     const container =
+
       this.mapContainer?.nativeElement;
-
-
 
 
 
@@ -522,15 +895,13 @@ async saveProfile(){
 
 
 
+    this.map = L.map(
 
+      container,
 
-    if(this.map){
+      {
 
-
-
-      this.map.setView(
-
-        [
+        center:[
 
           latitude,
 
@@ -538,69 +909,15 @@ async saveProfile(){
 
         ],
 
-        15
+        zoom:15,
 
-      );
+        zoomControl:true,
 
+        scrollWheelZoom:false
 
+      }
 
-
-      this.marker?.setLatLng([
-
-        latitude,
-
-        longitude
-
-      ]);
-
-
-
-      this.map.invalidateSize();
-
-
-      return;
-
-
-    }
-
-
-
-
-
-
-
-
-    this.map =
-      L.map(
-
-        container,
-
-        {
-
-          center:[
-
-            latitude,
-
-            longitude
-
-          ],
-
-
-          zoom:15,
-
-
-          zoomControl:true,
-
-
-          scrollWheelZoom:false
-
-        }
-
-      );
-
-
-
-
+    );
 
 
 
@@ -612,14 +929,11 @@ async saveProfile(){
 
       {
 
-
         maxZoom:19,
-
 
         attribution:
 
         '&copy; OpenStreetMap contributors'
-
 
       }
 
@@ -632,36 +946,31 @@ async saveProfile(){
 
 
 
+    this.marker = L.marker(
 
+      [
 
+        latitude,
 
-    this.marker =
+        longitude
 
-      L.marker(
+      ],
 
-        [
+      {
 
-          latitude,
+        icon:defaultIcon
 
-          longitude
+      }
 
-        ],
+    )
 
-        {
+    .addTo(this.map)
 
-          icon:defaultIcon
+    .bindPopup(
 
-        }
+      `<b>${farmName}</b>`
 
-      )
-
-      .addTo(this.map)
-
-      .bindPopup(
-
-        `<b>${farmName}</b>`
-
-      );
+    );
 
 
 
@@ -669,22 +978,88 @@ async saveProfile(){
 
 
 
-
-
-    this.marker.on(
+    this.map.on(
 
       'click',
 
-      ()=>{
+      (event:L.LeafletMouseEvent)=>{
+
+
+
+        if(!this.mapClickEnabled){
+
+          return;
+
+        }
+
+
+
+
+        const newLat =
+
+          event.latlng.lat;
+
+
+
+        const newLng =
+
+          event.latlng.lng;
+
+
+
+
+
+        this.marker?.setLatLng([
+
+          newLat,
+
+          newLng
+
+        ]);
+
+
+
+
+
+        const current =
+
+          this.editedProfile();
+
+
+
+
+
+        if(current){
+
+
+          this.editedProfile.set({
+
+            ...current,
+
+
+            latitude:newLat,
+
+
+            longitude:newLng
+
+
+          });
+
+
+        }
+
+
+
 
 
         this.clickedCoordinates.set({
 
-          lat:latitude,
+          lat:newLat,
 
-          lng:longitude
+          lng:newLng
 
         });
+
 
 
       }
@@ -696,14 +1071,10 @@ async saveProfile(){
 
 
 
-
-
-
     setTimeout(()=>{
 
 
       this.map?.invalidateSize();
-
 
 
     },500);
@@ -718,14 +1089,14 @@ async saveProfile(){
 
 
 
+  hasValidationErrors(): boolean {
 
 
-  ngOnDestroy(){
+    return Object.keys(
 
+      this.validationErrors()
 
-
-    this.map?.remove();
-
+    ).length > 0;
 
 
   }
@@ -736,15 +1107,24 @@ async saveProfile(){
 
 
 
+  ngOnDestroy(){
+
+
+    this.map?.remove();
+
+
+  }
+
+
+
+
+
 
 
   get fullName(){
 
 
-
-    const farmer =
-      this.profile();
-
+    const farmer = this.profile();
 
 
 
@@ -756,14 +1136,10 @@ async saveProfile(){
 
 
 
-
-
     return `${farmer.firstName} ${farmer.lastName}`;
 
 
-
   }
-
 
 
 

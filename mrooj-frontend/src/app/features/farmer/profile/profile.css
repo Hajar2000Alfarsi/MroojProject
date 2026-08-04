@@ -3,11 +3,9 @@
 }
 
 
-
 /* =========================
    PAGE
 ========================= */
-
 
 .profile-page {
 
@@ -34,13 +32,11 @@
 
 .profile-header {
 
-
   background:#ffffff;
 
   border-radius:18px;
 
   padding:22px;
-
 
   display:flex;
 
@@ -50,18 +46,14 @@
 
   gap:20px;
 
-
   box-shadow:
   0 4px 15px rgba(0,0,0,0.06);
-
 
 }
 
 
 
-
 .profile-header h1 {
-
 
   margin:0;
 
@@ -71,14 +63,11 @@
 
   font-weight:800;
 
-
 }
 
 
 
-
 .profile-header h3 {
-
 
   margin:8px 0 4px;
 
@@ -86,19 +75,15 @@
 
   color:#26302a;
 
-
 }
-
 
 
 
 .profile-header p {
 
-
   margin:0;
 
   color:#6b7268;
-
 
 }
 
@@ -118,7 +103,6 @@
 .save-btn,
 .cancel-btn {
 
-
   border:none;
 
   padding:11px 22px;
@@ -131,9 +115,7 @@
 
   transition:.3s;
 
-
 }
-
 
 
 
@@ -141,11 +123,9 @@
 .edit-btn,
 .save-btn {
 
-
   background:#1e4620;
 
   color:white;
-
 
 }
 
@@ -155,12 +135,21 @@
 .edit-btn:hover,
 .save-btn:hover {
 
-
   background:#8a5a3b;
-
 
 }
 
+
+
+
+
+.save-btn:disabled {
+
+  opacity:.6;
+
+  cursor:not-allowed;
+
+}
 
 
 
@@ -168,11 +157,9 @@
 
 .cancel-btn {
 
-
   background:#ece9e3;
 
   color:#26302a;
-
 
 }
 
@@ -180,9 +167,7 @@
 
 .cancel-btn:hover {
 
-
   background:#d8d2c8;
-
 
 }
 
@@ -190,14 +175,11 @@
 
 
 
-
 .edit-actions {
-
 
   display:flex;
 
   gap:10px;
-
 
 }
 
@@ -216,18 +198,15 @@
 
 .profile-card {
 
-
   background:white;
 
   padding:22px;
 
   border-radius:18px;
 
-
   box-shadow:
 
   0 4px 15px rgba(0,0,0,.06);
-
 
 }
 
@@ -235,18 +214,13 @@
 
 
 
-
 .profile-card h2 {
-
 
   margin:0 0 18px;
 
-
   color:#1e4620;
 
-
   font-size:20px;
-
 
 }
 
@@ -265,16 +239,12 @@
 
 .info-grid {
 
-
   display:grid;
-
 
   grid-template-columns:
   repeat(2,minmax(0,1fr));
 
-
   gap:16px;
-
 
 }
 
@@ -283,24 +253,17 @@
 
 
 
-
 .info-box {
-
 
   background:#fafaf8;
 
-
   border:1px solid #ece9e3;
-
 
   border-radius:14px;
 
-
   padding:14px;
 
-
   transition:.25s;
-
 
 }
 
@@ -310,17 +273,13 @@
 
 .info-box:hover {
 
-
   transform:translateY(-3px);
 
-
   border-color:#1e4620;
-
 
   box-shadow:
 
   0 8px 18px rgba(30,70,32,.12);
-
 
 }
 
@@ -332,23 +291,19 @@
 
 .info-box label {
 
-
   display:block;
-
 
   font-size:13px;
 
-
   font-weight:700;
-
 
   color:#6b7268;
 
-
   margin-bottom:7px;
 
-
 }
+
+
 
 
 
@@ -356,20 +311,18 @@
 
 .info-box p {
 
-
   margin:0;
-
 
   font-size:16px;
 
-
   font-weight:600;
-
 
   color:#26302a;
 
-
 }
+
+
+
 
 
 
@@ -385,36 +338,25 @@
 
 .info-box input {
 
-
   width:100%;
-
 
   box-sizing:border-box;
 
-
   padding:10px 12px;
-
 
   border-radius:10px;
 
-
   border:1px solid #d8d8d2;
-
 
   background:white;
 
-
   font-size:15px;
-
 
   color:#26302a;
 
-
   outline:none;
 
-
   transition:.25s;
-
 
 }
 
@@ -425,14 +367,11 @@
 
 .info-box input:focus {
 
-
   border-color:#1e4620;
-
 
   box-shadow:
 
   0 0 0 3px rgba(30,70,32,.12);
-
 
 }
 
@@ -443,8 +382,57 @@
 
 .info-box input:hover {
 
-
   border-color:#8a5a3b;
+
+}
+
+
+
+
+
+
+
+/* =========================
+   VALIDATION
+========================= */
+
+
+.info-box input.invalid {
+
+  border-color:#b00020;
+
+  background:#fff5f5;
+
+}
+
+
+
+.info-box input.invalid:focus {
+
+  border-color:#b00020;
+
+  box-shadow:
+
+  0 0 0 3px rgba(176,0,32,.12);
+
+}
+
+
+
+
+
+.validation-error {
+
+
+  display:block;
+
+  margin-top:8px;
+
+  font-size:13px;
+
+  font-weight:600;
+
+  color:#b00020;
 
 
 }
@@ -464,33 +452,23 @@
 
 .map-container {
 
-
   width:100%;
-
 
   height:320px;
 
-
   border-radius:15px;
-
 
   overflow:hidden;
 
-
   border:1px solid #ece9e3;
-
 
   margin-top:10px;
 
-
   position:relative;
-
 
   z-index:0;
 
-
 }
-
 
 
 
@@ -498,18 +476,13 @@
 
 .map-container .leaflet-container {
 
-
   width:100% !important;
-
 
   height:100% !important;
 
-
   border-radius:15px;
 
-
 }
-
 
 
 
@@ -518,8 +491,32 @@
 
 .leaflet-control-container {
 
-
   z-index:500;
+
+}
+
+
+
+
+
+
+
+.map-help {
+
+
+  margin-bottom:10px;
+
+  padding:10px 14px;
+
+  border-radius:10px;
+
+  background:#eef3ec;
+
+  color:#1e4620;
+
+  font-size:14px;
+
+  font-weight:600;
 
 
 }
@@ -532,15 +529,11 @@
 
 .coordinates {
 
-
   margin-top:12px;
-
 
   color:#6b7268;
 
-
   font-size:14px;
-
 
 }
 
@@ -559,17 +552,25 @@
 
 .state-banner {
 
-
   padding:14px;
-
 
   border-radius:12px;
 
-
   background:#eef3ec;
 
-
   color:#1e4620;
+
+}
+
+
+
+
+.state-banner.success {
+
+
+  background:#e7f6e7;
+
+  color:#1e7a2e;
 
 
 }
@@ -583,9 +584,7 @@
 
   background:#ffe8e8;
 
-
   color:#b00020;
-
 
 }
 
@@ -607,12 +606,9 @@
 
   .profile-header {
 
-
     flex-direction:column;
 
-
     align-items:flex-start;
-
 
   }
 
@@ -622,9 +618,7 @@
 
   .info-grid {
 
-
     grid-template-columns:1fr;
-
 
   }
 
@@ -634,9 +628,7 @@
 
   .edit-actions {
 
-
     width:100%;
-
 
   }
 
@@ -647,9 +639,7 @@
   .save-btn,
   .cancel-btn {
 
-
     flex:1;
-
 
   }
 
@@ -659,9 +649,7 @@
 
   .map-container {
 
-
     height:280px;
-
 
   }
 
@@ -686,9 +674,7 @@
 
   .profile-page {
 
-
     gap:15px;
-
 
   }
 
@@ -698,9 +684,7 @@
 
   .profile-header {
 
-
     padding:18px;
-
 
   }
 
@@ -710,9 +694,7 @@
 
   .profile-header h1 {
 
-
     font-size:22px;
-
 
   }
 
@@ -722,9 +704,7 @@
 
   .profile-header h3 {
 
-
     font-size:18px;
-
 
   }
 
@@ -734,9 +714,7 @@
 
   .edit-btn {
 
-
     width:100%;
-
 
   }
 
@@ -746,9 +724,7 @@
 
   .profile-card {
 
-
     padding:16px;
-
 
   }
 
@@ -758,9 +734,7 @@
 
   .map-container {
 
-
     height:240px;
-
 
   }
 

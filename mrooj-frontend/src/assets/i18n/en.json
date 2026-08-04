@@ -501,15 +501,34 @@
 
   },
 
+"success": {
+  "updated": "Profile updated successfully."
+},
 
-  "errors": {
+"saving": "Saving...",
 
-    "missingUserId": "Unable to load your profile: no logged-in user found.",
+"mapInstruction": "Click on the map to change farm location.",
 
-    "loadFailed": "Failed to load profile."
+"errors": {
 
-  }
+  "updateFailed": "Failed to update profile.",
 
+  "firstNameRequired": "First name is required.",
+
+  "lastNameRequired": "Last name is required.",
+
+  "phoneInvalid": "Invalid phone number.",
+
+  "farmNameRequired": "Farm name is required.",
+
+  "regionRequired": "Region is required.",
+
+  "farmSizeInvalid": "Farm size must be greater than zero.",
+
+  "cropTypesRequired": "Crop types are required.",
+
+  "locationRequired": "Please select farm location."
+}
 }
   }
 

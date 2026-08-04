@@ -549,13 +549,34 @@
   },
 
 
-  "errors": {
+  "success": {
+  "updated": "تم تحديث الملف الشخصي بنجاح."
+},
 
-    "missingUserId": "تعذر تحميل الملف الشخصي: لم يتم العثور على مستخدم مسجل الدخول.",
+"saving": "جاري الحفظ...",
 
-    "loadFailed": "فشل تحميل الملف الشخصي."
+"mapInstruction": "اضغط على الخريطة لتغيير موقع المزرعة.",
 
-  }
+"errors": {
+
+  "updateFailed": "حدث خطأ أثناء تحديث الملف الشخصي.",
+
+  "firstNameRequired": "الاسم الأول مطلوب.",
+
+  "lastNameRequired": "اسم العائلة مطلوب.",
+
+  "phoneInvalid": "رقم الهاتف غير صحيح.",
+
+  "farmNameRequired": "اسم المزرعة مطلوب.",
+
+  "regionRequired": "المنطقة مطلوبة.",
+
+  "farmSizeInvalid": "مساحة المزرعة يجب أن تكون أكبر من صفر.",
+
+  "cropTypesRequired": "يرجى إدخال أنواع المحاصيل.",
+
+  "locationRequired": "يرجى تحديد موقع المزرعة."
+}
 
 }
 
