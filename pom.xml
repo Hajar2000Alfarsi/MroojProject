@@ -116,6 +116,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- AI -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
 	</dependencies>
 
 
