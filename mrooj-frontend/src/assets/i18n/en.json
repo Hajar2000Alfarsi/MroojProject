@@ -455,33 +455,61 @@
 
 }
 }
-
 ,
 "profile": {
+
   "title": "Farmer Profile",
+
   "personalInfo": "Personal Information",
+
   "farmDetails": "Farm Details",
+
   "location": "Geographical Location",
+
+
   "editButton": "Edit Profile",
+
+  "saveButton": "Save Changes",
+
+  "cancelButton": "Cancel",
+
+
   "loading": "Loading profile...",
 
+
   "fields": {
+
     "firstName": "First Name",
+
     "lastName": "Last Name",
+
     "email": "Email",
+
     "phone": "Phone",
+
     "farmName": "Farm Name",
+
     "region": "Region",
+
     "farmSize": "Farm Size",
+
     "cropTypes": "Crop Types",
+
     "acresUnit": "Acres",
+
     "coordinates": "Coordinates"
+
   },
 
+
   "errors": {
+
     "missingUserId": "Unable to load your profile: no logged-in user found.",
+
     "loadFailed": "Failed to load profile."
+
   }
+
 }
   }
 

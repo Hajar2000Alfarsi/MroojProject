@@ -12,38 +12,28 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import * as L from 'leaflet';
 
-import { FarmerProfileService } from '../../../core/services/farmer-profile';
+import { FarmerProfileService, FarmerResponseDto } from '../../../core/services/farmer-profile';
+
 
 
 
 // ===============================
-// Fix Leaflet Default Marker Icon
+// Leaflet Marker Icon Fix
 // ===============================
 
 const defaultIcon = L.icon({
 
-  iconUrl: 'assets/leaflet/marker-icon.jpg',
+  iconUrl: 'assets/leaflet/marker-icon1.jpg',
 
+  shadowUrl: 'assets/leaflet/marker-shadow.png',
 
-  iconSize: [
-    25,
-    41
-  ],
+  iconSize: [25, 41],
 
-  iconAnchor: [
-    12,
-    41
-  ],
+  iconAnchor: [12, 41],
 
-  popupAnchor: [
-    1,
-    -34
-  ],
+  popupAnchor: [1, -34],
 
-  shadowSize: [
-    41,
-    41
-  ]
+  shadowSize: [41, 41]
 
 });
 
@@ -54,13 +44,15 @@ L.Marker.prototype.options.icon = defaultIcon;
 
 
 
+
+
 @Component({
 
-  selector: 'app-profile',
+  selector:'app-profile',
 
-  standalone: true,
+  standalone:true,
 
-  imports: [
+  imports:[
 
     CommonModule,
 
@@ -68,9 +60,9 @@ L.Marker.prototype.options.icon = defaultIcon;
 
   ],
 
-  templateUrl: './profile.html',
+  templateUrl:'./profile.html',
 
-  styleUrl: './profile.css'
+  styleUrl:'./profile.css'
 
 })
 
@@ -81,6 +73,7 @@ export class Profile implements OnDestroy {
 
   private farmerProfileService =
     inject(FarmerProfileService);
+
 
 
 
@@ -103,6 +96,29 @@ export class Profile implements OnDestroy {
 
 
 
+
+
+
+  // ===============================
+  // Edit Mode
+  // ===============================
+
+
+  editMode =
+    signal(false);
+
+
+
+  editedProfile =
+    signal<FarmerResponseDto | null>(null);
+
+
+
+
+
+
+
+
   @ViewChild('mapContainer')
 
   mapContainer?: ElementRef<HTMLDivElement>;
@@ -118,14 +134,26 @@ export class Profile implements OnDestroy {
 
 
 
+
+
   clickedCoordinates =
     signal<{
 
-      lat:number,
+      lat:number;
 
-      lng:number
+      lng:number;
 
     } | null>(null);
+
+
+
+
+
+
+
+
+  private mapInitialized = false;
+
 
 
 
@@ -150,12 +178,13 @@ export class Profile implements OnDestroy {
 
 
 
-      if(farmer){
-
+      if(
+        farmer &&
+        !this.mapInitialized
+      ){
 
 
         setTimeout(()=>{
-
 
 
           this.createMap(
@@ -167,6 +196,9 @@ export class Profile implements OnDestroy {
             farmer.farmName
 
           );
+
+
+          this.mapInitialized = true;
 
 
 
@@ -190,6 +222,275 @@ export class Profile implements OnDestroy {
 
 
 
+
+
+  // ===============================
+  // Start Edit
+  // ===============================
+
+
+  startEdit(){
+
+
+
+    const farmer = this.profile();
+
+
+
+
+    if(farmer){
+
+
+      this.editedProfile.set({
+
+        ...farmer
+
+      });
+
+
+
+      this.editMode.set(true);
+
+
+    }
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+  // ===============================
+  // Cancel Edit
+  // ===============================
+
+
+  cancelEdit(){
+
+
+    this.editedProfile.set(null);
+
+
+    this.editMode.set(false);
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+  // ===============================
+  // Update Input Values
+  // ===============================
+
+
+  updateField(
+
+    field:keyof FarmerResponseDto,
+
+    value:string | number
+
+  ){
+
+
+
+    const current =
+      this.editedProfile();
+
+
+
+
+    if(current){
+
+
+
+      this.editedProfile.set({
+
+        ...current,
+
+        [field]:value
+
+      });
+
+
+    }
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+  // ===============================
+  // Save Profile
+  // ===============================
+
+async saveProfile(){
+
+
+  const updated =
+    this.editedProfile();
+
+
+
+  if(!updated){
+
+    return;
+
+  }
+
+
+
+
+
+
+  const request = {
+
+
+    firstName:
+      updated.firstName,
+
+
+    lastName:
+      updated.lastName,
+
+
+    phone:
+      updated.phone,
+
+
+
+    farmName:
+      updated.farmName,
+
+
+
+    region:
+      updated.region,
+
+
+
+    farmSizeAcres:
+      Number(updated.farmSizeAcres),
+
+
+
+    cropTypes:
+      updated.cropTypes,
+
+
+
+    latitude:
+      updated.latitude,
+
+
+
+    longitude:
+      updated.longitude,
+
+
+
+    preferredLanguage:
+
+      localStorage.getItem('lang')
+      ??
+      'ar'
+
+
+  };
+
+
+
+
+
+
+
+  try {
+
+
+
+    await this.farmerProfileService.updateProfile(
+
+
+      updated.id,
+
+
+      request
+
+
+    );
+
+
+
+
+
+    this.editMode.set(false);
+
+
+
+    this.editedProfile.set(null);
+
+
+
+
+
+    console.log(
+
+      "Profile updated successfully"
+
+    );
+
+
+
+  }
+
+
+
+  catch(error){
+
+
+
+    console.error(
+
+      "Update failed",
+
+      error
+
+    );
+
+
+
+  }
+
+
+
+
+}
+
+
+
+
+  // ===============================
+  // Leaflet Map
+  // ===============================
 
 
   private createMap(
@@ -221,11 +522,6 @@ export class Profile implements OnDestroy {
 
 
 
-
-    /*
-      If map already created
-      update only location
-    */
 
 
     if(this.map){
@@ -259,16 +555,11 @@ export class Profile implements OnDestroy {
 
 
 
-
-      setTimeout(()=>{
-
-        this.map?.invalidateSize();
-
-      },300);
-
+      this.map.invalidateSize();
 
 
       return;
+
 
     }
 
@@ -279,44 +570,33 @@ export class Profile implements OnDestroy {
 
 
 
+    this.map =
+      L.map(
 
-    /*
-      Create Map
-    */
+        container,
 
+        {
 
-    this.map = L.map(
+          center:[
 
-      container,
+            latitude,
 
-      {
+            longitude
 
-
-        center:[
-
-          latitude,
-
-          longitude
-
-        ],
+          ],
 
 
-
-        zoom:15,
-
+          zoom:15,
 
 
-        zoomControl:true,
+          zoomControl:true,
 
 
+          scrollWheelZoom:false
 
-        scrollWheelZoom:false
+        }
 
-
-      }
-
-
-    );
+      );
 
 
 
@@ -324,11 +604,6 @@ export class Profile implements OnDestroy {
 
 
 
-
-
-    /*
-      OpenStreetMap Layer
-    */
 
 
     L.tileLayer(
@@ -337,13 +612,16 @@ export class Profile implements OnDestroy {
 
       {
 
+
         maxZoom:19,
 
+
         attribution:
+
         '&copy; OpenStreetMap contributors'
 
-      }
 
+      }
 
     )
 
@@ -357,40 +635,33 @@ export class Profile implements OnDestroy {
 
 
 
-    /*
-      Location Marker
-    */
+    this.marker =
 
+      L.marker(
 
-    this.marker = L.marker(
+        [
 
-      [
+          latitude,
 
-        latitude,
+          longitude
 
-        longitude
+        ],
 
-      ],
+        {
 
+          icon:defaultIcon
 
-      {
+        }
 
-        icon: defaultIcon
+      )
 
-      }
+      .addTo(this.map)
 
+      .bindPopup(
 
-    )
+        `<b>${farmName}</b>`
 
-    .addTo(this.map)
-
-
-
-    .bindPopup(
-
-      `<b>${farmName}</b>`
-
-    );
+      );
 
 
 
@@ -409,19 +680,14 @@ export class Profile implements OnDestroy {
 
         this.clickedCoordinates.set({
 
-
           lat:latitude,
 
-
           lng:longitude
-
 
         });
 
 
-
       }
-
 
     );
 
@@ -433,11 +699,6 @@ export class Profile implements OnDestroy {
 
 
 
-    /*
-      Fix Leaflet Rendering
-    */
-
-
     setTimeout(()=>{
 
 
@@ -445,8 +706,7 @@ export class Profile implements OnDestroy {
 
 
 
-    },800);
-
+    },500);
 
 
 
@@ -460,7 +720,7 @@ export class Profile implements OnDestroy {
 
 
 
-  ngOnDestroy(): void {
+  ngOnDestroy(){
 
 
 
@@ -478,7 +738,7 @@ export class Profile implements OnDestroy {
 
 
 
-  get fullName():string{
+  get fullName(){
 
 
 
@@ -490,10 +750,10 @@ export class Profile implements OnDestroy {
 
     if(!farmer){
 
-
       return '';
 
     }
+
 
 
 
@@ -511,21 +771,13 @@ export class Profile implements OnDestroy {
 
 
 
-
   onEditProfile(){
 
 
-
-    console.log(
-
-      "Edit profile clicked"
-
-    );
-
+    this.startEdit();
 
 
   }
-
 
 
 

@@ -1,6 +1,7 @@
 package com.example.mroojBE.Service;
 
 import com.example.mroojBE.DTOs.RequestDTO.FarmerRequestDTO;
+import com.example.mroojBE.DTOs.RequestDTO.FarmerUpdateRequestDTO;
 import com.example.mroojBE.DTOs.ResponseDTO.FarmerResponseDTO;
 import com.example.mroojBE.Entity.Farmer;
 import com.example.mroojBE.Entity.User;
@@ -91,23 +92,82 @@ public class FarmerService {
      * (first/last name, phone) — same pattern UserRequestDTO#applyTo follows,
      * email/password stay untouched here.
      */
-    public FarmerResponseDTO updateFarmerProfile(Long farmerId, FarmerRequestDTO request) {
+    public FarmerResponseDTO updateFarmerProfile(
+            Long farmerId,
+            FarmerUpdateRequestDTO request
+    ) {
+
         Farmer farmer = findOrThrow(farmerId);
 
-        farmer.setFarmName(request.getFarmName());
-        farmer.setRegion(request.getRegion());
-        farmer.setFarmSizeAcres(request.getFarmSizeAcres());
-        farmer.setCropTypes(request.getCropTypes());
-        if (request.getLatitude() != null && request.getLongitude() != null) {
-            farmer.setFarmLocation(GeoUtils.createPoint(request.getLatitude(), request.getLongitude()));
+
+
+        // ==========================
+        // Farmer fields
+        // ==========================
+
+        if(request.getFarmName() != null)
+            farmer.setFarmName(request.getFarmName());
+
+
+        if(request.getRegion() != null)
+            farmer.setRegion(request.getRegion());
+
+
+        if(request.getFarmSizeAcres() != null)
+            farmer.setFarmSizeAcres(request.getFarmSizeAcres());
+
+
+        if(request.getCropTypes() != null)
+            farmer.setCropTypes(request.getCropTypes());
+
+
+
+        if(
+                request.getLatitude() != null &&
+                        request.getLongitude() != null
+        ){
+
+            farmer.setFarmLocation(
+                    GeoUtils.createPoint(
+                            request.getLatitude(),
+                            request.getLongitude()
+                    )
+            );
+
         }
 
+
+
+
+        // ==========================
+        // User fields
+        // ==========================
+
         User user = farmer.getUser();
-        if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
-        if (request.getLastName() != null) user.setLastName(request.getLastName());
-        if (request.getPhone() != null) user.setPhone(request.getPhone());
+
+
+        if(request.getFirstName() != null)
+            user.setFirstName(request.getFirstName());
+
+
+        if(request.getLastName() != null)
+            user.setLastName(request.getLastName());
+
+
+        if(request.getPhone() != null)
+            user.setPhone(request.getPhone());
+
+
+        if(request.getPreferredLanguage() != null)
+            user.setPreferredLanguage(
+                    request.getPreferredLanguage()
+            );
+
+
+        userRepository.save(user);
 
         return toDTO(farmer);
+
     }
 
     private Farmer findOrThrow(Long farmerId) {

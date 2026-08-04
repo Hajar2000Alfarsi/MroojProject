@@ -1,46 +1,68 @@
 <div class="profile-page">
 
+
   @if (loading()) {
 
     <div class="state-banner">
+
       {{ 'farmer.profile.loading' | translate }}
+
     </div>
 
   }
+
 
 
   @if (error()) {
 
     <div class="state-banner error">
+
       {{ error() | translate }}
+
     </div>
 
   }
+
+
+
 
 
 
   @if (profile(); as farmer) {
 
 
-    <!-- Page Header -->
+
+    <!-- ================= HEADER ================= -->
+
 
     <div class="profile-header">
 
+
       <div class="header-info">
 
+
         <h1>
+
           {{ 'farmer.profile.title' | translate }}
+
         </h1>
 
 
+
         <h3>
+
           {{ farmer.firstName }}
+
           {{ farmer.lastName }}
+
         </h3>
 
 
+
         <p>
+
           {{ farmer.farmName }}
+
         </p>
 
 
@@ -48,14 +70,82 @@
 
 
 
-      <button
-        class="edit-btn"
-        type="button"
-        (click)="onEditProfile()">
 
-        {{ 'farmer.profile.editButton' | translate }}
 
-      </button>
+      @if(!editMode()){
+
+
+        <button
+
+          class="edit-btn"
+
+          type="button"
+
+          (click)="startEdit()">
+
+
+          {{ 'farmer.profile.editButton' | translate }}
+
+
+        </button>
+
+
+      }
+
+
+
+
+
+      @if(editMode()){
+
+
+        <div class="edit-actions">
+
+
+          <button
+
+            class="save-btn"
+
+            type="button"
+
+            (click)="saveProfile()">
+
+
+
+            {{ 'farmer.profile.saveButton' | translate }}
+
+
+
+          </button>
+
+
+
+
+
+          <button
+
+            class="cancel-btn"
+
+            type="button"
+
+            (click)="cancelEdit()">
+
+
+
+            {{ 'farmer.profile.cancelButton' | translate }}
+
+
+
+          </button>
+
+
+
+        </div>
+
+
+
+      }
+
 
 
     </div>
@@ -64,73 +154,250 @@
 
 
 
-    <!-- Personal Information -->
+
+
+
+
+    <!-- ================= PERSONAL INFORMATION ================= -->
+
+
 
     <section class="profile-card">
 
 
       <h2>
+
         {{ 'farmer.profile.personalInfo' | translate }}
+
       </h2>
+
 
 
 
       <div class="info-grid">
 
 
+
+
+
+        <!-- First Name -->
+
         <div class="info-box">
 
+
           <label>
+
             {{ 'farmer.profile.fields.firstName' | translate }}
+
           </label>
 
-          <p>
-            {{ farmer.firstName }}
-          </p>
+
+
+
+          @if(editMode()){
+
+
+            <input
+
+              type="text"
+
+              [value]="editedProfile()?.firstName"
+
+              (input)="updateField(
+
+                'firstName',
+
+                $any($event.target).value
+
+              )">
+
+
+          }
+
+          @else{
+
+
+            <p>
+
+              {{ farmer.firstName }}
+
+            </p>
+
+
+          }
+
+
 
         </div>
 
 
 
+
+
+
+
+
+
+        <!-- Last Name -->
+
+
         <div class="info-box">
 
+
           <label>
+
             {{ 'farmer.profile.fields.lastName' | translate }}
+
           </label>
 
-          <p>
-            {{ farmer.lastName }}
-          </p>
+
+
+
+          @if(editMode()){
+
+
+            <input
+
+              type="text"
+
+              [value]="editedProfile()?.lastName"
+
+              (input)="updateField(
+
+                'lastName',
+
+                $any($event.target).value
+
+              )">
+
+
+
+          }
+
+          @else{
+
+
+            <p>
+
+              {{ farmer.lastName }}
+
+            </p>
+
+
+          }
+
+
 
         </div>
 
 
 
+
+
+
+
+
+
+        <!-- Email -->
+
+
         <div class="info-box">
 
+
           <label>
+
             {{ 'farmer.profile.fields.email' | translate }}
+
           </label>
 
-          <p>
+
+
+          @if(editMode()){
+
+            <p>
             {{ farmer.email }}
-          </p>
+            </p>
+
+          }
+
+          @else{
+
+
+            <p>
+
+              {{ farmer.email }}
+
+            </p>
+
+
+          }
+
+
 
         </div>
 
+
+
+
+
+
+
+
+
+        <!-- Phone -->
 
 
         <div class="info-box">
 
+
           <label>
+
             {{ 'farmer.profile.fields.phone' | translate }}
+
           </label>
 
-          <p>
-            {{ farmer.phone }}
-          </p>
+
+
+
+          @if(editMode()){
+
+
+            <input
+
+              type="text"
+
+              [value]="editedProfile()?.phone"
+
+              (input)="updateField(
+
+                'phone',
+
+                $any($event.target).value
+
+              )">
+
+
+
+          }
+
+          @else{
+
+
+            <p>
+
+              {{ farmer.phone }}
+
+            </p>
+
+
+          }
+
+
 
         </div>
+
+
+
 
 
       </div>
@@ -144,78 +411,269 @@
 
 
 
-    <!-- Farm Details -->
+
+
+    <!-- ================= FARM DETAILS ================= -->
+
 
 
     <section class="profile-card">
 
 
       <h2>
+
         {{ 'farmer.profile.farmDetails' | translate }}
+
       </h2>
+
+
 
 
 
       <div class="info-grid">
 
 
+
+
+
+
+
+        <!-- Farm Name -->
+
+
         <div class="info-box">
 
+
           <label>
+
             {{ 'farmer.profile.fields.farmName' | translate }}
+
           </label>
 
-          <p>
-            {{ farmer.farmName }}
-          </p>
+
+
+
+          @if(editMode()){
+
+
+            <input
+
+              type="text"
+
+              [value]="editedProfile()?.farmName"
+
+              (input)="updateField(
+
+                'farmName',
+
+                $any($event.target).value
+
+              )">
+
+
+
+          }
+
+          @else{
+
+
+            <p>
+
+              {{ farmer.farmName }}
+
+            </p>
+
+
+          }
+
+
 
         </div>
 
 
 
 
+
+
+
+
+
+        <!-- Region -->
+
+
         <div class="info-box">
 
+
           <label>
+
             {{ 'farmer.profile.fields.region' | translate }}
+
           </label>
 
-          <p>
-            {{ farmer.region }}
-          </p>
+
+
+          @if(editMode()){
+
+
+            <input
+
+              type="text"
+
+              [value]="editedProfile()?.region"
+
+              (input)="updateField(
+
+                'region',
+
+                $any($event.target).value
+
+              )">
+
+
+
+          }
+
+          @else{
+
+
+            <p>
+
+              {{ farmer.region }}
+
+            </p>
+
+
+          }
+
+
 
         </div>
 
 
 
 
+
+
+
+
+
+        <!-- Farm Size -->
+
+
         <div class="info-box">
 
+
           <label>
+
             {{ 'farmer.profile.fields.farmSize' | translate }}
+
           </label>
 
-          <p>
-            {{ farmer.farmSizeAcres }}
-            {{ 'farmer.profile.fields.acresUnit' | translate }}
-          </p>
+
+
+
+          @if(editMode()){
+
+
+            <input
+
+              type="number"
+
+              [value]="editedProfile()?.farmSizeAcres"
+
+              (input)="updateField(
+
+                'farmSizeAcres',
+
+                $any($event.target).value
+
+              )">
+
+
+
+          }
+
+          @else{
+
+
+            <p>
+
+              {{ farmer.farmSizeAcres }}
+
+              {{ 'farmer.profile.fields.acresUnit' | translate }}
+
+            </p>
+
+
+          }
+
+
 
         </div>
 
 
+
+
+
+
+
+
+
+        <!-- Crop Types -->
 
 
         <div class="info-box">
 
+
           <label>
+
             {{ 'farmer.profile.fields.cropTypes' | translate }}
+
           </label>
 
-          <p>
-            {{ farmer.cropTypes }}
-          </p>
+
+
+
+          @if(editMode()){
+
+
+            <input
+
+              type="text"
+
+              [value]="editedProfile()?.cropTypes"
+
+              (input)="updateField(
+
+                'cropTypes',
+
+                $any($event.target).value
+
+              )">
+
+
+
+          }
+
+          @else{
+
+
+            <p>
+
+              {{ farmer.cropTypes }}
+
+            </p>
+
+
+          }
+
+
 
         </div>
+
+
+
+
 
 
       </div>
@@ -229,45 +687,71 @@
 
 
 
-    <!-- Geographical Location -->
+
+
+    <!-- ================= LOCATION ================= -->
+
 
 
     <section class="profile-card">
 
 
       <h2>
+
         {{ 'farmer.profile.location' | translate }}
+
       </h2>
+
 
 
 
       <div
+
         class="map-container"
+
         #mapContainer>
+
+
       </div>
+
+
 
 
 
 
       @if(clickedCoordinates(); as coords){
 
+
         <p class="coordinates">
 
+
           {{ 'farmer.profile.fields.coordinates' | translate }}
+
           :
+
           {{ coords.lat }},
+
           {{ coords.lng }}
+
+
 
         </p>
 
+
       }
+
+
 
 
 
     </section>
 
 
+
+
+
   }
+
 
 
 </div>

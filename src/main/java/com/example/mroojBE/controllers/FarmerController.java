@@ -2,6 +2,7 @@ package com.example.mroojBE.controllers;
 
 
 import com.example.mroojBE.DTOs.RequestDTO.FarmerRequestDTO;
+import com.example.mroojBE.DTOs.RequestDTO.FarmerUpdateRequestDTO;
 import com.example.mroojBE.DTOs.ResponseDTO.FarmerResponseDTO;
 import com.example.mroojBE.DTOs.ApiResponse;
 import com.example.mroojBE.Service.FarmerService;
@@ -40,8 +41,17 @@ public class FarmerController {
     // once JwtAuthFilter exists, so a farmer can only edit their own profile.
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<FarmerResponseDTO>> updateProfile(
-            @PathVariable Long id, @Valid @RequestBody FarmerRequestDTO request) {
-        return ResponseEntity.ok(ApiResponse.of("Profile updated", farmerService.updateFarmerProfile(id, request)));
+            @PathVariable Long id,
+            @RequestBody FarmerUpdateRequestDTO request) {
+
+
+        return ResponseEntity.ok(
+                ApiResponse.of(
+                        "Profile updated",
+                        farmerService.updateFarmerProfile(id, request)
+                )
+        );
+
     }
 
     //dashboard

@@ -3,21 +3,27 @@
 }
 
 
+
 /* =========================
    PAGE
 ========================= */
 
+
 .profile-page {
 
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display:flex;
 
-  width: 100%;
+  flex-direction:column;
 
-  box-sizing: border-box;
+  gap:20px;
+
+  width:100%;
+
+  box-sizing:border-box;
 
 }
+
+
 
 
 
@@ -28,30 +34,36 @@
 
 .profile-header {
 
-  background: #ffffff;
 
-  border-radius: 18px;
+  background:#ffffff;
 
-  padding: 22px;
+  border-radius:18px;
 
-  display: flex;
+  padding:22px;
 
-  justify-content: space-between;
 
-  align-items: center;
+  display:flex;
 
-  gap: 20px;
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:20px;
+
 
   box-shadow:
   0 4px 15px rgba(0,0,0,0.06);
+
 
 }
 
 
 
+
 .profile-header h1 {
 
-  margin: 0;
+
+  margin:0;
 
   color:#1e4620;
 
@@ -59,11 +71,14 @@
 
   font-weight:800;
 
+
 }
 
 
 
+
 .profile-header h3 {
+
 
   margin:8px 0 4px;
 
@@ -71,32 +86,38 @@
 
   color:#26302a;
 
+
 }
+
 
 
 
 .profile-header p {
 
+
   margin:0;
 
   color:#6b7268;
 
+
 }
+
+
+
 
 
 
 
 
 /* =========================
-   BUTTON
+   BUTTONS
 ========================= */
 
 
-.edit-btn {
+.edit-btn,
+.save-btn,
+.cancel-btn {
 
-  background:#1e4620;
-
-  color:white;
 
   border:none;
 
@@ -110,14 +131,79 @@
 
   transition:.3s;
 
+
 }
 
 
-.edit-btn:hover {
+
+
+
+.edit-btn,
+.save-btn {
+
+
+  background:#1e4620;
+
+  color:white;
+
+
+}
+
+
+
+
+.edit-btn:hover,
+.save-btn:hover {
+
 
   background:#8a5a3b;
 
+
 }
+
+
+
+
+
+
+.cancel-btn {
+
+
+  background:#ece9e3;
+
+  color:#26302a;
+
+
+}
+
+
+
+.cancel-btn:hover {
+
+
+  background:#d8d2c8;
+
+
+}
+
+
+
+
+
+
+.edit-actions {
+
+
+  display:flex;
+
+  gap:10px;
+
+
+}
+
+
+
+
 
 
 
@@ -149,6 +235,7 @@
 
 
 
+
 .profile-card h2 {
 
 
@@ -169,6 +256,8 @@
 
 
 
+
+
 /* =========================
    INFORMATION GRID
 ========================= */
@@ -181,13 +270,15 @@
 
 
   grid-template-columns:
-  repeat(2, minmax(0,1fr));
+  repeat(2,minmax(0,1fr));
 
 
   gap:16px;
 
 
 }
+
+
 
 
 
@@ -216,6 +307,7 @@
 
 
 
+
 .info-box:hover {
 
 
@@ -231,6 +323,8 @@
 
 
 }
+
+
 
 
 
@@ -259,6 +353,7 @@
 
 
 
+
 .info-box p {
 
 
@@ -280,17 +375,91 @@
 
 
 
+
+
+
 /* =========================
-   LEAFLET MAP
+   EDIT INPUTS
 ========================= */
 
 
-/*
-  Important:
-  Leaflet needs a fixed height.
-  Do NOT use height:100%
-  here because it causes huge maps.
-*/
+.info-box input {
+
+
+  width:100%;
+
+
+  box-sizing:border-box;
+
+
+  padding:10px 12px;
+
+
+  border-radius:10px;
+
+
+  border:1px solid #d8d8d2;
+
+
+  background:white;
+
+
+  font-size:15px;
+
+
+  color:#26302a;
+
+
+  outline:none;
+
+
+  transition:.25s;
+
+
+}
+
+
+
+
+
+
+.info-box input:focus {
+
+
+  border-color:#1e4620;
+
+
+  box-shadow:
+
+  0 0 0 3px rgba(30,70,32,.12);
+
+
+}
+
+
+
+
+
+
+.info-box input:hover {
+
+
+  border-color:#8a5a3b;
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =========================
+   LEAFLET MAP
+========================= */
 
 
 .map-container {
@@ -324,18 +493,16 @@
 
 
 
-/*
-  Leaflet itself fills only the container
-*/
+
 
 
 .map-container .leaflet-container {
 
 
-  width:100%;
+  width:100% !important;
 
 
-  height:100%;
+  height:100% !important;
 
 
   border-radius:15px;
@@ -345,9 +512,8 @@
 
 
 
-/*
-  Controls above map
-*/
+
+
 
 
 .leaflet-control-container {
@@ -357,6 +523,8 @@
 
 
 }
+
+
 
 
 
@@ -375,6 +543,8 @@
 
 
 }
+
+
 
 
 
@@ -406,6 +576,8 @@
 
 
 
+
+
 .error {
 
 
@@ -423,6 +595,8 @@
 
 
 
+
+
 /* =========================
    TABLET
 ========================= */
@@ -431,39 +605,70 @@
 @media(max-width:900px){
 
 
-.profile-header {
+  .profile-header {
 
 
-  flex-direction:column;
+    flex-direction:column;
 
 
-  align-items:flex-start;
+    align-items:flex-start;
+
+
+  }
+
+
+
+
+
+  .info-grid {
+
+
+    grid-template-columns:1fr;
+
+
+  }
+
+
+
+
+
+  .edit-actions {
+
+
+    width:100%;
+
+
+  }
+
+
+
+
+
+  .save-btn,
+  .cancel-btn {
+
+
+    flex:1;
+
+
+  }
+
+
+
+
+
+  .map-container {
+
+
+    height:280px;
+
+
+  }
 
 
 }
 
 
-
-.info-grid {
-
-
-  grid-template-columns:1fr;
-
-
-}
-
-
-
-.map-container {
-
-
-  height:280px;
-
-
-}
-
-
-}
 
 
 
@@ -479,73 +684,88 @@
 @media(max-width:600px){
 
 
-.profile-page {
+  .profile-page {
 
 
-  gap:15px;
+    gap:15px;
 
 
-}
-
-
-
-.profile-header {
-
-
-  padding:18px;
-
-
-}
+  }
 
 
 
-.profile-header h1 {
 
 
-  font-size:22px;
+  .profile-header {
 
 
-}
+    padding:18px;
 
 
-
-.profile-header h3 {
-
-
-  font-size:18px;
-
-
-}
+  }
 
 
 
-.edit-btn {
 
 
-  width:100%;
+  .profile-header h1 {
 
 
-}
+    font-size:22px;
 
 
-
-.profile-card {
-
-
-  padding:16px;
-
-
-}
+  }
 
 
 
-.map-container {
 
 
-  height:240px;
+  .profile-header h3 {
 
 
-}
+    font-size:18px;
+
+
+  }
+
+
+
+
+
+  .edit-btn {
+
+
+    width:100%;
+
+
+  }
+
+
+
+
+
+  .profile-card {
+
+
+    padding:16px;
+
+
+  }
+
+
+
+
+
+  .map-container {
+
+
+    height:240px;
+
+
+  }
+
+
+
 
 
 }
