@@ -411,8 +411,25 @@
       "profile": "Profile",
       "logout": "Logout"
     }
+  },
+  
+"consultant": {
+  "sidebar": {
+    "brandName": "MROOJ",
+    "brandSubtitle": "Consultant Portal",
+    "dashboard": "Dashboard",
+    "requests": "Consultation Requests",
+    "appointments": "Appointments",
+    "profile": "Profile & Availability",
+    "logout": "Logout"
+  },
+  "navbar": {
+    "specialty": {
+      "PLANT": "Plant Specialist",
+      "LIVESTOCK": "Livestock Specialist"
+    }
   }
-
+}
 
 }
 

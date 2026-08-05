@@ -1,31 +1,31 @@
-<div class="consultant-layout">
+<div class="consultant-container"
+     [attr.dir]="direction()">
 
-  <aside class="sidebar">
 
-    <h2>Consultant Panel</h2>
+<app-consultant-sidebar></app-consultant-sidebar>
 
-    <nav>
 
-      <a routerLink="/consultant/dashboard">
-        Dashboard
-      </a>
+<div class="content">
 
-      <a routerLink="/consultant/appointments">
-        Appointments
-      </a>
 
-      <a routerLink="/consultant/profile">
-        Profile
-      </a>
+<app-consultant-navbar></app-consultant-navbar>
 
-    </nav>
 
-  </aside>
+<main>
 
-  <main class="content">
+<router-outlet></router-outlet>
 
-    <router-outlet></router-outlet>
+</main>
 
-  </main>
+
+<footer>
+
+© 2026 MROOJ AI Agriculture. All rights reserved.
+
+</footer>
+
+
+</div>
+
 
 </div>

@@ -1,28 +1,43 @@
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { Component, computed } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { AuthService } from '../services/auth.service';
+import { ConsultantService } from '../services/consultant.service';
 
-/**
- * Gate for every route under the 'consultant' layout in app.routes.ts.
- *
- * IMPORTANT LIMITATION: this is a client-side UX gate only. It stops an
- * unauthenticated browser tab from rendering consultant screens; it does
- * NOT stop a farmer or anonymous caller from hitting the consultant API
- * endpoints directly (Postman, curl, etc.), because SecurityConfig on the
- * backend is permitAll() on every path and JwtAuthFilter is never wired
- * into the filter chain yet. Closing that gap requires the backend
- * TODO(PHASE-JWT) work, not anything on this side.
- */
-export const consultantGuard: CanActivateFn = () => {
+@Component({
+  selector: 'app-consultant-navbar',
+  standalone: true,
+  imports: [
+    TranslatePipe
+  ],
+  templateUrl: './consultant-navbar.html',
+  styleUrl: './consultant-navbar.css'
+})
+export class ConsultantNavbar {
 
-  const auth = inject(AuthService);
-  const router = inject(Router);
+  constructor(
+    private authService: AuthService,
+    private consultantService: ConsultantService
+  ) {}
 
-  if (auth.isLoggedIn() && auth.role() === 'CONSULTANT') {
-    return true;
-  }
+  // FarmerNavbar hardcodes a fixed FarmerInfo object with no service
+  // behind it — deliberately not copying that here. This reads the
+  // actual logged-in user and the cached consultant profile
+  // (ConsultantService.current, populated once by ConsultantLayout).
 
-  return router.createUrlTree(['/auth/login']);
+  readonly fullName = computed(() => {
+    const user = this.authService.currentUser();
+    return user ? `${user.firstName} ${user.lastName}` : '';
+  });
 
-};
+  readonly initial = computed(() => this.fullName().charAt(0) || '?');
+
+  readonly specialtyDomain = computed(() =>
+    this.consultantService.current()?.specialtyDomain ?? null
+  );
+
+  readonly isAvailable = computed(() =>
+    this.consultantService.current()?.available ?? false
+  );
+
+}

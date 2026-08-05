@@ -1,28 +1,45 @@
-.consultant-layout {
-  display: flex;
-  min-height: 100vh;
+:host{
+
+display:block;
+height:100vh;
+
 }
 
-.sidebar {
-  width: 260px;
-  background-color: #1e4620;
-  color: white;
-  padding: 20px;
+
+.consultant-container{
+
+display:flex;
+height:100%;
+
+background:#fafaf8;
+
 }
 
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+
+.content{
+
+flex:1;
+display:flex;
+flex-direction:column;
+
 }
 
-.sidebar a {
-  color: white;
-  text-decoration: none;
+
+main{
+
+flex:1;
+padding:25px;
+overflow:auto;
+
 }
 
-.content {
-  flex: 1;
-  padding: 24px;
-  background: #f5f5f5;
+
+footer{
+
+text-align:center;
+padding:15px;
+border-top:1px solid #ddd;
+
+font-size:14px;
+
 }

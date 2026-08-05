@@ -1,0 +1,51 @@
+<header class="navbar">
+
+
+<div class="user-info">
+
+
+<div class="user-text">
+
+
+<span class="user-name">
+
+{{fullName()}}
+
+</span>
+
+
+@if(specialtyDomain()){
+
+<span class="user-specialty">
+
+<span
+  class="availability-dot"
+  [class.available]="isAvailable()"
+></span>
+
+{{ 'consultant.navbar.specialty.' + specialtyDomain() | translate }}
+
+</span>
+
+}
+
+
+</div>
+
+
+
+<div class="user-avatar">
+
+<span class="avatar-fallback">
+
+{{initial()}}
+
+</span>
+
+</div>
+
+
+</div>
+
+
+</header>
