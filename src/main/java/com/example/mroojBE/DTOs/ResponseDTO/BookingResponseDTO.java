@@ -21,10 +21,13 @@ public class BookingResponseDTO {
 
     private Long farmerId;
     private String farmerName;
+    private String farmerPhone;
 
 
     private Long consultantId;
     private String consultantName;
+    private String consultantPhone;
+    private String meetingLink;
 
     private String domain;
     private String subjectType;

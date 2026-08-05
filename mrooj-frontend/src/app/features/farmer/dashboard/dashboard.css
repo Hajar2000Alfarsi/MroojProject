@@ -1,181 +1,88 @@
 :host {
-  --mrooj-forest: #1e4620;
-  --mrooj-forest-light: #2e7d32;
-  --mrooj-brown: #8a5a3b;
-  --mrooj-off-white: #fafaf8;
-  --mrooj-border: #ece9e3;
-  --mrooj-text-muted: #6b7268;
+  --forest: #1e4620;
+  --forest-soft: #edf5ec;
+  --brown: #8a5a3b;
+  --border: #e7e9e3;
+  --muted: #6b7268;
   display: block;
 }
 
-.dashboard {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
+.dashboard { display: grid; gap: 1.5rem; }
 
-/* Welcome Section */
 .welcome-banner {
-  background: linear-gradient(135deg, var(--mrooj-forest) 0%, #123016 100%);
+  background: linear-gradient(135deg, #1e4620, #123016);
   border-radius: 20px;
   padding: 2rem 2.25rem;
-  color: #eafbea;
-  box-shadow: 0 12px 30px rgba(30, 70, 32, 0.18);
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(30, 70, 32, .18);
 }
+.welcome-title { margin: 0 0 .5rem; font-size: clamp(1.4rem, 3vw, 1.9rem); }
+.welcome-subtitle { margin: 0; color: #d7ead6; line-height: 1.6; }
 
-.welcome-title {
-  font-size: 1.7rem;
-  font-weight: 800;
-  margin: 0 0 0.5rem;
-}
-
-.welcome-subtitle {
-  font-size: 1rem;
-  color: #cfe9cf;
-  margin: 0;
-  line-height: 1.5;
-}
-
-/* Statistics Cards Section */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-}
-
+.stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
 .stat-card {
-  background: #ffffff;
+  background: #fff;
+  border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 1.25rem 1.4rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  box-shadow: 0 6px 18px rgba(20, 40, 30, 0.06);
-  border: 1px solid var(--mrooj-border);
+  padding: 1.25rem;
+  box-shadow: 0 7px 20px rgba(20, 40, 30, .06);
+  display: grid;
+  gap: .45rem;
 }
+.stat-title { color: var(--muted); font-weight: 700; font-size: .86rem; }
+.stat-value { color: var(--forest); font-size: 1.9rem; font-weight: 800; }
 
-.stat-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--mrooj-text-muted);
-}
-
-.stat-value {
-  font-size: 1.9rem;
-  font-weight: 800;
-  color: var(--mrooj-forest);
-}
-
-/* Recent Bookings Section */
-.bookings-section {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid var(--mrooj-border);
-  box-shadow: 0 6px 18px rgba(20, 40, 30, 0.06);
+.data-section {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
   overflow: hidden;
+  box-shadow: 0 8px 24px rgba(20, 40, 30, .06);
 }
-
-.bookings-title {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: #26302a;
-  margin: 0;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--mrooj-border);
-}
-
-.bookings-table-wrapper {
-  overflow-x: auto;
-}
-
-.bookings-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 560px;
-}
-
-.bookings-table thead {
-  background: #f4f6f3;
-}
-
-.bookings-table th {
+.section-heading { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+.section-heading h2 { margin: 0; color: #1f2b22; font-size: 1.2rem; }
+.table-scroll { width: 100%; overflow-x: auto; }
+.dashboard-table { width: 100%; min-width: 680px; border-collapse: collapse; table-layout: fixed; }
+.dashboard-table thead { background: #f6f8f4; }
+.dashboard-table th,
+.dashboard-table td {
+  padding: 1rem 1.25rem;
   text-align: start;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--mrooj-text-muted);
-  padding: 0.85rem 1.5rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #eef0eb;
+  overflow-wrap: anywhere;
 }
-
-.bookings-table td {
-  padding: 1rem 1.5rem;
-  font-size: 0.9rem;
-  color: #333;
-  border-top: 1px solid var(--mrooj-border);
-}
-
-.booking-id {
-  font-weight: 700;
-  color: #26302a;
-}
-
+.dashboard-table th { color: #536056; font-size: .8rem; font-weight: 800; }
+.dashboard-table tbody tr:last-child td { border-bottom: 0; }
+.dashboard-table tbody tr:hover { background: #fbfcfa; }
+.booking-code { font-weight: 800; color: var(--forest); white-space: nowrap; }
 .status-badge {
-  display: inline-block;
-  padding: 0.3rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  padding: .38rem .75rem;
   border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 700;
+  background: #eef2ed;
+  color: #344238;
+  font-size: .78rem;
+  font-weight: 800;
+  text-transform: capitalize;
 }
+.status-badge[data-status='pending'], .status-badge[data-status='submitted'] { background: #fff3df; color: #915d0b; }
+.status-badge[data-status='assigned'], .status-badge[data-status='in_progress'] { background: #e7f0ff; color: #245f9a; }
+.status-badge[data-status='resolved'], .status-badge[data-status='completed'] { background: #e3f3e3; color: var(--forest); }
+.status-badge[data-status='cancelled'] { background: #fde8e8; color: #9f2929; }
+.empty-row { padding: 2rem !important; text-align: center !important; color: var(--muted); }
 
-.status-badge[data-status='confirmed'] {
-  background: #e3f2e3;
-  color: var(--mrooj-forest);
-}
-
-.status-badge[data-status='pending'] {
-  background: #fbeee6;
-  color: var(--mrooj-brown);
-}
-
-.status-badge[data-status='completed'] {
-  background: #e3f2e3;
-  color: var(--mrooj-forest-light);
-}
-
-.empty-row {
-  text-align: center;
-  color: var(--mrooj-text-muted);
-  padding: 1.5rem;
-}
-
-/* Responsive */
-@media (max-width: 1100px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+@media (max-width: 1000px) { .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) {
-  .welcome-banner {
-    padding: 1.5rem 1.25rem;
-    border-radius: 16px;
-  }
-
-  .welcome-title {
-    font-size: 1.35rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .bookings-title {
-    padding: 1rem 1.1rem;
-  }
-
-  .bookings-table th,
-  .bookings-table td {
-    padding: 0.85rem 1.1rem;
-  }
+  .dashboard { gap: 1rem; }
+  .welcome-banner { border-radius: 16px; padding: 1.4rem 1.2rem; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .stat-card { padding: 1rem; }
+  .stat-value { font-size: 1.55rem; }
+  .section-heading { padding: 1rem; }
+  .dashboard-table th, .dashboard-table td { padding: .85rem 1rem; }
 }
+@media (max-width: 420px) { .stats-grid { grid-template-columns: 1fr; } }

@@ -1,0 +1,2 @@
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}.stats article{background:#fff;padding:28px;border-radius:16px;border:1px solid #e5e8e1}.stats strong{display:block;font-size:2.4rem;color:#1e4620}.stats span{color:#687166}
+@media(max-width:560px){.stats{grid-template-columns:1fr}.stats article{padding:20px}.stats strong{font-size:2rem}}

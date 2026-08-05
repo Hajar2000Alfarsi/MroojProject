@@ -32,6 +32,7 @@ public class AssignmentService {
     private final AssignmentLogRepository assignmentLogRepository;
     private final BookingRepository bookingRepository;
     private final ConsultantRepository consultantRepository;
+    private final AuthenticatedUserService authenticatedUserService;
 
     /**
      * Core Phase 4 flow: finds the nearest available consultant matching the
@@ -41,6 +42,7 @@ public class AssignmentService {
      * attempt for this booking are excluded, so a retry after a
      * REJECTED/TIMEOUT never re-offers the same person.
      */
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
     public AssignmentLogResponseDTO assignBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
@@ -97,7 +99,8 @@ public class AssignmentService {
      * candidate (see AssignmentLogRepository's "at most one ACCEPTED attempt
      * per booking" note — this is the application-level enforcement of that).
      */
-    public AssignmentLogResponseDTO rejectAndReassign(Long bookingId, Long consultantId) {
+    public AssignmentLogResponseDTO rejectAndReassign(Long bookingId) {
+        Long consultantId = authenticatedUserService.currentConsultant().getId();
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
 
@@ -146,10 +149,17 @@ public class AssignmentService {
 
     @Transactional(readOnly = true)
     public List<AssignmentLogResponseDTO> getHistory(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+        String email = com.example.mroojBE.Security.SecurityUtils.currentEmail();
+        boolean farmerOwner = booking.getFarmer().getUser().getEmail().equalsIgnoreCase(email);
+        boolean assignedConsultant = booking.getAssignedConsultant() != null
+                && booking.getAssignedConsultant().getUser().getEmail().equalsIgnoreCase(email);
+        if (!farmerOwner && !assignedConsultant) {
+            throw new org.springframework.security.access.AccessDeniedException("You cannot view this assignment history");
+        }
         return assignmentLogRepository.findByBookingIdOrderByAssignedAtDesc(bookingId)
-                .stream()
-                .map(log -> toDTO(log, null))
-                .toList();
+                .stream().map(log -> toDTO(log, null)).toList();
     }
 
     private AssignmentLogResponseDTO toDTO(AssignmentLog log, String message) {

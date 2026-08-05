@@ -69,7 +69,7 @@ export class LanguageService {
   // إرجاع اللغة الحالية
   getCurrentLanguage() {
 
-    return this.translate.currentLang;
+    return this.translate.currentLang();
 
   }
 

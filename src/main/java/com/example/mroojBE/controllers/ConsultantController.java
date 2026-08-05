@@ -2,6 +2,7 @@ package com.example.mroojBE.controllers;
 
 
 import com.example.mroojBE.DTOs.RequestDTO.ConsultantRequestDTO;
+import com.example.mroojBE.DTOs.RequestDTO.ConsultantUpdateRequestDTO;
 import com.example.mroojBE.DTOs.ResponseDTO.ConsultantResponseDTO;
 import com.example.mroojBE.DTOs.ApiResponse;
 import com.example.mroojBE.Entity.enums.Domain;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +28,20 @@ public class ConsultantController {
         ConsultantResponseDTO created = consultantService.registerConsultant(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.of("Consultant account created", created));
+    }
+
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('CONSULTANT')")
+    public ResponseEntity<ApiResponse<ConsultantResponseDTO>> getMyProfile() {
+        return ResponseEntity.ok(ApiResponse.of(consultantService.getMyProfile()));
+    }
+
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('CONSULTANT')")
+    public ResponseEntity<ApiResponse<ConsultantResponseDTO>> updateMyProfile(
+            @Valid @RequestBody ConsultantUpdateRequestDTO request) {
+        return ResponseEntity.ok(ApiResponse.of("Profile updated", consultantService.updateMyProfile(request)));
     }
 
     @GetMapping("/{id}")

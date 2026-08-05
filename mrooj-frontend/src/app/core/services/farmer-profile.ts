@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 
+import { API_BASE_URL } from '../config/api.config';
 export interface ApiResponse<T> {
 
   success: boolean;
@@ -110,7 +111,7 @@ export class FarmerProfileService {
 
 
   private apiUrl =
-    'http://localhost:8080/api/farmers';
+    `${API_BASE_URL}/farmers`;
 
 
 

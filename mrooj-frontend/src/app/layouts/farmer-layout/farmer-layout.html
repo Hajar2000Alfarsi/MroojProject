@@ -1,41 +1,34 @@
-<div class="farmer-container"
-     [attr.dir]="direction()">
+<div class="farmer-container" [attr.dir]="direction()">
+  <button
+    class="mobile-menu-button"
+    type="button"
+    (click)="toggleMenu()"
+    [attr.aria-expanded]="menuOpen()"
+    aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
 
+  @if (menuOpen()) {
+    <button
+      class="overlay"
+      type="button"
+      (click)="closeMenu()"
+      aria-label="Close menu"></button>
+  }
 
-
-  <div class="sidebar-wrapper">
-
-    <app-farmer-sidebar></app-farmer-sidebar>
-
+  <div class="sidebar-wrapper" [class.open]="menuOpen()">
+    <app-farmer-sidebar (navigate)="closeMenu()"></app-farmer-sidebar>
   </div>
-
-
-
 
   <div class="content">
-
-
     <app-farmer-navbar></app-farmer-navbar>
 
-
-
     <main>
-
       <router-outlet></router-outlet>
-
     </main>
 
-
-
     <footer>
-
       © 2026 MROOJ AI Agriculture. All rights reserved.
-
     </footer>
-
-
   </div>
-
-
-
 </div>

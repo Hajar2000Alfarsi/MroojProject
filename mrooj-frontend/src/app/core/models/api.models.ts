@@ -1,0 +1,7 @@
+export interface ApiResponse<T> { success: boolean; message: string; data: T; timestamp?: string; }
+export interface PageResponse<T> { content: T[]; totalElements: number; totalPages: number; number: number; size: number; first: boolean; last: boolean; }
+export interface CurrentUser { id: number; email: string; firstName: string; lastName: string; phone: string; role: 'FARMER'|'CONSULTANT'|'ADMIN'; enabled: boolean; preferredLanguage: string; }
+export interface LocationDto { latitude: number; longitude: number; }
+export interface AiAnalysis { summary: string; possibleIssue: string; confidence: string; observations: string[]; recommendedActions: string[]; urgency: string; missingInformation: string[]; disclaimer: string; imageUrl: string; }
+export interface Booking { id:number; farmerId:number; farmerName:string; farmerPhone?:string; consultantId?:number; consultantName?:string; consultantPhone?:string; meetingLink?:string; domain:string; subjectType:string; issueCategory?:string; description:string; symptomsImageUrl?:string; aiReport?:string; cropType?:string; location:LocationDto; consultantResponse?:string; status:string; createdAt:string; rejectionReason?:string; }
+export interface Appointment { id:number; bookingId:number; farmerId:number; consultantId:number; consultantName?:string; consultantPhone?:string; meetingLink?:string; scheduledAt:string; endAt:string; durationMinutes:number; status:string; location?:string; notes?:string; cancellationReason?:string; }

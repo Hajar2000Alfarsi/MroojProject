@@ -1,0 +1,37 @@
+:host { display: block; color: #1f2b22; }
+.page-shell { display: grid; gap: 1.25rem; }
+.page-header h1 { margin: 0; font-size: clamp(1.55rem, 3vw, 2rem); }
+.page-header p { margin: .4rem 0 0; color: #687269; }
+.state-card { background: #fff; border: 1px solid #e6e9e2; border-radius: 16px; padding: 2rem; text-align: center; color: #687269; }
+.request-list { display: grid; gap: 1rem; }
+.request-card { background: #fff; border: 1px solid #e4e8e1; border-radius: 18px; padding: 1.25rem; box-shadow: 0 8px 24px rgba(24, 62, 29, .07); }
+.card-topline { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #edf0eb; }
+.eyebrow { color: #1e4620; font-weight: 800; font-size: .88rem; }
+.card-topline h2 { margin: .35rem 0 0; font-size: 1.1rem; line-height: 1.45; }
+.status { flex: 0 0 auto; padding: .38rem .78rem; border-radius: 999px; background: #edf2ec; color: #344238; font-size: .76rem; font-weight: 800; }
+.status[data-status='pending'], .status[data-status='submitted'] { background: #fff2da; color: #8d5908; }
+.status[data-status='assigned'], .status[data-status='in_progress'] { background: #e6f0ff; color: #245f9a; }
+.status[data-status='resolved'], .status[data-status='completed'] { background: #e3f3e3; color: #1e6427; }
+.status[data-status='cancelled'] { background: #fde7e7; color: #9a2929; }
+.request-content { display: grid; gap: 1.2rem; padding-top: 1.1rem; }
+.request-content.with-image { grid-template-columns: minmax(220px, 320px) minmax(0, 1fr); align-items: start; }
+.symptom-photo { margin: 0; border-radius: 14px; overflow: hidden; border: 1px solid #dfe5dc; background: #f5f7f3; aspect-ratio: 4 / 3; }
+.symptom-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.request-details { display: grid; gap: 1rem; }
+.label { display: block; color: #657067; font-size: .78rem; font-weight: 800; margin-bottom: .3rem; }
+.detail-block p, .response-box p { margin: 0; line-height: 1.65; white-space: pre-wrap; }
+.info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
+.info-grid > div { background: #f7f9f5; border: 1px solid #e8ece5; border-radius: 12px; padding: .85rem; }
+.info-grid strong { overflow-wrap: anywhere; }
+.response-box { background: #eef6eb; border-inline-start: 4px solid #1e4620; border-radius: 12px; padding: 1rem; }
+.meeting-link { width: fit-content; color: #fff; background: #1e4620; border-radius: 10px; padding: .72rem 1rem; text-decoration: none; font-weight: 800; }
+.cancel-button { width: fit-content; background: transparent; color: #a32b2b; border: 1px solid #dcaeae; border-radius: 10px; padding: .7rem 1rem; cursor: pointer; font-weight: 700; }
+@media (max-width: 760px) {
+  .request-content.with-image { grid-template-columns: 1fr; }
+  .symptom-photo { max-width: 100%; }
+  .info-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .request-card { padding: 1rem; border-radius: 15px; }
+  .card-topline { flex-direction: column; }
+}

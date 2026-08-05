@@ -28,6 +28,9 @@ public class BookingRequestDTO {
     @NotBlank(message = "Subject type is required")
     private String subjectType; // e.g. "tomato", "cattle"
     private String symptomsImageUrl;
+
+    /** Structured JSON returned by /api/ai/analyze; optional when AI is unavailable. */
+    private String aiReport;
     @NotNull(message = "Location is required")
 
     @Valid

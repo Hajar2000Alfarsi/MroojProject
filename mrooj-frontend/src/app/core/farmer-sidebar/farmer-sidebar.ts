@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
@@ -33,6 +33,8 @@ import { AuthService } from '../services/auth.service';
 
 
 export class FarmerSidebar {
+
+  readonly navigate = output<void>();
 
 
 
@@ -116,7 +118,7 @@ export class FarmerSidebar {
 
       name:'farmer.sidebar.createBooking',
 
-      link:'/farmer/create-booking'
+      link:'/farmer/new-issue'
 
     },
 
@@ -126,6 +128,15 @@ export class FarmerSidebar {
       name:'farmer.sidebar.myBookings',
 
       link:'/farmer/bookings'
+
+    },
+
+
+    {
+
+      name:'farmer.sidebar.appointments',
+
+      link:'/farmer/appointments'
 
     },
 
@@ -148,13 +159,18 @@ export class FarmerSidebar {
 
 
 
+  closeAfterNavigation(): void {
+    this.navigate.emit();
+  }
+
   logout(){
 
 
     this.authService.logout();
 
 
-    this.router.navigate(['/login']);
+    this.navigate.emit();
+    this.router.navigate(['/auth/login']);
 
 
   }

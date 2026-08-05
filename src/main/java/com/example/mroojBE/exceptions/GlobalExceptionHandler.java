@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoConsultantAvailableException.class)
     public ResponseEntity<ErrorResponse> handleNoConsultant(NoConsultantAvailableException ex, WebRequest request) {
-        return build(HttpStatus.UNPROCESSABLE_CONTENT, "No Consultant Available", ex.getMessage(), request);
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, "No Consultant Available", ex.getMessage(), request);
     }
 
     @ExceptionHandler(AccessDeniedException.class)

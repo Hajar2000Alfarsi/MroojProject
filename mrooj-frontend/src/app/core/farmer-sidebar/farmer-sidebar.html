@@ -27,7 +27,8 @@
         class="nav-item"
         [routerLink]="item.link"
         routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact:false}">
+        [routerLinkActiveOptions]="{exact:false}"
+        (click)="closeAfterNavigation()">
 
 
         <span class="nav-label">

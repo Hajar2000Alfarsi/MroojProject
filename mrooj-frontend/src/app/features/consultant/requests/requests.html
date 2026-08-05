@@ -1,0 +1,92 @@
+<h1>{{ 'consultant.requests.title' | translate }}</h1>
+@if (message()) {
+  <p class="message">{{ message() }}</p>
+}
+
+<div class="grid">
+  @for (b of items(); track b.id) {
+    <article>
+      <span class="status">{{ b.status }}</span>
+      <h3>#{{ b.id }} · {{ b.subjectType }}</h3>
+      <p><b>{{ 'consultant.requests.farmer' | translate }}:</b> {{ b.farmerName }}</p>
+      <p><b>{{ 'consultant.requests.farmerPhone' | translate }}:</b> {{ b.farmerPhone || ('common.notAvailable' | translate) }}</p>
+      @if (b.meetingLink) {
+        <p><b>{{ 'consultant.requests.meetingLink' | translate }}:</b> <a [href]="b.meetingLink" target="_blank" rel="noopener noreferrer">{{ 'common.openMeeting' | translate }}</a></p>
+      }
+      <p>{{ b.description }}</p>
+
+      @if (b.symptomsImageUrl) {
+        <img
+          class="symptom-image"
+          [src]="imageUrl(b.symptomsImageUrl)"
+          [alt]="'consultant.requests.symptoms' | translate"
+          loading="lazy"
+          (error)="imageLoadFailed($event)">
+        <p class="image-error" hidden>{{ 'consultant.requests.imageUnavailable' | translate }}</p>
+      }
+
+      @if (aiReport(b.aiReport); as report) {
+        <details class="ai-report" open>
+          <summary>{{ 'consultant.requests.aiReport' | translate }}</summary>
+          @if (report.summary) { <p><b>Summary:</b> {{ report.summary }}</p> }
+          @if (report.possibleIssue) { <p><b>Possible issue:</b> {{ report.possibleIssue }}</p> }
+          @if (report.confidence) { <p><b>Confidence:</b> {{ report.confidence }}</p> }
+          @if (report.urgency) { <p><b>Urgency:</b> {{ report.urgency }}</p> }
+
+          @if (report.observations?.length) {
+            <h4>Observations</h4>
+            <ul>@for (item of report.observations; track item) { <li>{{ item }}</li> }</ul>
+          }
+          @if (report.recommendedActions?.length) {
+            <h4>Recommended actions</h4>
+            <ul>@for (item of report.recommendedActions; track item) { <li>{{ item }}</li> }</ul>
+          }
+          @if (report.missingInformation?.length) {
+            <h4>Missing information</h4>
+            <ul>@for (item of report.missingInformation; track item) { <li>{{ item }}</li> }</ul>
+          }
+          @if (report.disclaimer) { <p class="disclaimer">{{ report.disclaimer }}</p> }
+        </details>
+      }
+
+      @if (b.status === 'ASSIGNED') {
+        <button (click)="start(b.id)" [disabled]="busyBookingId() === b.id">
+          {{ 'consultant.requests.start' | translate }}
+        </button>
+      }
+
+      <textarea
+        [(ngModel)]="responses[b.id]"
+        [disabled]="!canEditResponse(b) || busyBookingId() === b.id"
+        [placeholder]="'consultant.requests.plan' | translate"></textarea>
+      <button
+        (click)="resolve(b.id)"
+        [disabled]="!canEditResponse(b) || !responses[b.id]?.trim() || busyBookingId() === b.id">
+        {{ 'consultant.requests.saveResponse' | translate }}
+      </button>
+
+      <label>
+        {{ 'consultant.requests.appointment' | translate }}
+        <input
+          type="datetime-local"
+          [(ngModel)]="dates[b.id]"
+          [disabled]="!canSchedule(b) || busyBookingId() === b.id">
+      </label>
+      <label>
+        {{ 'consultant.requests.meetingLink' | translate }}
+        <input
+          type="url"
+          [(ngModel)]="meetingLinks[b.id]"
+          [placeholder]="'consultant.requests.meetingLinkPlaceholder' | translate"
+          [disabled]="!canSchedule(b) || busyBookingId() === b.id">
+      </label>
+      <button
+        (click)="schedule(b)"
+        [disabled]="!canSchedule(b) || !dates[b.id] || busyBookingId() === b.id">
+        {{ 'consultant.requests.schedule' | translate }}
+      </button>
+    </article>
+  } @empty {
+    <div class="empty">{{ 'consultant.requests.empty' | translate }}</div>
+  }
+</div>
