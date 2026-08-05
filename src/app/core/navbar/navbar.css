@@ -1,0 +1,475 @@
+:host {
+
+  --primary-green: #1b5e20;
+  --light-green: #c8e6c9;
+  --white: #ffffff;
+
+  display: block;
+
+  font-family: 'Inter', sans-serif;
+
+}
+
+
+
+/* ==========================
+   Main Navbar
+========================== */
+
+.navbar {
+
+  width: 100%;
+
+  background: var(--primary-green);
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 1000;
+
+}
+
+
+
+.navbar__container {
+
+  max-width: 1440px;
+
+  margin: auto;
+
+  padding: 14px 40px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 30px;
+
+}
+
+
+
+
+
+/* ==========================
+   Logo / Brand
+========================== */
+
+
+.navbar__brand {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  text-decoration: none;
+
+  color: var(--white);
+
+  flex-shrink: 0;
+
+}
+
+
+
+.navbar__logo {
+
+  width: 45px;
+
+  height: 45px;
+
+  object-fit: cover;
+
+  border-radius: 50%;
+
+}
+
+
+
+.navbar__brand-name {
+
+  color: var(--white);
+
+  font-size: 22px;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+
+}
+
+
+
+
+
+/* ==========================
+   Navigation Links
+========================== */
+
+
+.navbar__links {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 35px;
+
+}
+
+
+
+.navbar__link {
+
+  position: relative;
+
+  text-decoration: none;
+
+  color: var(--white);
+
+  font-size: 15px;
+
+  font-weight: 500;
+
+  padding: 5px 0;
+
+  transition: 0.3s ease;
+
+}
+
+
+
+.navbar__link::after {
+
+  content: "";
+
+  position: absolute;
+
+  bottom: -5px;
+
+  left: 0;
+
+  width: 0;
+
+  height: 2px;
+
+  background: var(--white);
+
+  transition: 0.3s ease;
+
+}
+
+
+
+.navbar__link:hover::after,
+
+.navbar__link--active::after {
+
+  width: 100%;
+
+}
+
+
+
+.navbar__link:hover,
+
+.navbar__link--active {
+
+  color: var(--light-green);
+
+}
+
+
+
+
+
+/* ==========================
+   Right Actions
+========================== */
+
+
+.navbar__actions {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+}
+
+
+
+
+
+/* ==========================
+   Language Switch
+========================== */
+
+
+.language-switch {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+}
+
+
+
+.language-icon {
+
+  font-size: 20px;
+
+}
+
+
+
+.language-switch__option {
+
+  background: transparent;
+
+  border: none;
+
+  color: var(--white);
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  transition: 0.3s ease;
+
+}
+
+
+
+.language-switch__option:hover {
+
+  color: var(--light-green);
+
+  transform: scale(1.1);
+
+}
+
+
+
+.language-switch__option--active {
+
+  color: var(--light-green);
+
+  font-weight: 700;
+
+}
+
+
+
+.language-switch__divider {
+
+  color: rgba(255,255,255,0.5);
+
+}
+
+
+
+
+
+/* ==========================
+   Buttons
+========================== */
+
+
+.btn {
+
+  padding: 10px 22px;
+
+  border-radius: 30px;
+
+  text-decoration: none;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  transition: 0.3s ease;
+
+  white-space: nowrap;
+
+}
+
+
+
+.btn--outline {
+
+  border: 1.5px solid var(--white);
+
+  color: var(--white);
+
+  background: transparent;
+
+}
+
+
+
+.btn--outline:hover {
+
+  background: var(--white);
+
+  color: var(--primary-green);
+
+}
+
+
+
+.btn--filled {
+
+  background: var(--white);
+
+  color: var(--primary-green);
+
+  border: 1.5px solid var(--white);
+
+}
+
+
+
+.btn--filled:hover {
+
+  background: var(--light-green);
+
+}
+
+
+
+
+
+/* ==========================
+   Mobile Menu Button
+========================== */
+
+
+.navbar__toggle {
+
+  display: none;
+
+  border: none;
+
+  background: transparent;
+
+  color: var(--white);
+
+  cursor: pointer;
+
+}
+
+
+
+
+
+/* ==========================
+   Mobile Menu
+========================== */
+
+
+.mobile-menu {
+
+  display: none;
+
+  flex-direction: column;
+
+  gap: 15px;
+
+  padding: 20px;
+
+  background: var(--primary-green);
+
+}
+
+
+
+.mobile-menu__link {
+
+  color: var(--white);
+
+  text-decoration: none;
+
+}
+
+
+
+.mobile-menu__link:hover {
+
+  color: var(--light-green);
+
+}
+
+
+
+.mobile-menu__actions {
+
+  display: flex;
+
+  gap: 10px;
+
+}
+
+
+
+
+
+/* ==========================
+   Responsive
+========================== */
+
+
+@media (max-width: 900px) {
+
+
+  .navbar__container {
+
+    padding: 14px 20px;
+
+  }
+
+
+
+  .navbar__links,
+
+  .navbar__actions {
+
+    display: none;
+
+  }
+
+
+
+  .navbar__toggle {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 28px;
+
+  }
+
+
+
+  .mobile-menu {
+
+    display: flex;
+
+  }
+
+
+}

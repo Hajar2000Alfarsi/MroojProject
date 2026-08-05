@@ -1,0 +1,171 @@
+<footer class="footer">
+
+  <div class="footer__container">
+
+
+    <div class="footer__columns">
+
+
+      <!-- Brand Section -->
+
+      <div class="footer__brand-col">
+
+        <a 
+          class="footer__brand"
+          routerLink="/"
+        >
+
+          <img
+            src="assets/images/icon.jpg"
+            alt="Mrooj Logo"
+            class="footer__logo"
+          >
+
+          <span class="footer__brand-name">
+            MROOJ
+          </span>
+
+        </a>
+
+
+
+        <p class="footer__tagline">
+          {{ 'footer.tagline' | translate }}
+        </p>
+
+
+      </div>
+
+
+
+
+
+
+
+      <!-- Quick Links -->
+
+      <div class="footer__col">
+
+
+        <h3 class="footer__heading">
+          {{ 'footer.quickLinks.title' | translate }}
+        </h3>
+
+
+
+        <a
+          class="footer__link"
+          *ngFor="let link of quickLinks"
+          [routerLink]="link.path"
+        >
+
+          {{ link.label | translate }}
+
+        </a>
+
+
+      </div>
+
+
+
+
+
+
+
+
+
+      <!-- Services -->
+
+      <div class="footer__col">
+
+
+        <h3 class="footer__heading">
+          {{ 'footer.services.title' | translate }}
+        </h3>
+
+
+
+        <a
+          class="footer__link"
+          *ngFor="let link of serviceLinks"
+          [routerLink]="link.path"
+        >
+
+          {{ link.label | translate }}
+
+        </a>
+
+
+      </div>
+
+
+
+
+
+
+
+
+
+      <!-- Contact -->
+
+      <div class="footer__col">
+
+
+        <h3 class="footer__heading">
+          {{ 'footer.contact.title' | translate }}
+        </h3>
+
+
+
+        <span class="footer__text">
+          {{ contact.location | translate }}
+        </span>
+
+
+
+        <span class="footer__text">
+          {{ contact.email | translate }}
+        </span>
+
+
+
+        <span class="footer__text">
+          {{ contact.phone | translate }}
+        </span>
+
+
+      </div>
+
+
+
+    </div>
+
+
+
+
+
+
+
+    <!-- Divider -->
+
+    <div class="footer__divider"></div>
+
+
+
+
+
+
+
+    <!-- Copyright -->
+
+    <p class="footer__copyright">
+
+      © {{ currentYear }} {{ 'footer.copyright' | translate }}
+
+    </p>
+
+
+  </div>
+
+
+</footer>

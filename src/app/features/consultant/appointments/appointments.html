@@ -1,0 +1,68 @@
+<h1>Appointments</h1>
+
+@if (loading()) {
+
+  <p>Loading...</p>
+
+}
+
+@else {
+
+  @if (appointments().length === 0) {
+
+    <p>No appointments found.</p>
+
+  }
+
+  @else {
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Consultant</th>
+          <th>Date</th>
+          <th>Duration</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        @for (appointment of appointments(); track appointment.id) {
+
+          <tr>
+
+            <td>
+              {{ appointment.consultantName }}
+            </td>
+
+            <td>
+              {{ appointment.scheduledAt | date:'medium' }}
+            </td>
+
+            <td>
+              {{ appointment.durationMinutes }} min
+            </td>
+
+            <td>
+
+              <span
+                [style.color]="statusColor(appointment.status)"
+              >
+                {{ appointment.status }}
+              </span>
+
+            </td>
+
+          </tr>
+
+        }
+
+      </tbody>
+
+    </table>
+
+  }
+
+}

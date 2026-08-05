@@ -1,0 +1,303 @@
+<header class="navbar">
+
+  <div class="navbar__container">
+
+
+    <!-- Brand / Logo -->
+
+    <a 
+      class="navbar__brand"
+      routerLink="/"
+      (click)="closeMobileMenu()"
+    >
+
+      <img 
+        src="assets/images/icon.jpg"
+        alt="Mrooj Logo"
+        class="navbar__logo"
+      >
+
+      <span class="navbar__brand-name">
+        MROOJ
+      </span>
+
+    </a>
+
+
+
+
+
+    <!-- Desktop Navigation -->
+
+    <nav 
+      class="navbar__links"
+      aria-label="Primary navigation"
+    >
+
+      <a
+        *ngFor="let link of navLinks"
+        class="navbar__link"
+        [routerLink]="link.path"
+        routerLinkActive="navbar__link--active"
+      >
+
+        {{ link.label | translate }}
+
+      </a>
+
+
+    </nav>
+
+
+
+
+
+
+
+    <!-- Desktop Actions -->
+
+    <div class="navbar__actions">
+
+
+
+      <!-- Language Switcher -->
+
+      <div 
+        class="language-switch"
+        role="group"
+        aria-label="Language selection"
+      >
+
+
+        <span class="language-icon">
+          🌐
+        </span>
+
+
+
+        <button
+          type="button"
+          class="language-switch__option"
+          [class.language-switch__option--active]="selectedLanguage() === 'en'"
+          (click)="selectLanguage('en')"
+        >
+
+          EN
+
+        </button>
+
+
+
+        <span class="language-switch__divider">
+          |
+        </span>
+
+
+
+        <button
+          type="button"
+          class="language-switch__option"
+          [class.language-switch__option--active]="selectedLanguage() === 'ar'"
+          (click)="selectLanguage('ar')"
+        >
+
+          AR
+
+        </button>
+
+
+      </div>
+
+
+
+
+
+
+
+      <!-- Login Button -->
+
+      <a 
+        class="btn btn--outline"
+        routerLink="/auth/login"
+      >
+
+        {{ 'navbar.login' | translate }}
+
+      </a>
+
+
+
+
+
+
+
+      <!-- Registration Button -->
+
+      <a 
+        class="btn btn--filled"
+        routerLink="auth/registration"
+      >
+
+        {{ 'navbar.register' | translate }}
+
+      </a>
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+    <!-- Mobile Menu Button -->
+
+    <button
+      type="button"
+      class="navbar__toggle"
+      [attr.aria-expanded]="isMobileMenuOpen()"
+      (click)="toggleMobileMenu()"
+    >
+
+      <span class="material-symbols-rounded">
+
+        {{ isMobileMenuOpen() ? 'close' : 'menu' }}
+
+      </span>
+
+
+    </button>
+
+
+
+  </div>
+
+
+
+
+
+
+
+
+
+  <!-- Mobile Menu -->
+
+
+  <nav
+    class="mobile-menu"
+    [class.mobile-menu--open]="isMobileMenuOpen()"
+  >
+
+
+
+    <a
+      *ngFor="let link of navLinks"
+      class="mobile-menu__link"
+      [routerLink]="link.path"
+      routerLinkActive="mobile-menu__link--active"
+      (click)="closeMobileMenu()"
+    >
+
+      {{ link.label | translate }}
+
+    </a>
+
+
+
+
+
+
+
+    <!-- Mobile Language -->
+
+    <div class="language-switch language-switch--mobile">
+
+
+      <span class="language-icon">
+        🌐
+      </span>
+
+
+
+      <button
+        type="button"
+        class="language-switch__option"
+        [class.language-switch__option--active]="selectedLanguage() === 'en'"
+        (click)="selectLanguage('en')"
+      >
+
+        EN
+
+      </button>
+
+
+
+      <span>
+        |
+      </span>
+
+
+
+      <button
+        type="button"
+        class="language-switch__option"
+        [class.language-switch__option--active]="selectedLanguage() === 'ar'"
+        (click)="selectLanguage('ar')"
+      >
+
+        AR
+
+      </button>
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+    <!-- Mobile Buttons -->
+
+    <div class="mobile-menu__actions">
+
+
+
+      <a 
+        class="btn btn--outline"
+        routerLink="/login"
+      >
+
+        {{ 'navbar.login' | translate }}
+
+      </a>
+
+
+
+
+
+      <a 
+        class="btn btn--filled"
+        routerLink="/register"
+      >
+
+        {{ 'navbar.register' | translate }}
+
+      </a>
+
+
+
+    </div>
+
+
+
+  </nav>
+
+
+</header>

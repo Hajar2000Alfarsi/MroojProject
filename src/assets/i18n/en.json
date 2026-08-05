@@ -1,0 +1,418 @@
+{
+  "navbar": {
+    "home": "Home",
+    "about": "About",
+    "learning": "Learning Center",
+    "login": "Login",
+    "register": "Registration"
+  },
+
+
+  "hero": {
+    "badge": "AI-DRIVEN PRECISION AGRICULTURE",
+    "title": "Empowering Growth through Smart AI Consultation",
+    "description": "MROOJ bridges the gap between traditional farming wisdom and cutting-edge data science. Optimize your yields with real-time AI diagnoses and expert agricultural guidance.",
+    "button": "Start Consultation"
+  },
+
+
+  "mission": {
+    "title": "Our Mission: Digitizing the Earth’s Wisdom",
+    "description": "At MROOJ, we believe the future of farming is sustainable and data-driven. Our platform connects farmers with AI-powered precision tools and agricultural expertise."
+  },
+
+
+  "features": {
+    "title": "Precision Tools for Modern Producers",
+
+    "items": [
+      {
+        "icon": "🤖",
+        "title": "AI Diagnosis",
+        "description": "Instant disease identification using AI-assisted analysis for crops and livestock."
+      },
+      {
+        "icon": "👨‍🌾",
+        "title": "Expert Consults",
+        "description": "Direct access to agricultural and veterinary consultants for complex cases."
+      },
+      {
+        "icon": "📚",
+        "title": "Learning Center",
+        "description": "Educational resources covering crops, diseases, livestock and farming practices."
+      },
+      {
+        "icon": "📊",
+        "title": "Smart Recommendations",
+        "description": "AI-based suggestions to improve farming decisions."
+      }
+    ]
+  },
+
+
+  "homeLearning": {
+    "title": "Cultivate Your Knowledge",
+
+    "items": [
+      {
+        "title": "Palm Disease Prevention",
+        "description": "Guide for managing Red Palm Weevil and common date palm diseases.",
+        "image": "/assets/images/palm.png",
+        "link": "https://iraqi-datepalms.net/wp-content/uploads/2021/06/%D8%A3%D9%85%D8%B1%D8%A7%D8%B6-%D9%88-%D8%A2%D9%81%D8%A7%D8%AA-%D8%A7%D9%84%D9%86%D8%AE%D9%8A%D9%84-2017%D9%85.pdf"
+      },
+      {
+        "title": "Mastering Tomato Health",
+        "description": "Improve tomato production through nutrition and disease prevention.",
+        "image": "/assets/images/tomato.png",
+        "link": "https://agrimisr.com/index.php?dispatch=pages.view&page_id=69"
+      },
+      {
+        "title": "Livestock Wellness 101",
+        "description": "Learn vaccination, nutrition and early disease detection.",
+        "image": "/assets/images/livestock.png",
+        "link": "https://www.noah.co.uk/wp-content/uploads/2022/08/NOAH-Livestock-Vaccination-Guideline-August-2022.pdf"
+    
+      }
+    ]
+  },
+
+
+  "steps": {
+    "title": "From Problem to Solution in 3 Steps",
+
+    "items": [
+      {
+        "number": 1,
+        "title": "Upload Data",
+        "description": "Upload crop or animal images and information."
+      },
+      {
+        "number": 2,
+        "title": "AI Analysis",
+        "description": "AI detects possible diseases and provides insights."
+      },
+      {
+        "number": 3,
+        "title": "Expert Feedback",
+        "description": "Receive recommendations from specialists."
+      }
+    ]
+  },
+
+
+  "footer": {
+
+    "tagline": "AI-powered agricultural and veterinary consultation platform connecting farmers and livestock owners with experts and smart solutions.",
+
+
+    "quickLinks": {
+      "title": "Quick Links",
+      "home": "Home",
+      "about": "About",
+      "learning": "Learning Center"
+    },
+
+
+    "services": {
+      "title": "Services",
+      "plant": "Plant Care",
+      "animal": "Animal Care",
+      "consultation": "AI Consultation"
+    },
+
+
+    "contact": {
+      "title": "Contact",
+      "location": "Oman",
+      "email": "Email: mrooj@gmail.com",
+      "phone": "Phone: +968 9114 9309"
+    },
+
+
+    "copyright": "MROOJ AI Agriculture. All rights reserved."
+
+  }
+
+  
+  ,
+    "about": {
+
+      "hero": {
+        "title": "Empowering Agriculture Through Intelligent Technology",
+        "description": "MROOJ combines artificial intelligence, agricultural expertise, and veterinary knowledge to support smarter and more sustainable farming."
+      },
+
+
+      "who": {
+        "title": "Who We Are",
+        "description": "MROOJ is an AI-powered agricultural and veterinary consultation platform designed to connect farmers and livestock owners with intelligent solutions and specialized experts."
+      },
+
+
+      "mission": {
+        "title": "Our Mission",
+        "description": "To empower farmers with accessible AI technologies and expert guidance that improve productivity and sustainability."
+      },
+
+
+      "vision": {
+        "title": "Our Vision",
+        "description": "To become a leading smart agriculture platform that transforms farming decisions through artificial intelligence."
+      },
+
+
+      "process": {
+        "title": "How MROOJ Works",
+
+        "steps": [
+          {
+            "title": "Identify",
+            "description": "Upload crop or livestock information and describe the problem."
+          },
+
+          {
+            "title": "AI Analysis",
+            "description": "Our AI analyzes the information and provides possible insights."
+          },
+
+          {
+            "title": "Expert Consultation",
+            "description": "Connect with agricultural and veterinary specialists for guidance."
+          }
+        ]
+      },
+
+
+      "why": {
+        "title": "Why Choose MROOJ",
+
+        "items": [
+          {
+            "icon": "🤖",
+            "title": "AI-Powered Solutions",
+            "description": "Smart analysis to support faster agricultural decisions."
+          },
+
+          {
+            "icon": "🌱",
+            "title": "Sustainable Farming",
+            "description": "Helping farmers adopt efficient and sustainable practices."
+          },
+
+          {
+            "icon": "👨‍⚕️",
+            "title": "Expert Support",
+            "description": "Access professional agricultural and veterinary consultants."
+          }
+        ]
+      }
+
+    }
+    , 
+        "learning": {
+
+      "hero": {
+        "title": "MROOJ Learning Center",
+        "description": "Explore agricultural and veterinary knowledge designed for farmers and livestock owners in Oman."
+      },
+
+
+      "plant": {
+        "title": "Plant Care",
+        "description": "Learn about crops, diseases, farming techniques, and sustainable agriculture practices."
+      },
+
+
+      "animal": {
+        "title": "Animal Care",
+        "description": "Discover animal health, livestock management, diseases, and veterinary guidance."
+      },
+
+
+      "explore": "Explore Articles"
+
+    }, 
+
+
+"learningArticles": {
+
+  "title": "Learning Articles",
+  "description": "Explore agricultural and veterinary knowledge designed for farmers and livestock owners in Oman.",
+  "read": "Read More",
+
+
+  "plant": {
+    "title": "Plant",
+    "button": "Plant Care",
+
+    "article1": {
+      "title": "Date Palm Diseases",
+      "description": "Learn how to identify, prevent, and manage common date palm diseases in Oman."
+    },
+
+    "article2": {
+      "title": "Red Palm Weevil Management",
+      "description": "Discover prevention methods and early detection techniques for red palm weevil infestations."
+    },
+
+    "article3": {
+      "title": "Crop Disease Prevention",
+      "description": "Learn how to protect crops from common diseases using sustainable farming practices."
+    },
+
+    "article4": {
+      "title": "Smart Irrigation Techniques",
+      "description": "Understand efficient irrigation methods to improve crop growth and save water."
+    },
+
+    "article5": {
+      "title": "Soil Health Management",
+      "description": "Learn how soil quality affects plant growth and agricultural productivity."
+    },
+
+    "article6": {
+      "title": "Sustainable Farming Practices",
+      "description": "Discover eco-friendly farming methods that improve productivity while protecting natural resources."
+    }
+
+  },
+
+
+  "animal": {
+    "title": "Animals",
+    "button": "Animal Care",
+
+    "article1": {
+      "title": "Camel Health Management",
+      "description": "Learn about camel nutrition, diseases, and veterinary care practices."
+    },
+
+    "article2": {
+      "title": "Livestock Vaccination Guide",
+      "description": "Understand important vaccinations and preventive care for livestock."
+    },
+
+    "article3": {
+      "title": "Animal Nutrition Basics",
+      "description": "Learn how proper nutrition improves animal health and productivity."
+    },
+
+    "article4": {
+      "title": "Early Disease Detection",
+      "description": "Discover common signs of livestock diseases and when to seek expert advice."
+    },
+
+    "article5": {
+      "title": "Poultry Health Management",
+      "description": "Learn basic poultry care, disease prevention, and farm management practices."
+    },
+
+      "article6": {
+        "title": "Goat Farming Essentials",
+        "description": "Learn the fundamentals of goat breeding, nutrition, and disease prevention."
+      }
+
+  }
+
+  },
+
+  "REGISTRATION": {
+    "TITLE": "Create Your Account",
+    "SUBTITLE": "Join Mrooj and get smart agricultural & veterinary support",
+
+    "FARMER": "Farmer",
+    "CONSULTANT": "Consultant",
+
+    "PERSONAL_INFO": "Personal Information",
+
+    "FIRST_NAME": "First Name",
+    "LAST_NAME": "Last Name",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "PHONE": "Phone",
+
+    "FARM_INFO": "Farm Information",
+    "FARM_NAME": "Farm Name",
+    "REGION": "Region",
+    "FARM_SIZE": "Farm Size (Acres)",
+    "CROP_TYPES": "Crop Types",
+
+    "CONSULTANT_INFO": "Consultant Information",
+    "SPECIALTY_DOMAIN": "Specialty Domain",
+    "PLANT": "Plant",
+    "LIVESTOCK": "Livestock",
+    "SPECIALTY_TAGS": "Specialty Tags",
+    "EXPERIENCE": "Experience Years",
+
+    "LOCATION": "Location",
+    "CURRENT_LOCATION": "Use Current Location",
+
+    "CREATE_ACCOUNT": "Create Account",
+
+    "SHOW": "Show",
+    "HIDE": "Hide",
+
+    "LOCATION_LOADING": "Getting location...",
+    "LOCATION_SUCCESS": "Location detected",
+
+    "FIRST_NAME_REQUIRED": "First name is required",
+    "LAST_NAME_REQUIRED": "Last name is required",
+    "EMAIL_REQUIRED": "Email is required",
+    "EMAIL_INVALID": "Invalid email format",
+    "PASSWORD_REQUIRED": "Password is required",
+    "PASSWORD_LENGTH": "Password must be at least 8 characters",
+    "FARM_NAME_REQUIRED": "Farm name is required",
+    "DOMAIN_REQUIRED": "Please select specialty domain",
+    "INVALID_PHONE": "Enter a valid Oman phone number",
+    "PASSWORD_PATTERN": "Password must contain uppercase, lowercase letters and a number"
+  },
+
+
+  
+  "login": {
+    "brandName": "MROOJ",
+    "title": "Welcome Back!",
+    "subtitle": "Access your smart agricultural and veterinary support platform.",
+    "email": {
+      "label": "Email Address",
+      "placeholder": "user@gmail.com",
+      "errors": {
+        "required": "Email address is required.",
+        "invalid": "Please enter a valid email address."
+      }
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password",
+      "forgotPassword": "Forgot Password?",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "errors": {
+        "required": "Password is required."
+      }
+    },
+    "submitButton": "Login",
+    "loadingText": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create Account",
+    "errors": {
+      "invalidLogin": "Invalid email or password. Please try again."
+    }
+  }  ,
+
+
+  "farmer": {
+    "sidebar": {
+      "brandName": "MROOJ",
+      "brandSubtitle": "Agricultural Management",
+      "dashboard": "Dashboard",
+      "createBooking": "Create Booking",
+      "myBookings": "My Bookings",
+      "profile": "Profile",
+      "logout": "Logout"
+    }
+  }
+
+
+}
+

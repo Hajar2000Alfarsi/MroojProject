@@ -1,0 +1,98 @@
+<main class="learning-page">
+
+
+<section 
+class="hero"
+[class.plant-hero]="category === 'plant-care'"
+[class.animal-hero]="category === 'animal-care'"
+>
+
+<h1 *ngIf="category === 'plant-care'">
+{{ 'learningArticles.plant.title' | translate }}
+</h1>
+
+
+<h1 *ngIf="category === 'animal-care'">
+{{ 'learningArticles.animal.title' | translate }}
+</h1>
+
+</section>
+
+<section class="category-buttons">
+
+
+<button
+routerLink="/learning-center/articles/plant-care"
+>
+🌱 
+{{ 'learningArticles.plant.button' | translate }}
+</button>
+
+
+<button
+routerLink="/learning-center/articles/animal-care"
+>
+🐪
+{{ 'learningArticles.animal.button' | translate }}
+</button>
+
+
+</section>
+
+
+<section class="cards">
+
+
+<div
+class="article-card"
+*ngFor="let article of filteredArticles"
+>
+
+
+
+<img
+[src]="article.image"
+[alt]="article.title | translate"
+/>
+
+
+
+<div class="content">
+
+
+<h2>
+{{ article.title | translate }}
+</h2>
+
+
+
+<p>
+{{ article.description | translate }}
+</p>
+
+
+
+<a
+  class="read-button"
+  [href]="article.link"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+
+  {{ 'learningArticles.read' | translate }}
+
+</a>
+
+
+
+</div>
+
+
+</div>
+
+
+
+</section>
+
+
+</main>

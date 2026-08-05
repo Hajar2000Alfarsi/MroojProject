@@ -1,0 +1,19 @@
+.appointments-container {
+  padding: 24px;
+}
+
+.appointment-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.appointment-status {
+  font-weight: bold;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+}
