@@ -422,7 +422,51 @@
       "profile": "الملف الشخصي",
       "logout": "تسجيل الخروج"
     }
+  },
+
+  "consultant": {
+
+    "sidebar": {
+      "brandName": "مروج",
+      "brandSubtitle": "بوابة المستشار",
+      "dashboard": "لوحة التحكم",
+      "requests": "طلبات الاستشارة",
+      "appointments": "المواعيد",
+      "profile": "الملف الشخصي والتوفر",
+      "logout": "تسجيل الخروج"
+    },
+
+    "navbar": {
+      "specialty": {
+        "PLANT": "مختص نباتات",
+        "LIVESTOCK": "مختص ثروة حيوانية"
+      }
+    },
+
+    "placeholder": {
+      "comingSoon": "هذه الصفحة قيد الإنشاء."
+    },
+
+    "sessionDetails": {
+      "title": "جلسة الاستشارة"
+    },
+
+    "dashboard": {
+      "greeting": "مرحبًا بعودتك،",
+      "rating": "التقييم",
+      "statsAssigned": "طلبات قيد الانتظار",
+      "statsInProgress": "حالات نشطة",
+      "statsResolved": "حالات تم حلها",
+      "upcomingTitle": "المواعيد القادمة (7 أيام القادمة)",
+      "viewAll": "عرض الكل",
+      "noUpcoming": "لا توجد مواعيد قادمة خلال 7 أيام.",
+      "unknownFarmer": "مزارع غير معروف",
+      "loading": "جارٍ تحميل لوحة التحكم...",
+      "loadError": "تعذر تحميل بيانات لوحة التحكم. حاول مرة أخرى."
+    }
+
   }
+
 
 
 }

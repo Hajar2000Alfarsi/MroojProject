@@ -1,0 +1,117 @@
+<div class="dashboard">
+
+  @if(loading()){
+
+    <p class="status-text">
+      {{ 'consultant.dashboard.loading' | translate }}
+    </p>
+
+  }
+
+
+  @if(error()){
+
+    <p class="status-text error-text">
+      {{ error()! | translate }}
+    </p>
+
+  }
+
+
+  @if(!loading() && !error()){
+
+
+    <div class="greeting">
+
+      <h1>
+        {{ 'consultant.dashboard.greeting' | translate }}
+        {{ consultant()?.firstName }}
+      </h1>
+
+      @if(consultant()?.specialtyDomain){
+
+        <p class="specialty-line">
+          {{ 'consultant.navbar.specialty.' + consultant()!.specialtyDomain | translate }}
+          · {{ 'consultant.dashboard.rating' | translate }}: {{ consultant()?.rating | number:'1.1-1' }}
+        </p>
+
+      }
+
+    </div>
+
+
+
+    <div class="stats-grid">
+
+      <a class="stat-card" routerLink="/consultant/requests">
+        <span class="stat-value">{{ stats().assigned }}</span>
+        <span class="stat-label">{{ 'consultant.dashboard.statsAssigned' | translate }}</span>
+      </a>
+
+      <div class="stat-card">
+        <span class="stat-value">{{ stats().inProgress }}</span>
+        <span class="stat-label">{{ 'consultant.dashboard.statsInProgress' | translate }}</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-value">{{ stats().resolved }}</span>
+        <span class="stat-label">{{ 'consultant.dashboard.statsResolved' | translate }}</span>
+      </div>
+
+    </div>
+
+
+
+    <div class="upcoming-section">
+
+      <div class="section-header">
+
+        <h2>
+          {{ 'consultant.dashboard.upcomingTitle' | translate }}
+        </h2>
+
+        <a routerLink="/consultant/appointments">
+          {{ 'consultant.dashboard.viewAll' | translate }}
+        </a>
+
+      </div>
+
+
+      @if(upcomingAppointments().length === 0){
+
+        <p class="empty-text">
+          {{ 'consultant.dashboard.noUpcoming' | translate }}
+        </p>
+
+      }
+
+
+      @for(appt of upcomingAppointments(); track appt.id){
+
+        <a
+          class="appointment-row"
+          [routerLink]="['/consultant/session', appt.bookingId]"
+        >
+
+          <div class="appointment-date">
+            {{ appt.scheduledAt | date:'MMM d, y · h:mm a' }}
+          </div>
+
+          <div class="appointment-farmer">
+            {{ farmerNameByBookingId()[appt.bookingId] || ('consultant.dashboard.unknownFarmer' | translate) }}
+          </div>
+
+          <div class="appointment-status status-{{ appt.status.toLowerCase() }}">
+            {{ appt.status }}
+          </div>
+
+        </a>
+
+      }
+
+    </div>
+
+
+  }
+
+</div>

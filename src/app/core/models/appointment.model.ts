@@ -36,3 +36,14 @@ export interface Appointment {
   cancellationReason: string | null;
 
 }
+
+export interface AppointmentRequest {
+  bookingId: number;
+  farmerId: number;
+  consultantId: number;
+  scheduledAt: string;
+  durationMinutes: number;
+  meetingLink?: string | null;
+  location?: string | null;
+  notes?: string | null;
+}

@@ -1,0 +1,131 @@
+:host {
+  --mrooj-forest: #1e4620;
+  --mrooj-forest-dark: #163618;
+  --mrooj-brown: #8a5a3b;
+  --mrooj-off-white: #fafaf8;
+  --mrooj-border: #ece9e3;
+  --mrooj-text-muted: #6b7268;
+  display: block;
+  height: 100%;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 260px;
+  background: #ffffff;
+  border-inline-end: 1px solid var(--mrooj-border);
+  padding: 1.75rem 1.25rem;
+  box-sizing: border-box;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+  padding: 0 0.5rem;
+}
+
+.brand-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--mrooj-forest);
+  letter-spacing: 0.02em;
+}
+
+.brand-subtitle {
+  font-size: 0.8rem;
+  color: var(--mrooj-text-muted);
+  margin-top: 0.15rem;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  color: #4a5248;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: start;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-item:hover {
+  background: #f1f5ef;
+}
+
+.nav-item.active {
+  background: var(--mrooj-forest);
+  color: #eafbea;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(30, 70, 32, 0.25);
+}
+
+.sidebar-bottom {
+  border-top: 1px solid var(--mrooj-border);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  color: var(--mrooj-brown);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.logout-btn:hover {
+  background: #f7efe9;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 76px;
+    padding: 1.5rem 0.6rem;
+    align-items: center;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .brand {
+    align-items: center;
+    padding: 0;
+  }
+
+  .brand-name {
+    font-size: 0.95rem;
+  }
+
+  .nav-label {
+    display: none;
+  }
+
+  .nav-item,
+  .logout-btn {
+    justify-content: center;
+    padding: 0.7rem;
+  }
+}

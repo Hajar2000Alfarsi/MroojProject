@@ -412,24 +412,47 @@
       "logout": "Logout"
     }
   },
-  
-"consultant": {
-  "sidebar": {
-    "brandName": "MROOJ",
-    "brandSubtitle": "Consultant Portal",
-    "dashboard": "Dashboard",
-    "requests": "Consultation Requests",
-    "appointments": "Appointments",
-    "profile": "Profile & Availability",
-    "logout": "Logout"
-  },
-  "navbar": {
-    "specialty": {
-      "PLANT": "Plant Specialist",
-      "LIVESTOCK": "Livestock Specialist"
+  "consultant": {
+
+    "sidebar": {
+      "brandName": "MROOJ",
+      "brandSubtitle": "Consultant Portal",
+      "dashboard": "Dashboard",
+      "requests": "Consultation Requests",
+      "appointments": "Appointments",
+      "profile": "Profile & Availability",
+      "logout": "Logout"
+    },
+
+    "navbar": {
+      "specialty": {
+        "PLANT": "Plant Specialist",
+        "LIVESTOCK": "Livestock Specialist"
+      }
+    },
+
+    "placeholder": {
+      "comingSoon": "This page is under construction."
+    },
+
+    "sessionDetails": {
+      "title": "Consultation Session"
+    },
+
+    "dashboard": {
+      "greeting": "Welcome back,",
+      "rating": "Rating",
+      "statsAssigned": "Pending Requests",
+      "statsInProgress": "Active Cases",
+      "statsResolved": "Resolved Cases",
+      "upcomingTitle": "Upcoming Appointments (Next 7 Days)",
+      "viewAll": "View All",
+      "noUpcoming": "No upcoming appointments in the next 7 days.",
+      "unknownFarmer": "Unknown farmer",
+      "loading": "Loading your dashboard...",
+      "loadError": "Couldn't load dashboard data. Please try again."
     }
+
   }
-}
 
 }
-
