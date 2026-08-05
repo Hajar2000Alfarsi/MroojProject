@@ -12,6 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -52,6 +58,55 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:4200",
+                "http://127.0.0.1:4200",
+                "http://192.168.*.*:4200",
+                "http://10.*.*.*:4200",
+                "http://172.16.*.*:4200",
+                "http://172.17.*.*:4200",
+                "http://172.18.*.*:4200",
+                "http://172.19.*.*:4200",
+                "http://172.20.*.*:4200",
+                "http://172.21.*.*:4200",
+                "http://172.22.*.*:4200",
+                "http://172.23.*.*:4200",
+                "http://172.24.*.*:4200",
+                "http://172.25.*.*:4200",
+                "http://172.26.*.*:4200",
+                "http://172.27.*.*:4200",
+                "http://172.28.*.*:4200",
+                "http://172.29.*.*:4200",
+                "http://172.30.*.*:4200",
+                "http://172.31.*.*:4200"
+        ));
+
+        configuration.setAllowedMethods(List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "OPTIONS"
+        ));
+
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 
     @Bean
