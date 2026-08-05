@@ -37,4 +37,9 @@ public class AuthController {
         AuthResponseDTO result = authService.login(request);
         return ResponseEntity.ok(ApiResponse.of("Login successful", result));
     }
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> me() {
+        return ResponseEntity.ok(ApiResponse.of(authService.currentUser()));
+    }
+
 }

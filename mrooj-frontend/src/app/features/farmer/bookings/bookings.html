@@ -1,0 +1,65 @@
+<section class="page-shell">
+  <header class="page-header">
+    <div>
+      <h1>{{ 'farmer.bookings.title' | translate }}</h1>
+      <p>{{ 'farmer.bookings.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="state-card">{{ 'common.loading' | translate }}</div>
+  } @else if (!items().length) {
+    <div class="state-card">{{ 'farmer.bookings.empty' | translate }}</div>
+  } @else {
+    <div class="request-list">
+      @for (b of items(); track b.id) {
+        <article class="request-card">
+          <div class="card-topline">
+            <div>
+              <span class="eyebrow">#{{ b.id }} · {{ b.subjectType }}</span>
+              <h2>{{ 'farmer.bookings.problem' | translate }}: {{ b.issueCategory || b.subjectType }}</h2>
+            </div>
+            <span class="status" [attr.data-status]="b.status.toLowerCase()">{{ b.status }}</span>
+          </div>
+
+          <div class="request-content" [class.with-image]="!!b.symptomsImageUrl">
+            @if (b.symptomsImageUrl) {
+              <figure class="symptom-photo">
+                <img [src]="imageUrl(b.symptomsImageUrl)" [alt]="'farmer.bookings.symptomImage' | translate">
+              </figure>
+            }
+
+            <div class="request-details">
+              <div class="detail-block">
+                <span class="label">{{ 'farmer.bookings.description' | translate }}</span>
+                <p>{{ b.description }}</p>
+              </div>
+
+              <div class="info-grid">
+                <div><span class="label">{{ 'farmer.bookings.consultant' | translate }}</span><strong>{{ b.consultantName || ('farmer.bookings.waiting' | translate) }}</strong></div>
+                <div><span class="label">{{ 'farmer.bookings.consultantPhone' | translate }}</span><strong>{{ b.consultantPhone || ('common.notAvailable' | translate) }}</strong></div>
+              </div>
+
+              @if (b.meetingLink) {
+                <a class="meeting-link" [href]="b.meetingLink" target="_blank" rel="noopener noreferrer">
+                  {{ 'common.openMeeting' | translate }}
+                </a>
+              }
+
+              @if (b.consultantResponse) {
+                <div class="response-box">
+                  <span class="label">{{ 'farmer.bookings.plan' | translate }}</span>
+                  <p>{{ b.consultantResponse }}</p>
+                </div>
+              }
+
+              @if (b.status !== 'COMPLETED' && b.status !== 'RESOLVED' && b.status !== 'CANCELLED') {
+                <button class="cancel-button" type="button" (click)="cancel(b.id)">{{ 'common.cancel' | translate }}</button>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

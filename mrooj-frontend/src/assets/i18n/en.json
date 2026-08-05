@@ -6,25 +6,18 @@
     "login": "Login",
     "register": "Registration"
   },
-
-
   "hero": {
     "badge": "AI-DRIVEN PRECISION AGRICULTURE",
     "title": "Empowering Growth through Smart AI Consultation",
     "description": "MROOJ bridges the gap between traditional farming wisdom and cutting-edge data science. Optimize your yields with real-time AI diagnoses and expert agricultural guidance.",
     "button": "Start Consultation"
   },
-
-
   "mission": {
     "title": "Our Mission: Digitizing the Earth’s Wisdom",
     "description": "At MROOJ, we believe the future of farming is sustainable and data-driven. Our platform connects farmers with AI-powered precision tools and agricultural expertise."
   },
-
-
   "features": {
     "title": "Precision Tools for Modern Producers",
-
     "items": [
       {
         "icon": "🤖",
@@ -48,11 +41,8 @@
       }
     ]
   },
-
-
   "homeLearning": {
     "title": "Cultivate Your Knowledge",
-
     "items": [
       {
         "title": "Palm Disease Prevention",
@@ -71,15 +61,11 @@
         "description": "Learn vaccination, nutrition and early disease detection.",
         "image": "/assets/images/livestock.png",
         "link": "https://www.noah.co.uk/wp-content/uploads/2022/08/NOAH-Livestock-Vaccination-Guideline-August-2022.pdf"
-    
       }
     ]
   },
-
-
   "steps": {
     "title": "From Problem to Solution in 3 Steps",
-
     "items": [
       {
         "number": 1,
@@ -98,263 +84,188 @@
       }
     ]
   },
-
-
   "footer": {
-
     "tagline": "AI-powered agricultural and veterinary consultation platform connecting farmers and livestock owners with experts and smart solutions.",
-
-
     "quickLinks": {
       "title": "Quick Links",
       "home": "Home",
       "about": "About",
       "learning": "Learning Center"
     },
-
-
     "services": {
       "title": "Services",
       "plant": "Plant Care",
       "animal": "Animal Care",
       "consultation": "AI Consultation"
     },
-
-
     "contact": {
       "title": "Contact",
       "location": "Oman",
       "email": "Email: mrooj@gmail.com",
       "phone": "Phone: +968 9114 9309"
     },
-
-
     "copyright": "MROOJ AI Agriculture. All rights reserved."
-
-  }
-
-  
-  ,
-    "about": {
-
-      "hero": {
-        "title": "Empowering Agriculture Through Intelligent Technology",
-        "description": "MROOJ combines artificial intelligence, agricultural expertise, and veterinary knowledge to support smarter and more sustainable farming."
-      },
-
-
-      "who": {
-        "title": "Who We Are",
-        "description": "MROOJ is an AI-powered agricultural and veterinary consultation platform designed to connect farmers and livestock owners with intelligent solutions and specialized experts."
-      },
-
-
-      "mission": {
-        "title": "Our Mission",
-        "description": "To empower farmers with accessible AI technologies and expert guidance that improve productivity and sustainability."
-      },
-
-
-      "vision": {
-        "title": "Our Vision",
-        "description": "To become a leading smart agriculture platform that transforms farming decisions through artificial intelligence."
-      },
-
-
-      "process": {
-        "title": "How MROOJ Works",
-
-        "steps": [
-          {
-            "title": "Identify",
-            "description": "Upload crop or livestock information and describe the problem."
-          },
-
-          {
-            "title": "AI Analysis",
-            "description": "Our AI analyzes the information and provides possible insights."
-          },
-
-          {
-            "title": "Expert Consultation",
-            "description": "Connect with agricultural and veterinary specialists for guidance."
-          }
-        ]
-      },
-
-
-      "why": {
-        "title": "Why Choose MROOJ",
-
-        "items": [
-          {
-            "icon": "🤖",
-            "title": "AI-Powered Solutions",
-            "description": "Smart analysis to support faster agricultural decisions."
-          },
-
-          {
-            "icon": "🌱",
-            "title": "Sustainable Farming",
-            "description": "Helping farmers adopt efficient and sustainable practices."
-          },
-
-          {
-            "icon": "👨‍⚕️",
-            "title": "Expert Support",
-            "description": "Access professional agricultural and veterinary consultants."
-          }
-        ]
-      }
-
-    }
-    , 
-        "learning": {
-
-      "hero": {
-        "title": "MROOJ Learning Center",
-        "description": "Explore agricultural and veterinary knowledge designed for farmers and livestock owners in Oman."
-      },
-
-
-      "plant": {
-        "title": "Plant Care",
-        "description": "Learn about crops, diseases, farming techniques, and sustainable agriculture practices."
-      },
-
-
-      "animal": {
-        "title": "Animal Care",
-        "description": "Discover animal health, livestock management, diseases, and veterinary guidance."
-      },
-
-
-      "explore": "Explore Articles"
-
-    }, 
-
-
-"learningArticles": {
-
-  "title": "Learning Articles",
-  "description": "Explore agricultural and veterinary knowledge designed for farmers and livestock owners in Oman.",
-  "read": "Read More",
-
-
-  "plant": {
-    "title": "Plant",
-    "button": "Plant Care",
-
-    "article1": {
-      "title": "Date Palm Diseases",
-      "description": "Learn how to identify, prevent, and manage common date palm diseases in Oman."
-    },
-
-    "article2": {
-      "title": "Red Palm Weevil Management",
-      "description": "Discover prevention methods and early detection techniques for red palm weevil infestations."
-    },
-
-    "article3": {
-      "title": "Crop Disease Prevention",
-      "description": "Learn how to protect crops from common diseases using sustainable farming practices."
-    },
-
-    "article4": {
-      "title": "Smart Irrigation Techniques",
-      "description": "Understand efficient irrigation methods to improve crop growth and save water."
-    },
-
-    "article5": {
-      "title": "Soil Health Management",
-      "description": "Learn how soil quality affects plant growth and agricultural productivity."
-    },
-
-    "article6": {
-      "title": "Sustainable Farming Practices",
-      "description": "Discover eco-friendly farming methods that improve productivity while protecting natural resources."
-    }
-
   },
-
-
-  "animal": {
-    "title": "Animals",
-    "button": "Animal Care",
-
-    "article1": {
-      "title": "Camel Health Management",
-      "description": "Learn about camel nutrition, diseases, and veterinary care practices."
+  "about": {
+    "hero": {
+      "title": "Empowering Agriculture Through Intelligent Technology",
+      "description": "MROOJ combines artificial intelligence, agricultural expertise, and veterinary knowledge to support smarter and more sustainable farming."
     },
-
-    "article2": {
-      "title": "Livestock Vaccination Guide",
-      "description": "Understand important vaccinations and preventive care for livestock."
+    "who": {
+      "title": "Who We Are",
+      "description": "MROOJ is an AI-powered agricultural and veterinary consultation platform designed to connect farmers and livestock owners with intelligent solutions and specialized experts."
     },
-
-    "article3": {
-      "title": "Animal Nutrition Basics",
-      "description": "Learn how proper nutrition improves animal health and productivity."
+    "mission": {
+      "title": "Our Mission",
+      "description": "To empower farmers with accessible AI technologies and expert guidance that improve productivity and sustainability."
     },
-
-    "article4": {
-      "title": "Early Disease Detection",
-      "description": "Discover common signs of livestock diseases and when to seek expert advice."
+    "vision": {
+      "title": "Our Vision",
+      "description": "To become a leading smart agriculture platform that transforms farming decisions through artificial intelligence."
     },
-
-    "article5": {
-      "title": "Poultry Health Management",
-      "description": "Learn basic poultry care, disease prevention, and farm management practices."
+    "process": {
+      "title": "How MROOJ Works",
+      "steps": [
+        {
+          "title": "Identify",
+          "description": "Upload crop or livestock information and describe the problem."
+        },
+        {
+          "title": "AI Analysis",
+          "description": "Our AI analyzes the information and provides possible insights."
+        },
+        {
+          "title": "Expert Consultation",
+          "description": "Connect with agricultural and veterinary specialists for guidance."
+        }
+      ]
     },
-
+    "why": {
+      "title": "Why Choose MROOJ",
+      "items": [
+        {
+          "icon": "🤖",
+          "title": "AI-Powered Solutions",
+          "description": "Smart analysis to support faster agricultural decisions."
+        },
+        {
+          "icon": "🌱",
+          "title": "Sustainable Farming",
+          "description": "Helping farmers adopt efficient and sustainable practices."
+        },
+        {
+          "icon": "👨‍⚕️",
+          "title": "Expert Support",
+          "description": "Access professional agricultural and veterinary consultants."
+        }
+      ]
+    }
+  },
+  "learning": {
+    "hero": {
+      "title": "MROOJ Learning Center",
+      "description": "Explore agricultural and veterinary knowledge designed for farmers and livestock owners in Oman."
+    },
+    "plant": {
+      "title": "Plant Care",
+      "description": "Learn about crops, diseases, farming techniques, and sustainable agriculture practices."
+    },
+    "animal": {
+      "title": "Animal Care",
+      "description": "Discover animal health, livestock management, diseases, and veterinary guidance."
+    },
+    "explore": "Explore Articles"
+  },
+  "learningArticles": {
+    "title": "Learning Articles",
+    "description": "Explore agricultural and veterinary knowledge designed for farmers and livestock owners in Oman.",
+    "read": "Read More",
+    "plant": {
+      "title": "Plant",
+      "button": "Plant Care",
+      "article1": {
+        "title": "Date Palm Diseases",
+        "description": "Learn how to identify, prevent, and manage common date palm diseases in Oman."
+      },
+      "article2": {
+        "title": "Red Palm Weevil Management",
+        "description": "Discover prevention methods and early detection techniques for red palm weevil infestations."
+      },
+      "article3": {
+        "title": "Crop Disease Prevention",
+        "description": "Learn how to protect crops from common diseases using sustainable farming practices."
+      },
+      "article4": {
+        "title": "Smart Irrigation Techniques",
+        "description": "Understand efficient irrigation methods to improve crop growth and save water."
+      },
+      "article5": {
+        "title": "Soil Health Management",
+        "description": "Learn how soil quality affects plant growth and agricultural productivity."
+      },
+      "article6": {
+        "title": "Sustainable Farming Practices",
+        "description": "Discover eco-friendly farming methods that improve productivity while protecting natural resources."
+      }
+    },
+    "animal": {
+      "title": "Animals",
+      "button": "Animal Care",
+      "article1": {
+        "title": "Camel Health Management",
+        "description": "Learn about camel nutrition, diseases, and veterinary care practices."
+      },
+      "article2": {
+        "title": "Livestock Vaccination Guide",
+        "description": "Understand important vaccinations and preventive care for livestock."
+      },
+      "article3": {
+        "title": "Animal Nutrition Basics",
+        "description": "Learn how proper nutrition improves animal health and productivity."
+      },
+      "article4": {
+        "title": "Early Disease Detection",
+        "description": "Discover common signs of livestock diseases and when to seek expert advice."
+      },
+      "article5": {
+        "title": "Poultry Health Management",
+        "description": "Learn basic poultry care, disease prevention, and farm management practices."
+      },
       "article6": {
         "title": "Goat Farming Essentials",
         "description": "Learn the fundamentals of goat breeding, nutrition, and disease prevention."
       }
-
-  }
-
+    }
   },
-
   "REGISTRATION": {
     "TITLE": "Create Your Account",
     "SUBTITLE": "Join Mrooj and get smart agricultural & veterinary support",
-
     "FARMER": "Farmer",
     "CONSULTANT": "Consultant",
-
     "PERSONAL_INFO": "Personal Information",
-
     "FIRST_NAME": "First Name",
     "LAST_NAME": "Last Name",
     "EMAIL": "Email",
     "PASSWORD": "Password",
     "PHONE": "Phone",
-
     "FARM_INFO": "Farm Information",
     "FARM_NAME": "Farm Name",
     "REGION": "Region",
     "FARM_SIZE": "Farm Size (Acres)",
     "CROP_TYPES": "Crop Types",
-
     "CONSULTANT_INFO": "Consultant Information",
     "SPECIALTY_DOMAIN": "Specialty Domain",
     "PLANT": "Plant",
     "LIVESTOCK": "Livestock",
     "SPECIALTY_TAGS": "Specialty Tags",
     "EXPERIENCE": "Experience Years",
-
     "LOCATION": "Location",
     "CURRENT_LOCATION": "Use Current Location",
-
     "CREATE_ACCOUNT": "Create Account",
-
     "SHOW": "Show",
     "HIDE": "Hide",
-
     "LOCATION_LOADING": "Getting location...",
     "LOCATION_SUCCESS": "Location detected",
-
     "FIRST_NAME_REQUIRED": "First name is required",
     "LAST_NAME_REQUIRED": "Last name is required",
     "EMAIL_REQUIRED": "Email is required",
@@ -366,9 +277,6 @@
     "INVALID_PHONE": "Enter a valid Oman phone number",
     "PASSWORD_PATTERN": "Password must contain uppercase, lowercase letters and a number"
   },
-
-
-  
   "login": {
     "brandName": "MROOJ",
     "title": "Welcome Back!",
@@ -398,139 +306,227 @@
     "errors": {
       "invalidLogin": "Invalid email or password. Please try again."
     }
-  }  ,
-
-
+  },
   "farmer": {
+    "appointments": {
+      "title": "My Appointments",
+      "consultant": "Consultant",
+      "openMeeting": "Open meeting",
+      "empty": "No appointments scheduled.",
+      "subtitle": "View your scheduled consultations and meeting details.",
+      "duration": "Duration"
+    },
+    "bookings": {
+      "title": "My Consultation Requests",
+      "empty": "No consultation requests yet.",
+      "consultant": "Consultant",
+      "waiting": "Waiting for assignment",
+      "plan": "Treatment plan",
+      "cancelReason": "Cancelled by farmer",
+      "consultantPhone": "Consultant phone",
+      "meetingLink": "Meeting link",
+      "subtitle": "Track your submitted problems and consultant responses.",
+      "problem": "Problem",
+      "description": "Problem description",
+      "symptomImage": "Uploaded symptom image"
+    },
+    "newIssue": {
+      "title": "New AI Issue Analysis",
+      "subtitle": "Describe the plant or livestock problem and upload a clear image.",
+      "domain": "Domain",
+      "subjectType": "Crop / animal type",
+      "category": "Issue category",
+      "description": "Description",
+      "image": "Symptom image",
+      "analyze": "Analyze with AI",
+      "analyzing": "Analyzing...",
+      "result": "Preliminary result",
+      "urgency": "Urgency",
+      "actions": "Recommended actions",
+      "submit": "Submit consultation request",
+      "submitWithoutAi": "Submit without AI result",
+      "completeFields": "Please complete the required fields and choose an image for AI analysis.",
+      "aiFailed": "AI analysis failed. You can still submit the consultation.",
+      "bookingSuccess": "Consultation #{{id}} submitted successfully.",
+      "bookingFailed": "Could not create consultation.",
+      "location": "Issue Location",
+      "mapHint": "Click the map to choose the issue location."
+    },
     "sidebar": {
       "brandName": "MROOJ",
-      "brandSubtitle": "Agricultural Management",
+      "brandSubtitle": "Farmer Portal",
       "dashboard": "Dashboard",
-      "createBooking": "Create Booking",
+      "createBooking": "New Consultation",
       "myBookings": "My Bookings",
+      "appointments": "Appointments",
       "profile": "Profile",
       "logout": "Logout"
     },
-
     "dashboard": {
-
-"welcome":"Welcome {{name}}",
-
-"subtitle":"Manage your farm smarter",
-
-"stats":{
-
-"totalRequests":"Total Requests",
-"pendingRequests":"Pending Requests",
-"resolvedRequests":"Resolved Requests",
-"upcomingAppointments":"Upcoming Appointments"
-
-},
-
-
-"bookings":{
-
-"title":"Recent Bookings",
-
-"empty":"No bookings yet.",
-
-
-"columns":{
-
-"bookingId":"Booking ID",
-"problemType":"Problem Type",
-"consultant":"Consultant",
-"status":"Status"
-
-},
-
-
-"status":{
-
-"confirmed":"Confirmed",
-"pending":"Pending",
-"completed":"Completed"
-
-}
-
-}
-}
-,
-"profile": {
-
-  "title": "Farmer Profile",
-
-  "personalInfo": "Personal Information",
-
-  "farmDetails": "Farm Details",
-
-  "location": "Geographical Location",
-
-
-  "editButton": "Edit Profile",
-
-  "saveButton": "Save Changes",
-
-  "cancelButton": "Cancel",
-
-
-  "loading": "Loading profile...",
-
-
-  "fields": {
-
-    "firstName": "First Name",
-
-    "lastName": "Last Name",
-
-    "email": "Email",
-
-    "phone": "Phone",
-
-    "farmName": "Farm Name",
-
-    "region": "Region",
-
-    "farmSize": "Farm Size",
-
-    "cropTypes": "Crop Types",
-
-    "acresUnit": "Acres",
-
-    "coordinates": "Coordinates"
-
+      "welcome": "Welcome, {{name}}",
+      "subtitle": "Here is an overview of your consultations and appointments.",
+      "stats": {
+        "totalRequests": "Total Requests",
+        "pendingRequests": "Pending Requests",
+        "resolvedRequests": "Resolved Requests",
+        "upcomingAppointments": "Upcoming Appointments"
+      },
+      "bookings": {
+        "title": "Recent Consultation Requests",
+        "columns": {
+          "bookingId": "Booking ID",
+          "problemType": "Problem Type",
+          "consultant": "Consultant",
+          "status": "Status"
+        },
+        "empty": "No recent consultation requests.",
+        "noConsultant": "Not assigned",
+        "status": {
+          "pending": "Pending",
+          "assigned": "Assigned",
+          "in_progress": "In progress",
+          "resolved": "Resolved",
+          "cancelled": "Cancelled"
+        }
+      },
+      "appointments": {
+        "title": "Upcoming Appointments",
+        "date": "Date",
+        "consultant": "Consultant",
+        "duration": "Duration",
+        "location": "Location",
+        "empty": "No upcoming appointments."
+      }
+    },
+    "profile": {
+      "title": "Farmer Profile",
+      "subtitle": "View and update your personal and farm information.",
+      "personalInfo": "Personal Information",
+      "farmInfo": "Farm Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "farmName": "Farm Name",
+      "region": "Region",
+      "farmSize": "Farm Size (acres)",
+      "cropTypes": "Crop Types",
+      "location": "Farm Location",
+      "edit": "Edit Profile",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "success": {
+        "updated": "Profile updated successfully."
+      },
+      "errors": {
+        "firstNameRequired": "First name is required.",
+        "lastNameRequired": "Last name is required.",
+        "phoneInvalid": "Enter a valid Omani phone number.",
+        "farmNameRequired": "Farm name is required.",
+        "regionRequired": "Region is required.",
+        "farmSizeInvalid": "Farm size must be greater than zero.",
+        "cropTypesRequired": "Crop types are required.",
+        "locationRequired": "Please select the farm location on the map.",
+        "updateFailed": "Unable to update the profile."
+      },
+      "loading": "Loading profile...",
+      "editButton": "Edit Profile",
+      "saveButton": "Save Changes",
+      "cancelButton": "Cancel",
+      "farmDetails": "Farm Details",
+      "mapInstruction": "Click the map to update the farm location.",
+      "fields": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "phone": "Phone",
+        "farmName": "Farm Name",
+        "region": "Region",
+        "farmSize": "Farm Size",
+        "cropTypes": "Crop Types",
+        "coordinates": "Coordinates",
+        "acresUnit": "acres"
+      }
+    }
   },
-
-"success": {
-  "updated": "Profile updated successfully."
-},
-
-"saving": "Saving...",
-
-"mapInstruction": "Click on the map to change farm location.",
-
-"errors": {
-
-  "updateFailed": "Failed to update profile.",
-
-  "firstNameRequired": "First name is required.",
-
-  "lastNameRequired": "Last name is required.",
-
-  "phoneInvalid": "Invalid phone number.",
-
-  "farmNameRequired": "Farm name is required.",
-
-  "regionRequired": "Region is required.",
-
-  "farmSizeInvalid": "Farm size must be greater than zero.",
-
-  "cropTypesRequired": "Crop types are required.",
-
-  "locationRequired": "Please select farm location."
-}
-}
+  "common": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "logout": "Log out",
+    "plant": "Plant",
+    "livestock": "Livestock",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "minutes": "minutes",
+    "booking": "Booking",
+    "location": "Location",
+    "language": "Language",
+    "english": "English",
+    "arabic": "العربية",
+    "useCurrentLocation": "Use my current location",
+    "locating": "Detecting location...",
+    "locationDetected": "Your current location was selected. You can move the marker if needed.",
+    "locationUnavailable": "Location detection is not supported by this browser.",
+    "locationPermissionDenied": "Could not detect your location. Allow location permission or select it on the map.",
+    "notAvailable": "Not available",
+    "openMeeting": "Open meeting link"
+  },
+  "consultant": {
+    "layout": {
+      "portal": "Consultant Portal",
+      "dashboard": "Dashboard",
+      "requests": "Assigned Requests",
+      "appointments": "Appointments",
+      "profile": "My Profile",
+      "welcome": "Welcome"
+    },
+    "dashboard": {
+      "title": "Consultant Dashboard",
+      "assigned": "Assigned requests",
+      "upcoming": "Upcoming appointments"
+    },
+    "appointments": {
+      "title": "Appointments",
+      "complete": "Mark completed",
+      "empty": "No upcoming appointments."
+    },
+    "requests": {
+      "title": "Assigned Requests",
+      "farmer": "Farmer",
+      "symptoms": "Symptoms",
+      "aiReport": "AI preliminary report",
+      "start": "Start consultation",
+      "plan": "Treatment and prevention plan",
+      "saveResponse": "Save response",
+      "appointment": "Appointment",
+      "schedule": "Schedule",
+      "empty": "No assigned requests.",
+      "saved": "Response saved successfully.",
+      "scheduled": "Appointment scheduled successfully.",
+      "scheduleFailed": "Could not schedule appointment.",
+      "imageUnavailable": "The symptom image could not be loaded.",
+      "farmerPhone": "Farmer phone",
+      "meetingLink": "Meeting link",
+      "meetingLinkPlaceholder": "https://meet.google.com/..."
+    },
+    "profile": {
+      "title": "Consultant Profile",
+      "subtitle": "Update your personal and professional information.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Phone",
+      "domain": "Specialty domain",
+      "tags": "Specialty tags",
+      "experience": "Experience years",
+      "available": "Available for new requests",
+      "saved": "Profile updated successfully.",
+      "location": "Consultant Location",
+      "mapHint": "Click the map to choose your location.",
+      "loadFailed": "Unable to load profile.",
+      "saveFailed": "Unable to save profile."
+    }
   }
-
 }
-

@@ -7,7 +7,7 @@
 --
 -- Notes:
 --   - utf8mb4 is used throughout since the platform serves Arabic content
---     (preferred_language, learning_articles.title/content) alongside English.
+--     (preferred_language and other Arabic-facing fields) alongside English.
 --   - POINT columns use SRID 4326 (WGS84 lat/lng), matching GPS/browser
 --     geolocation output and the @Column(columnDefinition = "POINT SRID 4326")
 --     annotations on the entities.
@@ -127,6 +127,8 @@ CREATE TABLE appointments
     status           VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED',
     meeting_link     VARCHAR(500) NULL,
     location         VARCHAR(255) NULL,
+    notes            TEXT NULL,
+    cancellation_reason VARCHAR(500) NULL,
     created_at       DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at       DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
@@ -165,26 +167,4 @@ CREATE TABLE assignment_log
     CONSTRAINT fk_assignment_log_consultant
         FOREIGN KEY (consultant_id) REFERENCES consultants (id)
             ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-
--- ---------------------------------------------------------------------
--- LEARNING_ARTICLES  (standalone — no FKs per ERD)
--- ---------------------------------------------------------------------
-CREATE TABLE learning_articles
-(
-    id            BIGINT       NOT NULL AUTO_INCREMENT,
-    title         VARCHAR(255) NOT NULL,
-    slug          VARCHAR(255) NOT NULL,
-    content       TEXT         NOT NULL,
-    category      VARCHAR(100) NULL,
-    target_domain VARCHAR(20)  NOT NULL,
-    language      VARCHAR(5)   NOT NULL DEFAULT 'ar',
-    author_name   VARCHAR(100) NULL,
-    published     BOOLEAN      NOT NULL DEFAULT FALSE,
-    created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    published_at  DATETIME NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_learning_articles_slug (slug),
-    KEY           idx_learning_articles_target_domain (target_domain)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;

@@ -1,0 +1,38 @@
+<section class="page-shell">
+  <header class="page-header">
+    <h1>{{ 'farmer.appointments.title' | translate }}</h1>
+    <p>{{ 'farmer.appointments.subtitle' | translate }}</p>
+  </header>
+
+  <div class="appointment-list">
+    @for (a of items(); track a.id) {
+      <article class="appointment-card">
+        <div class="appointment-date">
+          <span class="day">{{ a.scheduledAt | date:'dd' }}</span>
+          <span>{{ a.scheduledAt | date:'MMM yyyy' }}</span>
+        </div>
+
+        <div class="appointment-details">
+          <div class="title-row">
+            <h2>{{ a.scheduledAt | date:'mediumTime' }}</h2>
+            <span class="status" [attr.data-status]="a.status.toLowerCase()">{{ a.status }}</span>
+          </div>
+
+          <div class="info-grid">
+            <div><span>{{ 'farmer.appointments.consultant' | translate }}</span><strong>{{ a.consultantName || '-' }}</strong></div>
+            <div><span>{{ 'farmer.appointments.duration' | translate }}</span><strong>{{ a.durationMinutes }} {{ 'common.minutes' | translate }}</strong></div>
+            <div><span>{{ 'common.location' | translate }}</span><strong>{{ a.location || '-' }}</strong></div>
+          </div>
+
+          @if (a.meetingLink) {
+            <a class="meeting-link" [href]="a.meetingLink" target="_blank" rel="noopener noreferrer">
+              {{ 'common.openMeeting' | translate }}
+            </a>
+          }
+        </div>
+      </article>
+    } @empty {
+      <div class="empty">{{ 'farmer.appointments.empty' | translate }}</div>
+    }
+  </div>
+</section>

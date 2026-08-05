@@ -2,6 +2,7 @@ package com.example.mroojBE.DTOs.RequestDTO;
 
 import com.example.mroojBE.Entity.Appointment;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Future;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,10 +15,10 @@ public class AppointmentRequestDTO {
     @NotNull(message = "Booking id is required")
     private Long bookingId;
 
-    @NotNull(message = "Consultant id is required")
-    private Long consultantId;
+    private Long consultantId; // ignored; consultant identity is derived from JWT
 
     @NotNull(message = "Scheduled time is required")
+    @Future(message = "Scheduled time must be in the future")
     private LocalDateTime scheduledAt;
 
     private Integer durationMinutes;

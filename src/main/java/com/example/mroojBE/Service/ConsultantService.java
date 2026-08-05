@@ -1,6 +1,7 @@
 package com.example.mroojBE.Service;
 
 import com.example.mroojBE.DTOs.RequestDTO.ConsultantRequestDTO;
+import com.example.mroojBE.DTOs.RequestDTO.ConsultantUpdateRequestDTO;
 import com.example.mroojBE.DTOs.ResponseDTO.ConsultantResponseDTO;
 import com.example.mroojBE.Entity.Consultant;
 import com.example.mroojBE.Entity.User;
@@ -30,6 +31,7 @@ public class ConsultantService {
     private final ConsultantRepository consultantRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticatedUserService authenticatedUserService;
 
     public ConsultantResponseDTO registerConsultant(ConsultantRequestDTO request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -62,6 +64,32 @@ public class ConsultantService {
         Consultant saved = consultantRepository.save(consultant);
 
         return toDTO(saved);
+    }
+
+
+    @Transactional(readOnly = true)
+    public ConsultantResponseDTO getMyProfile() {
+        return toDTO(authenticatedUserService.currentConsultant());
+    }
+
+    public ConsultantResponseDTO updateMyProfile(ConsultantUpdateRequestDTO request) {
+        Consultant consultant = authenticatedUserService.currentConsultant();
+        User user = consultant.getUser();
+
+        if (request.getFirstName() != null && !request.getFirstName().isBlank()) user.setFirstName(request.getFirstName().trim());
+        if (request.getLastName() != null && !request.getLastName().isBlank()) user.setLastName(request.getLastName().trim());
+        if (request.getPhone() != null) user.setPhone(request.getPhone().trim());
+        if (request.getSpecialtyDomain() != null && !request.getSpecialtyDomain().isBlank()) {
+            consultant.setSpecialtyDomain(parseDomain(request.getSpecialtyDomain()));
+        }
+        if (request.getSpecialtyTags() != null) consultant.setSpecialtyTags(request.getSpecialtyTags().trim());
+        if (request.getExperienceYears() != null) consultant.setExperienceYears(request.getExperienceYears());
+        if (request.getLatitude() != null && request.getLongitude() != null) {
+            consultant.setLocation(GeoUtils.createPoint(request.getLatitude(), request.getLongitude()));
+        }
+        if (request.getAvailable() != null) consultant.setAvailable(request.getAvailable());
+
+        return toDTO(consultant);
     }
 
     @Transactional(readOnly = true)

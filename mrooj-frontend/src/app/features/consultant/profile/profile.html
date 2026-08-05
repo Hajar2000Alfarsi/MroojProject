@@ -1,0 +1,48 @@
+<section class="profile-card">
+  <div class="page-heading">
+    <div>
+      <h1>{{ 'consultant.profile.title' | translate }}</h1>
+      <p>{{ 'consultant.profile.subtitle' | translate }}</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p>{{ 'common.loading' | translate }}</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="grid">
+        <label>{{ 'consultant.profile.firstName' | translate }}<input formControlName="firstName"></label>
+        <label>{{ 'consultant.profile.lastName' | translate }}<input formControlName="lastName"></label>
+        <label>{{ 'consultant.profile.phone' | translate }}<input formControlName="phone"></label>
+        <label>{{ 'consultant.profile.domain' | translate }}
+          <select formControlName="specialtyDomain">
+            <option value="PLANT">{{ 'common.plant' | translate }}</option>
+            <option value="LIVESTOCK">{{ 'common.livestock' | translate }}</option>
+          </select>
+        </label>
+        <label>{{ 'consultant.profile.tags' | translate }}<input formControlName="specialtyTags"></label>
+        <label>{{ 'consultant.profile.experience' | translate }}<input type="number" formControlName="experienceYears"></label>
+      </div>
+
+      <div class="map-section">
+        <div class="map-heading">
+          <div>
+            <h3>{{ 'consultant.profile.location' | translate }}</h3>
+            <p>{{ 'consultant.profile.mapHint' | translate }}</p>
+          </div>
+          <button class="location-button" type="button" (click)="useCurrentLocation()" [disabled]="locating()">
+            {{ (locating() ? 'common.locating' : 'common.useCurrentLocation') | translate }}
+          </button>
+        </div>
+        @if (locationMessage()) { <p class="location-message">{{ locationMessage() }}</p> }
+        <div #consultantMap class="map" role="application" [attr.aria-label]="'consultant.profile.location' | translate"></div>
+      </div>
+
+      <label class="availability"><input type="checkbox" formControlName="available"> {{ 'consultant.profile.available' | translate }}</label>
+      <button class="save-button" type="submit" [disabled]="saving()">{{ (saving() ? 'common.saving' : 'common.save') | translate }}</button>
+    </form>
+  }
+
+  @if (message()) { <p class="success">{{ message() | translate }}</p> }
+  @if (error()) { <p class="error">{{ error() }}</p> }
+</section>

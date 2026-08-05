@@ -138,4 +138,4 @@
 
   flex-direction: row-reverse;
 
-}
+}.language-btn{border:1px solid #1e4620;background:#fff;color:#1e4620;border-radius:10px;padding:.55rem .9rem;font-weight:700;cursor:pointer}.language-btn:hover{background:#eef6ec}

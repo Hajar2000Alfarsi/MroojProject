@@ -56,4 +56,10 @@ public class Appointment extends BaseEntity {
      */
     @Column(length = 255)
     private String location;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
+    @Column(name = "cancellation_reason", length = 500)
+    private String cancellationReason;
 }

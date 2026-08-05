@@ -6,6 +6,8 @@ import com.example.mroojBE.DTOs.ResponseDTO.AuthResponseDTO;
 import com.example.mroojBE.DTOs.ResponseDTO.UserResponseDTO;
 import com.example.mroojBE.Entity.User;
 import com.example.mroojBE.Security.JwtService;
+import com.example.mroojBE.Security.SecurityUtils;
+import com.example.mroojBE.Security.SecurityUtils;
 import com.example.mroojBE.exceptions.DuplicateResourceException;
 import com.example.mroojBE.exceptions.ResourceNotFoundException;
 import com.example.mroojBE.repository.UserRepository;
@@ -59,6 +61,14 @@ public class AuthService {
                 .tokenType("Bearer")
                 .user(toDTO(user))
                 .build();
+    }
+
+
+    @Transactional(readOnly = true)
+    public UserResponseDTO currentUser() {
+        User user = userRepository.findByEmail(SecurityUtils.currentEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+        return toDTO(user);
     }
 
     private UserResponseDTO toDTO(User user) {
